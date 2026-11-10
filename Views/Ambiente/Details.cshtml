@@ -6,19 +6,113 @@
 @* Bloco C#: configurações da view (título, layout e variáveis) *@
 @{
     ViewData["Title"] = "Informações do ambiente";
+    // Atribui Layout
+    Layout = null;
 }
 
-@* Título principal *@
-<h1>Detalhes do Ambiente</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    @* Configuração da página *@
+    <meta charset="UTF-8">
+    @* Configuração da página *@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @* Título da aba *@
+    <title>@ViewData["Title"] - Santa Massa</title>
 
-  @* Parágrafo de texto *@
-  <p><strong>ID:</strong> @Model.Id</p>
-    @* Parágrafo de texto *@
-    <p><strong>Nome:</strong> @Model.Nome</p>
-    @* Parágrafo de texto *@
-    <p><strong>Status:</strong> @Model.Status</p>
-    @* Parágrafo de texto *@
-    <p><strong>Capacidade:</strong> @Model.Capacidade</p>
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @* Arquivo de estilo/fonte externo *@
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-@* Link (asp-action Index) *@
-<a asp-action="Index">Voltar</a>
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
+</head>
+@* Corpo da página: layout do restaurante (sidebar + tema) *@
+<body class="detalhes-edicao-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
+    @* Conteúdo principal *@
+    <main class="detalhes-edicao-container">
+        @* Link (asp-action Index) *@
+        <a asp-action="Index" class="detalhes-edicao-voltar">Voltar aos ambientes</a>
+
+        @* Seção da página *@
+        <section class="detalhes-edicao-card">
+            @* Cabeçalho *@
+            <header class="detalhes-edicao-header">
+                @* Parágrafo de texto *@
+                <p class="detalhes-edicao-kicker">Santa Massa - Rio Preto</p>
+                @* Título principal *@
+                <h1>Detalhes do ambiente</h1>
+                @* Parágrafo de texto *@
+                <p class="detalhes-edicao-descricao">
+                    Confira as informações deste ambiente do restaurante.
+                </p>
+            </header>
+
+            @* Bloco (classe detalhes-edicao-conteudo) *@
+            <div class="detalhes-edicao-conteudo">
+                @* Bloco (classe detalhes-edicao-grid) *@
+                <div class="detalhes-edicao-grid">
+                    @* Bloco (classe detalhes-edicao-item) *@
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
+                        <span>Código do ambiente</span>
+                        @* Texto em negrito *@
+                        <strong>#@Model.Id</strong>
+                    </div>
+
+                    @* Bloco (classe detalhes-edicao-item) *@
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
+                        <span>Nome</span>
+                        @* Texto em negrito *@
+                        <strong>@Model.Nome</strong>
+                    </div>
+
+                    @* Bloco (classe detalhes-edicao-item) *@
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
+                        <span>Status</span>
+                        @* Texto em negrito *@
+                        <strong class="detalhes-edicao-status">@Model.Status</strong>
+                    </div>
+
+                    @* Bloco (classe detalhes-edicao-item) *@
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
+                        <span>Capacidade</span>
+                        @* Texto em negrito *@
+                        <strong>@Model.Capacidade @(Model.Capacidade == 1 ? "lugar" : "lugares")</strong>
+                    </div>
+                </div>
+
+                @* Bloco (classe detalhes-edicao-acoes) *@
+                <div class="detalhes-edicao-acoes" style="margin-top: 24px;">
+                    @* Link (asp-action Edit, id @Model.Id) *@
+                    <a asp-action="Edit" asp-route-id="@Model.Id"
+                       class="detalhes-edicao-botao detalhes-edicao-botao-principal">
+                        Editar ambiente
+                    </a>
+
+                    @* Link (asp-action Index) *@
+                    <a asp-action="Index"
+                       class="detalhes-edicao-botao detalhes-edicao-botao-secundario">
+                        Voltar
+                    </a>
+                </div>
+            </div>
+
+            @* Rodapé *@
+            <footer class="detalhes-edicao-rodape">
+                Santa Massa — Painel de gerenciamento
+            </footer>
+        </section>
+    </main>
+</body>
+</html>

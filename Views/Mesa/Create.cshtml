@@ -25,10 +25,14 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/Mesas.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="mesas-page">
+<body class="mesas-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
 @* Conteúdo principal *@
 <main class="mesas-container">
     @* Link (asp-action Index) *@

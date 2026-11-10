@@ -1,15 +1,15 @@
 ﻿/* Variáveis de cores do site */
 :root {
-    --fundo: #181817; /* variável de cor --fundo */
-    --cartao: #24231F; /* variável de cor --cartao */
-    --cartao-item: #2D2B26; /* variável de cor --cartao-item */
-    --dourado: #D3B779; /* variável de cor --dourado */
-    --dourado-claro: #E8D5A5; /* variável de cor --dourado-claro */
-    --texto: #F7F3EA; /* variável de cor --texto */
-    --texto-secundario: #C8C0B1; /* variável de cor --texto-secundario */
-    --borda: #49443A; /* variável de cor --borda */
+    --fundo: #090909; /* variável de cor --fundo */
+    --cartao: #151515; /* variável de cor --cartao */
+    --cartao-item: #201c14; /* variável de cor --cartao-item */
+    --dourado: #C6A45C; /* variável de cor --dourado */
+    --dourado-claro: #E8D5A3; /* variável de cor --dourado-claro */
+    --texto: var(--texto); /* variável de cor --texto */
+    --texto-secundario: #BDB7AA; /* variável de cor --texto-secundario */
+    --borda: var(--borda); /* variável de cor --borda */
     --verde: #7DB58A; /* variável de cor --verde */
-    --vermelho: #E7A09A; /* variável de cor --vermelho */
+    --vermelho: #E07A5F; /* variável de cor --vermelho */
 }
 
 /* Estilo de: * */
@@ -31,7 +31,7 @@ body.funcionarios-page {
         radial-gradient(
             circle at 85% 0%,
             rgba(211, 183, 121, 0.10),
-            transparent 30%
+            var(--fundo) 55%
         ),
         var(--fundo);
     color: var(--texto); /* cor do texto */

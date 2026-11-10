@@ -1,11 +1,11 @@
 ﻿
 /* Variáveis de cores do site */
 :root {
-    --preto: #0B0B0B; /* variável de cor --preto */
+    --preto: #090909; /* variável de cor --preto */
     --dourado: #C6A45C; /* variável de cor --dourado */
     --dourado-suave: rgba(198, 164, 92, 0.28); /* variável de cor --dourado-suave */
-    --branco: #F5F1E8; /* variável de cor --branco */
-    --cinza: #B7B1A5; /* variável de cor --cinza */
+    --branco: #F7F3EA; /* variável de cor --branco */
+    --cinza: #BDB7AA; /* variável de cor --cinza */
 }
 
 /* Estilo de: * */
@@ -17,12 +17,7 @@
 body.area-page {
     margin: 0; /* espaçamento externo */
     min-height: 100vh; /* altura mínima */
-    background:
-        radial-gradient(
-            ellipse at 50% 0%,
-            #1B1914 0%,
-            var(--preto) 58%
-        );
+    background: var(--preto);
     color: var(--branco); /* cor do texto */
     font-family: "Poppins", Arial, sans-serif; /* fonte */
 }

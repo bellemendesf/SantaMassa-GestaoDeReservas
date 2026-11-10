@@ -43,17 +43,18 @@
           asp-append-version="true">
     <link rel="stylesheet" href="~/css/Listagens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Reserva.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="mesas-page has-fixed-page-top">
+<body class="mesas-page has-fixed-page-top tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
 @await Component.InvokeAsync("ReservaPageTop")
     @* Conteúdo principal *@
     <main class="mesas-container">
-
-        <a asp-controller="AreaRestaurante" asp-action="Index" class="mesas-voltar">← Voltar à Área do Restaurante</a>
-
-        @* Seção da página *@
+@* Seção da página *@
         <section class="mesas-card">
 
             @* Cabeçalho *@

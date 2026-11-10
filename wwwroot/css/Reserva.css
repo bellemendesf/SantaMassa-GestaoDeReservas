@@ -1,15 +1,16 @@
 ﻿
 /* Variáveis de cores do site */
 :root {
-    --sm-fundo: #181817; /* variável de cor --sm-fundo */
-    --sm-fundo-secundario: #22211F; /* variável de cor --sm-fundo-secundario */
-    --sm-painel: #2B2925; /* variável de cor --sm-painel */
-    --sm-painel-claro: #34312B; /* variável de cor --sm-painel-claro */
-    --sm-dourado: #D3B779; /* variável de cor --sm-dourado */
-    --sm-dourado-claro: #E8D5A5; /* variável de cor --sm-dourado-claro */
-    --sm-texto: #F7F3EA; /* variável de cor --sm-texto */
-    --sm-texto-secundario: #C8C0B1; /* variável de cor --sm-texto-secundario */
-    --sm-borda: #49443A; /* variável de cor --sm-borda */
+    --sm-fundo: #090909; /* variável de cor --sm-fundo */
+    --sm-fundo-secundario: #151515; /* variável de cor --sm-fundo-secundario */
+    --sm-painel: #151515; /* variável de cor --sm-painel */
+    --sm-painel-claro: #201c14; /* variável de cor --sm-painel-claro */
+    --sm-dourado: #C6A45C; /* variável de cor --sm-dourado */
+    --sm-dourado-claro: #E8D5A3; /* variável de cor --sm-dourado-claro */
+    --sm-texto: var(--sm-texto); /* variável de cor --sm-texto */
+    --sm-texto-secundario: #BDB7AA; /* variável de cor --sm-texto-secundario */
+    --sm-borda: var(--sm-borda); /* variável de cor --sm-borda */
+    --sm-sobre-dourado: #090909; /* texto escuro só em botão dourado */
 }
 
 /* Estilo de: * */
@@ -27,7 +28,7 @@ body.page-reserva {
     min-height: 100vh; /* altura mínima */
     margin: 0; /* espaçamento externo */
     background:
-        radial-gradient(ellipse at 50% 0%, #393226 0%, transparent 48%),
+        radial-gradient(ellipse at 50% 0%, #393226 0%, var(--sm-fundo) 70%),
         var(--sm-fundo);
     color: var(--sm-texto); /* cor do texto */
     font-family: "Poppins", sans-serif; /* fonte */
@@ -72,9 +73,10 @@ body.page-reserva {
     left: 0;
     right: 0;
     z-index: 1030;
-    background: #181817;
+    background: var(--sm-fundo);
     border-bottom: 1px solid rgba(211, 183, 121, 0.35);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    /* Sem box-shadow preta: no fundo escuro virava uma faixa/linha no site todo */
+    box-shadow: none;
 }
 
 body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-edicao-page):not(.area-page) {
@@ -235,7 +237,7 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 
 /* Estilo de: .page-tab.is-active */
 .page-tab.is-active {
-    color: #211D15; /* cor do texto */
+    color: var(--sm-sobre-dourado); /* cor do texto */
     background: var(--sm-dourado); /* fundo */
     border-color: var(--sm-dourado); /* cor da borda */
     font-weight: 600; /* peso da fonte */
@@ -358,8 +360,8 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
     max-width: 920px; /* largura máxima */
     margin: 0 auto; /* espaçamento externo */
     padding: 36px 40px; /* espaçamento interno */
-    background: #2B2925; /* fundo */
-    border: 1px solid #49443A; /* borda */
+    background: var(--sm-painel); /* fundo */
+    border: 1px solid var(--sm-borda); /* borda */
     border-radius: 12px; /* cantos arredondados */
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); /* sombra */
 }
@@ -379,7 +381,7 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 .page-content form .form-label {
     display: block; /* tipo de exibição */
     margin-bottom: 9px; /* margem inferior */
-    color: #E8D5A5; /* cor do texto */
+    color: var(--sm-dourado-claro); /* cor do texto */
     font-family: "Poppins", sans-serif; /* fonte */
     font-size: 0.88rem; /* tamanho da fonte */
     font-weight: 500; /* peso da fonte */
@@ -396,8 +398,8 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
     width: 100%; /* largura */
     min-height: 50px; /* altura mínima */
     padding: 12px 15px; /* espaçamento interno */
-    color: #F7F3EA; /* cor do texto */
-    background-color: #201F1D; /* cor de fundo */
+    color: var(--sm-texto); /* cor do texto */
+    background-color: var(--sm-fundo-secundario); /* cor de fundo */
     border: 1px solid #514B40; /* borda */
     border-radius: 7px; /* cantos arredondados */
     font-family: "Poppins", sans-serif; /* fonte */
@@ -423,9 +425,9 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 .page-content form select:focus,
 /* Estilo de: .page-content form textarea:focus */
 .page-content form textarea:focus {
-    color: #F7F3EA; /* cor do texto */
-    background-color: #25231F; /* cor de fundo */
-    border-color: #D3B779; /* cor da borda */
+    color: var(--sm-texto); /* cor do texto */
+    background-color: var(--sm-painel-claro); /* cor de fundo */
+    border-color: var(--sm-dourado); /* cor da borda */
     outline: none; /* contorno de foco */
     box-shadow: 0 0 0 3px rgba(211, 183, 121, 0.12); /* sombra */
 }
@@ -434,8 +436,8 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 
 /* Estilo de: .page-content form select option */
 .page-content form select option {
-    color: #F7F3EA; /* cor do texto */
-    background-color: #201F1D; /* cor de fundo */
+    color: var(--sm-texto); /* cor do texto */
+    background-color: var(--sm-fundo-secundario); /* cor de fundo */
 }
 
 /* Validação */
@@ -449,6 +451,80 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
     font-size: 0.8rem; /* tamanho da fonte */
 }
 
+/* Esconde resumo/caixa de erro quando não há mensagem (ASP.NET: validation-summary-valid) */
+.validation-summary-valid,
+div.alerta-erro.validation-summary-valid,
+.alerta-erro.validation-summary-valid,
+.alerta-erro:empty,
+.page-content form .validation-summary-valid {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Caixas de alerta bem visíveis (erro / aviso / sucesso) */
+.alerta-erro,
+.alerta-aviso,
+.alerta-sucesso,
+.page-content form .validation-summary-errors,
+.page-content form .alerta-erro {
+    display: block;
+    margin: 12px 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.45;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.alerta-erro.validation-summary-errors,
+.alerta-erro:not(.validation-summary-valid):not(:empty),
+.page-content form .validation-summary-errors {
+    color: #FFE6E3 !important;
+    background: rgba(138, 75, 71, 0.42);
+    border: 2px solid #E08B85;
+}
+
+/* Sem mensagens: some ValidationSummary ficam com ul vazia dentro */
+.alerta-erro.validation-summary-valid,
+.validation-summary-valid ul:empty {
+    display: none !important;
+}
+
+.alerta-aviso {
+    color: #FFF3D6 !important;
+    background: rgba(211, 183, 121, 0.22);
+    border: 2px solid var(--sm-dourado);
+}
+
+.alerta-sucesso {
+    color: #E4F5E7 !important;
+    background: rgba(111, 167, 122, 0.28);
+    border: 2px solid #6FA77A;
+}
+
+.alerta-campo.field-validation-error:not(:empty),
+span.alerta-campo.text-danger:not(:empty) {
+    display: block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #FFE6E3 !important;
+    background: rgba(138, 75, 71, 0.35);
+    border: 1px solid #E08B85;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.page-content form .validation-summary-errors ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
 /* Botões */
 
 .page-content form button[type="submit"],
@@ -456,9 +532,9 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 .page-content form input[type="submit"] {
     min-height: 47px; /* altura mínima */
     padding: 12px 24px; /* espaçamento interno */
-    color: #211D15; /* cor do texto */
-    background: #D3B779; /* fundo */
-    border: 1px solid #D3B779; /* borda */
+    color: var(--sm-sobre-dourado); /* cor do texto */
+    background: var(--sm-dourado); /* fundo */
+    border: 1px solid var(--sm-dourado); /* borda */
     border-radius: 7px; /* cantos arredondados */
     font-family: "Poppins", sans-serif; /* fonte */
     font-size: 0.9rem; /* tamanho da fonte */
@@ -470,8 +546,8 @@ body.has-fixed-page-top:not(.mesas-page):not(.funcionarios-page):not(.detalhes-e
 .page-content form button[type="submit"]:hover,
 /* Estilo de: .page-content form input[type="submit"]:hover */
 .page-content form input[type="submit"]:hover {
-    background: #E8D5A5; /* fundo */
-    border-color: #E8D5A5; /* cor da borda */
+    background: var(--sm-dourado-claro); /* fundo */
+    border-color: var(--sm-dourado-claro); /* cor da borda */
     transform: translateY(-1px); /* transformação (movimento) */
 }
 

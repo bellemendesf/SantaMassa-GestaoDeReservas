@@ -5,16 +5,17 @@
 
 /* Variáveis de cores do site */
 :root {
-    --fundo: #181817; /* variável de cor --fundo */
-    --cartao: #24231F; /* variável de cor --cartao */
-    --cartao-item: #2D2B26; /* variável de cor --cartao-item */
-    --dourado: #D3B779; /* variável de cor --dourado */
-    --dourado-claro: #E8D5A5; /* variável de cor --dourado-claro */
-    --texto: #F7F3EA; /* variável de cor --texto */
-    --texto-secundario: #C8C0B1; /* variável de cor --texto-secundario */
-    --borda: #49443A; /* variável de cor --borda */
+    --fundo: #090909; /* variável de cor --fundo */
+    --cartao: #151515; /* variável de cor --cartao */
+    --cartao-item: #201c14; /* variável de cor --cartao-item */
+    --dourado: #C6A45C; /* variável de cor --dourado */
+    --dourado-claro: #E8D5A3; /* variável de cor --dourado-claro */
+    --texto: var(--texto); /* variável de cor --texto */
+    --texto-secundario: #BDB7AA; /* variável de cor --texto-secundario */
+    --borda: var(--borda);
+    --sobre-dourado: #090909; /* variável de cor --borda */
     --verde: #7DB58A; /* variável de cor --verde */
-    --vermelho: #E7A09A; /* variável de cor --vermelho */
+    --vermelho: #E07A5F; /* variável de cor --vermelho */
 }
 
 /* Estilo de: * */
@@ -28,7 +29,7 @@ body.detalhes-edicao-page {
     min-height: 100vh; /* altura mínima */
     padding: 42px 20px; /* espaçamento interno */
     background:
-        radial-gradient(ellipse at top, #302B20 0%, transparent 52%),
+        radial-gradient(ellipse at top, #302B20 0%, var(--fundo) 70%),
         var(--fundo);
     color: var(--texto); /* cor do texto */
     font-family: "Poppins", sans-serif; /* fonte */
@@ -60,7 +61,7 @@ body.detalhes-edicao-page {
 
 /* Estilo de: .detalhes-edicao-voltar:hover */
 .detalhes-edicao-voltar:hover {
-    color: #FFFFFF; /* cor do texto */
+    color: var(--texto); /* cor do texto */
     transform: translateX(-3px); /* transformação (movimento) */
 }
 
@@ -80,7 +81,7 @@ body.detalhes-edicao-page {
 /* Estilo de: .detalhes-edicao-header */
 .detalhes-edicao-header {
     padding: 32px 36px; /* espaçamento interno */
-    background: linear-gradient(135deg, #302C23, #24231F 75%); /* fundo */
+    background: linear-gradient(135deg, #302C23, var(--cartao) 75%); /* fundo */
     border-top: 3px solid var(--dourado); /* borda superior */
     border-bottom: 1px solid var(--borda); /* borda inferior */
 }
@@ -253,14 +254,86 @@ body.detalhes-edicao-page {
 
 /* Estilo de: .detalhes-edicao-erros */
 .detalhes-edicao-erros {
-    color: var(--vermelho); /* cor do texto */
-    font-size: 12px; /* tamanho da fonte */
-    line-height: 1.6; /* altura da linha */
+    color: #FFE6E3; /* cor do texto */
+    font-size: 0.9rem; /* tamanho da fonte */
+    line-height: 1.5; /* altura da linha */
 }
 
 /* Estilo de: .detalhes-edicao-erros:empty */
 .detalhes-edicao-erros:empty {
     display: none; /* tipo de exibição */
+}
+
+/* Esconde caixa de erro válida/vazia (barra marrom sem mensagem) */
+.detalhes-edicao-erros.validation-summary-valid,
+.detalhes-edicao-alerta-erro.validation-summary-valid,
+div.detalhes-edicao-alerta-erro.validation-summary-valid {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Resumo de erros e avisos bem visíveis na edição/detalhes */
+.detalhes-edicao-erros.validation-summary-errors,
+.detalhes-edicao-alerta-erro.validation-summary-errors,
+.detalhes-edicao-alerta-aviso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #FFF3D6;
+    background: rgba(211, 183, 121, 0.22);
+    border: 2px solid var(--dourado);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.detalhes-edicao-alerta-sucesso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.detalhes-edicao-erros.validation-summary-errors,
+.detalhes-edicao-alerta-erro.validation-summary-errors,
+.detalhes-edicao-alerta-erro:not(.validation-summary-valid):not(:empty) {
+    color: #FFE6E3;
+    background: rgba(138, 75, 71, 0.42);
+    border: 2px solid #E08B85;
+}
+
+.detalhes-edicao-alerta-aviso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #FFF3D6;
+    background: rgba(211, 183, 121, 0.22);
+    border: 2px solid var(--dourado);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.detalhes-edicao-alerta-sucesso {
+    color: #E4F5E7;
+    background: rgba(111, 167, 122, 0.28);
+    border: 2px solid #6FA77A;
+}
+
+span.detalhes-edicao-erros.field-validation-error:not(:empty) {
+    display: block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(138, 75, 71, 0.32);
+    border: 1px solid #E08B85;
+    font-weight: 600;
 }
 
 /* Botões */
@@ -323,7 +396,7 @@ body.detalhes-edicao-page {
 .detalhes-edicao-botao-secundario:hover {
     background: #34312B; /* fundo */
     border-color: var(--dourado); /* cor da borda */
-    color: #FFFFFF; /* cor do texto */
+    color: var(--texto); /* cor do texto */
 }
 
 /* Rodapé */

@@ -1,4 +1,15 @@
-﻿/* =====================================
+﻿/* Variáveis do mapa, alinhadas à paleta da Home */
+:root {
+    --mapa-dourado: #C6A45C;
+    --mapa-dourado-claro: #E8D5A3;
+    --mapa-texto: var(--mapa-texto, #F7F3EA);
+    --mapa-secundario: #BDB7AA;
+    --mapa-borda: var(--mapa-borda, #49443A);
+    --mapa-livre: #7DB58A;
+    --mapa-fundo: #151515;
+}
+
+/* =====================================
    MAPA DE MESAS — SANTA MASSA
    (mesmas cores do Reserva.css)
    ===================================== */
@@ -37,9 +48,9 @@
     align-items: center; /* alinhamento vertical */
     justify-content: center; /* alinhamento horizontal */
     height: 48px; /* altura */
-    color: #E8D5A5; /* cor do texto */
-    background: #34312B; /* fundo */
-    border: 1px solid #49443A; /* borda */
+    color: var(--mapa-dourado-claro, #E8D5A3); /* cor do texto */
+    background: var(--mapa-fundo, #151515); /* fundo */
+    border: 1px solid var(--mapa-borda, #49443A); /* borda */
     border-radius: 7px; /* cantos arredondados */
     font-weight: 600; /* peso da fonte */
 }
@@ -52,14 +63,14 @@
 }
 
 .mapa-mesa.livre {
-    border-color: #6FA77A;
+    border-color: var(--mapa-livre, #7DB58A);
     background: rgba(111, 167, 122, 0.15);
     cursor: pointer;
 }
 
 .mapa-mesa.livre:hover {
-    border-color: #D3B779;
-    box-shadow: 0 0 0 1px #D3B779;
+    border-color: var(--mapa-dourado, #C6A45C);
+    box-shadow: 0 0 0 1px var(--mapa-dourado, #C6A45C);
 }
 
 .mapa-mesa.reservada {
@@ -70,7 +81,7 @@
 }
 
 .mapa-mesa.selecionada {
-    border-color: #D3B779;
+    border-color: var(--mapa-dourado, #C6A45C);
     background: rgba(211, 183, 121, 0.22);
     box-shadow: 0 0 0 2px rgba(211, 183, 121, 0.45);
 }
@@ -88,7 +99,7 @@
     flex-wrap: wrap; /* quebra de linha dos itens */
     gap: 18px; /* espaço entre itens */
     margin-bottom: 14px; /* margem inferior */
-    color: #C8C0B1; /* cor do texto */
+    color: var(--mapa-secundario, #BDB7AA); /* cor do texto */
     font-size: 0.82rem; /* tamanho da fonte */
 }
 
@@ -102,9 +113,9 @@
     vertical-align: middle; /* alinhamento vertical */
 }
 
-.leg.livre { background: #6FA77A; }
+.leg.livre { background: var(--mapa-livre, #7DB58A); }
 .leg.reservada { background: #8A4B47; }
-.leg.selecionada { background: #D3B779; }
+.leg.selecionada { background: var(--mapa-dourado, #C6A45C); }
 
 /* Botões de seleção (gerados pelo JavaScript) */
 /* Estilo de: .selecao-mesas */
@@ -120,7 +131,7 @@
     flex-direction: column; /* direção dos itens */
     gap: 2px; /* espaço entre itens */
     padding: 12px; /* espaçamento interno */
-    color: #F7F3EA; /* cor do texto */
+    color: var(--mapa-texto, #F7F3EA); /* cor do texto */
     background: #201F1D; /* fundo */
     border: 1px solid #514B40; /* borda */
     border-radius: 7px; /* cantos arredondados */
@@ -129,13 +140,32 @@
     transition: 0.2s ease; /* animação suave */
 }
 
-.mesa-opcao small { color: #C8C0B1; font-size: 0.75rem; }
-.mesa-opcao.livre { border-left: 4px solid #6FA77A; cursor: pointer; }
-.mesa-opcao.livre:hover { border-color: #D3B779; }
+.mesa-opcao small { color: var(--mapa-secundario, #BDB7AA); font-size: 0.75rem; }
+.mesa-opcao.livre { border-left: 4px solid var(--mapa-livre, #7DB58A); cursor: pointer; }
+.mesa-opcao.livre:hover { border-color: var(--mapa-dourado, #C6A45C); }
 .mesa-opcao.reservada { border-left: 4px solid #8A4B47; opacity: 0.55; cursor: not-allowed; }
-.mesa-opcao.selecionada { border-color: #D3B779; background: rgba(211, 183, 121, 0.12); }
+.mesa-opcao.selecionada { border-color: var(--mapa-dourado, #C6A45C); background: rgba(211, 183, 121, 0.12); }
 
-.mapa-aviso { grid-column: 1 / -1; color: #A9A193; font-size: 0.85rem; margin: 0; }
+.mapa-aviso { grid-column: 1 / -1; margin: 10px 0 0; }
+#mapa-aviso.alerta-aviso,
+#mapa-juncao.alerta-aviso,
+#mapa-juncao.alerta-erro,
+#mapa-juncao.alerta-sucesso,
+.mapa-aviso.alerta-erro,
+.mapa-aviso.alerta-aviso,
+.mapa-aviso.alerta-sucesso {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+#mapa-aviso:not(.alerta-erro):not(.alerta-sucesso) {
+    color: #FFF3D6;
+    background: rgba(211, 183, 121, 0.18);
+    border: 2px solid rgba(211, 183, 121, 0.65);
+}
+
 
 .mapa-listagem {
     margin-top: 16px;
@@ -158,16 +188,16 @@
     flex: 1; /* proporção do item */
     padding: 8px; /* espaçamento interno */
     color: #A9A193; /* cor do texto */
-    background: #2B2925; /* fundo */
-    border: 1px dashed #49443A; /* borda */
+    background: var(--mapa-fundo, #151515); /* fundo */
+    border: 1px dashed var(--mapa-borda, #49443A); /* borda */
     border-radius: 7px; /* cantos arredondados */
     font-size: 0.72rem; /* tamanho da fonte */
     letter-spacing: 2px; /* espaço entre letras */
     text-transform: uppercase; /* maiúsculas/minúsculas */
 }
 
-.mapa-area.janela { flex: 3; color: #E8D5A5; border-style: solid; border-color: #D3B779; }
-.mapa-area.saida { color: #6FA77A; border-color: #6FA77A; }
+.mapa-area.janela { flex: 3; color: var(--mapa-dourado-claro, #E8D5A3); border-style: solid; border-color: var(--mapa-dourado, #C6A45C); }
+.mapa-area.saida { color: var(--mapa-livre, #7DB58A); border-color: var(--mapa-livre, #7DB58A); }
 
 /* Grade com 4 colunas (áreas Externo e Sacada) */
 /* Estilo de: .mapa-grade.quatro */

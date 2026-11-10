@@ -1,0 +1,165 @@
+/* Menu lateral fixo — somente área do restaurante */
+:root {
+    --menu-largura: 260px;
+    --menu-escuro: #1F1F1F;
+    --menu-amarelo: #F4D000;
+    --menu-texto: #F5F5F5;
+}
+
+.menu-restaurante {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--menu-largura);
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    background: var(--menu-escuro);
+    color: var(--menu-texto);
+    box-shadow: 4px 0 18px rgba(0, 0, 0, 0.18);
+}
+
+.menu-restaurante-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--menu-texto);
+    text-decoration: none;
+    font-family: "Josefin Sans", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.menu-restaurante-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.menu-restaurante-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.menu-restaurante-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: var(--menu-texto);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: background .15s ease, color .15s ease;
+}
+
+.menu-restaurante-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+}
+
+.menu-restaurante-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(244, 208, 0, 0.55);
+}
+
+.menu-restaurante-link--ativo {
+    background: var(--menu-amarelo);
+    color: #1F1F1F;
+    font-weight: 700;
+}
+
+.menu-restaurante-link--ativo:hover {
+    background: #E6C400;
+    color: #1F1F1F;
+}
+
+.menu-restaurante-rodape {
+    padding: 14px 10px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.menu-restaurante-sair {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    background: transparent;
+    color: #FFFFFF;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.menu-restaurante-sair:hover {
+    background: #C65D3B;
+    border-color: #C65D3B;
+}
+
+.menu-restaurante-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1300;
+    min-width: 44px;
+    min-height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: var(--menu-amarelo);
+    color: #1F1F1F;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Só empurra o conteúdo se o menu realmente renderizou (funcionário) */
+body.com-sidebar-restaurante:has(.menu-restaurante) {
+    padding-left: var(--menu-largura) !important;
+}
+
+/* Header fixo começa depois da sidebar */
+body.com-sidebar-restaurante:has(.menu-restaurante) .page-top--fixed {
+    left: var(--menu-largura);
+    width: auto;
+    right: 0;
+}
+
+/* Esconde Sair duplicado do header quando há sidebar (Sair fica no menu) */
+body.com-sidebar-restaurante:has(.menu-restaurante) .page-logout-form {
+    display: none !important;
+}
+
+@media (max-width: 900px) {
+    .menu-restaurante-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .menu-restaurante {
+        transform: translateX(-105%);
+        transition: transform .2s ease;
+    }
+
+    body.menu-restaurante-aberto .menu-restaurante {
+        transform: translateX(0);
+    }
+
+    body.com-sidebar-restaurante:has(.menu-restaurante) {
+        padding-left: 0 !important;
+    }
+
+    body.com-sidebar-restaurante:has(.menu-restaurante) .page-top--fixed {
+        left: 0;
+        padding-left: 64px;
+    }
+}

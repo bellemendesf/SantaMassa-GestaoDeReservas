@@ -14,11 +14,17 @@ public class AreaRestauranteController : Controller
 {
     private readonly IReservaRepository repository;
     private readonly IMesaRepository mesaRepository;
+    // Usado para completar o nome do cliente quando a reserva em memória não traz Cliente
+    private readonly IClienteRepository clienteRepository;
 
-    public AreaRestauranteController(IReservaRepository repository, IMesaRepository mesaRepository)
+    public AreaRestauranteController(
+        IReservaRepository repository,
+        IMesaRepository mesaRepository,
+        IClienteRepository clienteRepository)
     {
         this.repository = repository;
         this.mesaRepository = mesaRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     // Ação Index: mostra a listagem
@@ -49,11 +55,65 @@ public class AreaRestauranteController : Controller
         return RedirectToAction("Index", "Ambiente");
     }
 
-    // Ação Reservas
-    public ActionResult Reservas()
+    // Ação Reservas — filtros opcionais por nome do cliente e status (C#, sem SQL extra)
+    public ActionResult Reservas(string? nome, string? status)
     {
         // CORREÇÃO: reutiliza a View existente; links Edit levam ao fluxo do restaurante.
-        return View("~/Views/Reserva/Index.cshtml", repository.Read());
+        // Texto de busca (nome) e status escolhido no formulário GET
+        var buscaNome = (nome ?? "").Trim();
+        var buscaStatus = (status ?? "").Trim();
+
+        // Lista base do repositório
+        var baseLista = repository.Read().ToList();
+        // Garante Cliente.Nome preenchido (SQL já traz; memória às vezes só tem ClienteId)
+        foreach (var r in baseLista)
+        {
+            if (!string.IsNullOrWhiteSpace(r.Cliente?.Nome)) continue;
+            var cli = clienteRepository.Read(r.ClienteId);
+            if (cli != null) r.Cliente = cli;
+        }
+
+        // Filtro por nome do cliente (contém; ignora maiúsculas e acentos)
+        IEnumerable<Reserva> filtrada = baseLista;
+        if (!string.IsNullOrWhiteSpace(buscaNome))
+        {
+            filtrada = filtrada.Where(r =>
+                NomeContem(r.Cliente?.Nome, buscaNome));
+        }
+
+        // Filtro por status (Todos = vazio)
+        if (!string.IsNullOrWhiteSpace(buscaStatus) &&
+            !string.Equals(buscaStatus, "Todos", StringComparison.OrdinalIgnoreCase))
+        {
+            filtrada = filtrada.Where(r =>
+                string.Equals(r.Status, buscaStatus, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Ordena Pendente primeiro; dentro de cada grupo mantém a ordem original (estável).
+        var lista = filtrada
+            .Select((r, i) => new { Reserva = r, OrdemOriginal = i })
+            .OrderBy(x => string.Equals(x.Reserva.Status, "Pendente", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(x => x.OrdemOriginal)
+            .Select(x => x.Reserva)
+            .ToList();
+
+        // Mantém os valores preenchidos no formulário após filtrar
+        ViewBag.FiltroNome = buscaNome;
+        ViewBag.FiltroStatus = string.IsNullOrWhiteSpace(buscaStatus) ? "Todos" : buscaStatus;
+        // Mostra a view com a lista já filtrada/ordenada
+        return View("~/Views/Reserva/Index.cshtml", lista);
+    }
+
+    // Compara nomes ignorando maiúsculas e acentos (ex.: José ≈ jose)
+    private static bool NomeContem(string? nome, string busca)
+    {
+        // Sem nome cadastrado → não casa
+        if (string.IsNullOrWhiteSpace(nome)) return false;
+        // IndexOf com IgnoreCase + IgnoreNonSpace
+        return System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(
+            nome,
+            busca,
+            System.Globalization.CompareOptions.IgnoreCase | System.Globalization.CompareOptions.IgnoreNonSpace) >= 0;
     }
 
     // Ação atendida por requisições GET (abrir a tela)

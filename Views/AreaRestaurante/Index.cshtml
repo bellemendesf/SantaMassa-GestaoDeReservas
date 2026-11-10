@@ -38,10 +38,14 @@
           href="~/css/Areas.css"
           asp-append-version="true">
     <link rel="stylesheet" href="~/css/Reserva.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="area-page has-fixed-page-top">
+<body class="area-page has-fixed-page-top tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
 @await Component.InvokeAsync("ReservaPageTop")
     @* Conteúdo principal *@
     <main class="area-container">
@@ -78,24 +82,7 @@
         <section class="area-grid"
                  aria-label="Opções de gerenciamento">
 
-            @* Cadastro interno (funcionário já autenticado) *@
-            <a asp-controller="Funcionario"
-               asp-action="Create"
-               class="area-card">
-
-                @* Bloco *@
-                <div>
-                    @* Subtítulo *@
-                    <h2>Funcionários</h2>
-                    @* Parágrafo de texto *@
-                    <p>Cadastre os funcionários do restaurante.</p>
-                </div>
-
-                @* Texto destacado *@
-                <span class="card-link">Cadastrar</span>
-            </a>
-
-            @* NOVO: acesso à listagem (Index) de todos os funcionários cadastrados. *@
+            @* Único card: lista de funcionários (cadastro novo fica dentro da lista) *@
             <a asp-controller="Funcionario"
                asp-action="Index"
                class="area-card">
@@ -103,9 +90,9 @@
                 @* Bloco *@
                 <div>
                     @* Subtítulo *@
-                    <h2>Funcionários cadastrados</h2>
+                    <h2>Funcionários</h2>
                     @* Parágrafo de texto *@
-                    <p>Consulte todos os funcionários do restaurante.</p>
+                    <p>Consulte e cadastre os funcionários do restaurante.</p>
                 </div>
 
                 @* Texto destacado *@
@@ -182,12 +169,9 @@
 
         </section>
 
+        @* Rodapé sem botão Sair — o Sair fica só no header (ReservaPageTop) *@
         <footer class="area-footer">
             <span>Santa Massa · Painel de gerenciamento</span>
-            <form asp-controller="Auth" asp-action="Logout" method="post" class="area-logout-form">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="area-logout-btn">Sair</button>
-            </form>
         </footer>
 
     </main>

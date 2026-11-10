@@ -34,17 +34,16 @@
     <link rel="stylesheet"
           href="~/css/DetalhesEdicao.css"
           asp-append-version="true">
-
-    @* Estilos desta página *@
+@* Estilos desta página *@
     <style>
         /* Estilo de: .reserva-excluir-alerta */
         .reserva-excluir-alerta {
             padding: 14px 16px; /* espaçamento interno */
             margin-bottom: 24px; /* margem inferior */
-            border: 1px solid #F2C7C3; /* borda */
+            border: 1px solid #8A4A3A; /* borda */
             border-radius: 10px; /* cantos arredondados */
-            background: #FFF1F0; /* fundo */
-            color: #B42318; /* cor do texto */
+            background: #2A1816; /* fundo */
+            color: #E8A0A0; /* cor do texto */
             font-size: 13px; /* tamanho da fonte */
             line-height: 1.6; /* altura da linha */
         }
@@ -87,13 +86,14 @@
 
         /* Estilo de: .reserva-excluir-cancelar */
         .reserva-excluir-cancelar {
-            background: #F3E4B8; /* fundo */
-            color: #1F1F1F; /* cor do texto */
+            background: #201c14; /* fundo */
+            color: #F7F3EA; /* cor do texto */
         }
 
         /* Estilo de: .reserva-excluir-cancelar:hover */
         .reserva-excluir-cancelar:hover {
-            background: #E9D59A; /* fundo */
+            background: #C6A45C; /* fundo */
+            color: #090909; /* texto escuro sobre dourado */
         }
 
         /* Estilo de: .reserva-excluir-dado */
@@ -104,7 +104,7 @@
         /* Estilo de: .reserva-excluir-dado dt */
         .reserva-excluir-dado dt {
             margin-bottom: 5px; /* margem inferior */
-            color: #77736A; /* cor do texto */
+            color: #BDB7AA; /* cor do texto */
             font-size: 12px; /* tamanho da fonte */
             font-weight: 600; /* peso da fonte */
         }
@@ -112,7 +112,7 @@
         /* Estilo de: .reserva-excluir-dado dd */
         .reserva-excluir-dado dd {
             margin: 0; /* espaçamento externo */
-            color: #1F1F1F; /* cor do texto */
+            color: #F7F3EA; /* cor do texto */
             font-size: 14px; /* tamanho da fonte */
             font-weight: 500; /* peso da fonte */
             overflow-wrap: anywhere; /* quebra de palavras longas */
@@ -131,10 +131,12 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+
 </head>
 
 @* Corpo da página *@
-<body class="detalhes-edicao-page">
+<body class="detalhes-edicao-page tema-claro">
     @* Conteúdo principal *@
     <main class="detalhes-edicao-container">
 

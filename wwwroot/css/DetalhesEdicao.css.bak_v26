@@ -1,0 +1,458 @@
+﻿
+/* ========================================
+   SANTA MASSA — DETALHES E EDIÇÃO DE MESAS
+   ======================================== */
+
+/* Variáveis de cores do site */
+:root {
+    --fundo: #181817; /* variável de cor --fundo */
+    --cartao: #24231F; /* variável de cor --cartao */
+    --cartao-item: #2D2B26; /* variável de cor --cartao-item */
+    --dourado: #D3B779; /* variável de cor --dourado */
+    --dourado-claro: #E8D5A5; /* variável de cor --dourado-claro */
+    --texto: #F7F3EA; /* variável de cor --texto */
+    --texto-secundario: #C8C0B1; /* variável de cor --texto-secundario */
+    --borda: #49443A; /* variável de cor --borda */
+    --verde: #7DB58A; /* variável de cor --verde */
+    --vermelho: #E7A09A; /* variável de cor --vermelho */
+}
+
+/* Estilo de: * */
+* {
+    box-sizing: border-box; /* cálculo do tamanho */
+}
+
+/* Estilo de: body.detalhes-edicao-page */
+body.detalhes-edicao-page {
+    margin: 0; /* espaçamento externo */
+    min-height: 100vh; /* altura mínima */
+    padding: 42px 20px; /* espaçamento interno */
+    background:
+        radial-gradient(ellipse at top, #302B20 0%, var(--fundo) 70%),
+        var(--fundo);
+    color: var(--texto); /* cor do texto */
+    font-family: "Poppins", sans-serif; /* fonte */
+}
+
+/* Container */
+
+/* Estilo de: .detalhes-edicao-container */
+.detalhes-edicao-container {
+    width: 100%; /* largura */
+    max-width: 820px; /* largura máxima */
+    margin: 0 auto; /* espaçamento externo */
+}
+
+/* Voltar */
+
+/* Estilo de: .detalhes-edicao-voltar */
+.detalhes-edicao-voltar {
+    display: inline-flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 9px; /* espaço entre itens */
+    margin-bottom: 24px; /* margem inferior */
+    color: var(--dourado-claro); /* cor do texto */
+    font-size: 13px; /* tamanho da fonte */
+    font-weight: 500; /* peso da fonte */
+    text-decoration: none; /* decoração do texto */
+    transition: color 0.2s ease, transform 0.2s ease; /* animação suave */
+}
+
+/* Estilo de: .detalhes-edicao-voltar:hover */
+.detalhes-edicao-voltar:hover {
+    color: #FFFFFF; /* cor do texto */
+    transform: translateX(-3px); /* transformação (movimento) */
+}
+
+/* Cartão principal */
+
+/* Estilo de: .detalhes-edicao-card */
+.detalhes-edicao-card {
+    overflow: hidden; /* conteúdo excedente */
+    background: var(--cartao); /* fundo */
+    border: 1px solid var(--borda); /* borda */
+    border-radius: 17px; /* cantos arredondados */
+    box-shadow: 0 20px 55px rgb(0 0 0 / 28%); /* sombra */
+}
+
+/* Cabeçalho */
+
+/* Estilo de: .detalhes-edicao-header */
+.detalhes-edicao-header {
+    padding: 32px 36px; /* espaçamento interno */
+    background: linear-gradient(135deg, #302C23, #24231F 75%); /* fundo */
+    border-top: 3px solid var(--dourado); /* borda superior */
+    border-bottom: 1px solid var(--borda); /* borda inferior */
+}
+
+/* Estilo de: .detalhes-edicao-kicker */
+.detalhes-edicao-kicker {
+    margin: 0 0 12px; /* espaçamento externo */
+    color: var(--dourado); /* cor do texto */
+    font-size: 10px; /* tamanho da fonte */
+    font-weight: 600; /* peso da fonte */
+    letter-spacing: 2.5px; /* espaço entre letras */
+    text-transform: uppercase; /* maiúsculas/minúsculas */
+}
+
+/* Estilo de: .detalhes-edicao-header h1 */
+.detalhes-edicao-header h1 {
+    margin: 0; /* espaçamento externo */
+    color: var(--texto); /* cor do texto */
+    font-family: "Josefin Sans", sans-serif; /* fonte */
+    font-size: clamp(29px, 5vw, 38px); /* tamanho da fonte */
+    font-weight: 600; /* peso da fonte */
+    letter-spacing: 0.3px; /* espaço entre letras */
+}
+
+/* Estilo de: .detalhes-edicao-descricao */
+.detalhes-edicao-descricao {
+    max-width: 540px; /* largura máxima */
+    margin: 12px 0 0; /* espaçamento externo */
+    color: var(--texto-secundario); /* cor do texto */
+    font-size: 13px; /* tamanho da fonte */
+    line-height: 1.8; /* altura da linha */
+}
+
+/* Conteúdo */
+
+/* Estilo de: .detalhes-edicao-conteudo */
+.detalhes-edicao-conteudo {
+    padding: 34px 36px; /* espaçamento interno */
+}
+
+/* Informações da mesa */
+
+/* Estilo de: .detalhes-edicao-grid */
+.detalhes-edicao-grid {
+    display: grid; /* tipo de exibição */
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* colunas da grade */
+    gap: 16px; /* espaço entre itens */
+}
+
+/* Estilo de: .detalhes-edicao-item */
+.detalhes-edicao-item {
+    min-width: 0; /* largura mínima */
+    padding: 21px; /* espaçamento interno */
+    background: var(--cartao-item); /* fundo */
+    border: 1px solid var(--borda); /* borda */
+    border-radius: 11px; /* cantos arredondados */
+    transition: border-color 0.2s ease, transform 0.2s ease; /* animação suave */
+}
+
+/* Estilo de: .detalhes-edicao-item:hover */
+.detalhes-edicao-item:hover {
+    border-color: #756442; /* cor da borda */
+    transform: translateY(-2px); /* transformação (movimento) */
+}
+
+/* Estilo de: .detalhes-edicao-item span */
+.detalhes-edicao-item span {
+    display: block; /* tipo de exibição */
+    margin-bottom: 10px; /* margem inferior */
+    color: var(--texto-secundario); /* cor do texto */
+    font-size: 11px; /* tamanho da fonte */
+    font-weight: 500; /* peso da fonte */
+    letter-spacing: 0.3px; /* espaço entre letras */
+}
+
+/* Estilo de: .detalhes-edicao-item strong */
+.detalhes-edicao-item strong {
+    display: block; /* tipo de exibição */
+    overflow-wrap: anywhere; /* quebra de palavras longas */
+    color: var(--texto); /* cor do texto */
+    font-size: 16px; /* tamanho da fonte */
+    font-weight: 500; /* peso da fonte */
+}
+
+/* Status */
+
+/* Estilo de: .detalhes-edicao-status */
+.detalhes-edicao-status {
+    display: inline-flex !important; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    width: fit-content; /* largura */
+    padding: 6px 12px; /* espaçamento interno */
+    background: rgb(211 183 121 / 10%); /* fundo */
+    border: 1px solid rgb(211 183 121 / 35%); /* borda */
+    border-radius: 6px; /* cantos arredondados */
+    color: var(--dourado-claro) !important; /* cor do texto */
+    font-size: 12px !important; /* tamanho da fonte */
+    font-weight: 600 !important; /* peso da fonte */
+}
+
+/* Formulário */
+
+/* Estilo de: .detalhes-edicao-form */
+.detalhes-edicao-form {
+    display: flex; /* tipo de exibição */
+    flex-direction: column; /* direção dos itens */
+    gap: 23px; /* espaço entre itens */
+}
+
+/* Estilo de: .detalhes-edicao-campo */
+.detalhes-edicao-campo {
+    display: flex; /* tipo de exibição */
+    flex-direction: column; /* direção dos itens */
+    gap: 10px; /* espaço entre itens */
+}
+
+/* Estilo de: .detalhes-edicao-campo label */
+.detalhes-edicao-campo label {
+    color: var(--dourado-claro); /* cor do texto */
+    font-size: 12px; /* tamanho da fonte */
+    font-weight: 500; /* peso da fonte */
+    letter-spacing: 0.3px; /* espaço entre letras */
+}
+
+.detalhes-edicao-campo input,
+/* Estilo de: .detalhes-edicao-campo select */
+.detalhes-edicao-campo select {
+    width: 100%; /* largura */
+    min-height: 49px; /* altura mínima */
+    padding: 12px 15px; /* espaçamento interno */
+    border: 1px solid var(--borda); /* borda */
+    border-radius: 8px; /* cantos arredondados */
+    outline: none; /* contorno de foco */
+    background: #1D1C19; /* fundo */
+    color: var(--texto); /* cor do texto */
+    font-family: "Poppins", sans-serif; /* fonte */
+    font-size: 13px; /* tamanho da fonte */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* animação suave */
+}
+
+/* Estilo de: .detalhes-edicao-campo input::placeholder */
+.detalhes-edicao-campo input::placeholder {
+    color: #898477; /* cor do texto */
+}
+
+.detalhes-edicao-campo input:focus,
+/* Estilo de: .detalhes-edicao-campo select:focus */
+.detalhes-edicao-campo select:focus {
+    border-color: var(--dourado); /* cor da borda */
+    box-shadow: 0 0 0 3px rgb(211 183 121 / 12%); /* sombra */
+}
+
+/* Estilo de: .detalhes-edicao-campo select */
+.detalhes-edicao-campo select {
+    cursor: pointer; /* tipo de cursor */
+}
+
+/* Estilo de: .detalhes-edicao-campo select option */
+.detalhes-edicao-campo select option {
+    background: var(--cartao); /* fundo */
+    color: var(--texto); /* cor do texto */
+}
+
+/* Estilo de: .detalhes-edicao-campo input[type="hidden"] */
+.detalhes-edicao-campo input[type="hidden"] {
+    display: none; /* tipo de exibição */
+}
+
+/* Mensagens de validação */
+
+/* Estilo de: .detalhes-edicao-erros */
+.detalhes-edicao-erros {
+    color: #FFE6E3; /* cor do texto */
+    font-size: 0.9rem; /* tamanho da fonte */
+    line-height: 1.5; /* altura da linha */
+}
+
+/* Estilo de: .detalhes-edicao-erros:empty */
+.detalhes-edicao-erros:empty {
+    display: none; /* tipo de exibição */
+}
+
+/* Esconde caixa de erro válida/vazia (barra marrom sem mensagem) */
+.detalhes-edicao-erros.validation-summary-valid,
+.detalhes-edicao-alerta-erro.validation-summary-valid,
+div.detalhes-edicao-alerta-erro.validation-summary-valid {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Resumo de erros e avisos bem visíveis na edição/detalhes */
+.detalhes-edicao-erros.validation-summary-errors,
+.detalhes-edicao-alerta-erro.validation-summary-errors,
+.detalhes-edicao-alerta-aviso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #FFF3D6;
+    background: rgba(211, 183, 121, 0.22);
+    border: 2px solid #D3B779;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.detalhes-edicao-alerta-sucesso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.detalhes-edicao-erros.validation-summary-errors,
+.detalhes-edicao-alerta-erro.validation-summary-errors,
+.detalhes-edicao-alerta-erro:not(.validation-summary-valid):not(:empty) {
+    color: #FFE6E3;
+    background: rgba(138, 75, 71, 0.42);
+    border: 2px solid #E08B85;
+}
+
+.detalhes-edicao-alerta-aviso {
+    display: block;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #FFF3D6;
+    background: rgba(211, 183, 121, 0.22);
+    border: 2px solid #D3B779;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.detalhes-edicao-alerta-sucesso {
+    color: #E4F5E7;
+    background: rgba(111, 167, 122, 0.28);
+    border: 2px solid #6FA77A;
+}
+
+span.detalhes-edicao-erros.field-validation-error:not(:empty) {
+    display: block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(138, 75, 71, 0.32);
+    border: 1px solid #E08B85;
+    font-weight: 600;
+}
+
+/* Botões */
+
+/* Estilo de: .detalhes-edicao-acoes */
+.detalhes-edicao-acoes {
+    display: flex; /* tipo de exibição */
+    flex-wrap: wrap; /* quebra de linha dos itens */
+    align-items: center; /* alinhamento vertical */
+    gap: 13px; /* espaço entre itens */
+    margin-top: 10px; /* margem superior */
+}
+
+/* Estilo de: .detalhes-edicao-botao */
+.detalhes-edicao-botao {
+    display: inline-flex; /* tipo de exibição */
+    min-height: 47px; /* altura mínima */
+    align-items: center; /* alinhamento vertical */
+    justify-content: center; /* alinhamento horizontal */
+    padding: 12px 24px; /* espaçamento interno */
+    border: 1px solid transparent; /* borda */
+    border-radius: 8px; /* cantos arredondados */
+    font-family: "Poppins", sans-serif; /* fonte */
+    font-size: 12px; /* tamanho da fonte */
+    font-weight: 600; /* peso da fonte */
+    text-align: center; /* alinhamento do texto */
+    text-decoration: none; /* decoração do texto */
+    cursor: pointer; /* tipo de cursor */
+    transition: background 0.2s ease, border-color 0.2s ease,
+                color 0.2s ease, transform 0.2s ease;
+}
+
+/* Estilo de: .detalhes-edicao-botao:hover */
+.detalhes-edicao-botao:hover {
+    transform: translateY(-2px); /* transformação (movimento) */
+}
+
+/* Estilo de: .detalhes-edicao-botao-principal */
+.detalhes-edicao-botao-principal {
+    background: var(--dourado); /* fundo */
+    border-color: var(--dourado); /* cor da borda */
+    color: #201E19; /* cor do texto */
+}
+
+/* Estilo de: .detalhes-edicao-botao-principal:hover */
+.detalhes-edicao-botao-principal:hover {
+    background: var(--dourado-claro); /* fundo */
+    border-color: var(--dourado-claro); /* cor da borda */
+    color: #201E19; /* cor do texto */
+}
+
+/* Estilo de: .detalhes-edicao-botao-secundario */
+.detalhes-edicao-botao-secundario {
+    background: transparent; /* fundo */
+    border-color: #625640; /* cor da borda */
+    color: var(--dourado-claro); /* cor do texto */
+}
+
+/* Estilo de: .detalhes-edicao-botao-secundario:hover */
+.detalhes-edicao-botao-secundario:hover {
+    background: #34312B; /* fundo */
+    border-color: var(--dourado); /* cor da borda */
+    color: #FFFFFF; /* cor do texto */
+}
+
+/* Rodapé */
+
+/* Estilo de: .detalhes-edicao-rodape */
+.detalhes-edicao-rodape {
+    padding: 19px 30px; /* espaçamento interno */
+    border-top: 1px solid var(--borda); /* borda superior */
+    color: #A9A294; /* cor do texto */
+    font-size: 10px; /* tamanho da fonte */
+    letter-spacing: 0.5px; /* espaço entre letras */
+    text-align: center; /* alinhamento do texto */
+}
+
+/* Responsividade */
+
+/* Regras para telas que atendem: (max-width: 600px) */
+@media (max-width: 600px) {
+    /* Estilo de: body.detalhes-edicao-page */
+    body.detalhes-edicao-page {
+        padding: 25px 13px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .detalhes-edicao-header */
+    .detalhes-edicao-header {
+        padding: 27px 22px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .detalhes-edicao-conteudo */
+    .detalhes-edicao-conteudo {
+        padding: 25px 21px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .detalhes-edicao-grid */
+    .detalhes-edicao-grid {
+        grid-template-columns: 1fr; /* colunas da grade */
+        gap: 12px; /* espaço entre itens */
+    }
+
+    /* Estilo de: .detalhes-edicao-item */
+    .detalhes-edicao-item {
+        padding: 18px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .detalhes-edicao-acoes */
+    .detalhes-edicao-acoes {
+        flex-direction: column; /* direção dos itens */
+        align-items: stretch; /* alinhamento vertical */
+    }
+
+    /* Estilo de: .detalhes-edicao-botao */
+    .detalhes-edicao-botao {
+        width: 100%; /* largura */
+    }
+
+    /* Estilo de: .detalhes-edicao-rodape */
+    .detalhes-edicao-rodape {
+        padding: 17px 20px; /* espaçamento interno */
+    }
+}

@@ -1,0 +1,9 @@
+namespace GestaoReservas.Models;
+
+public class LoginViewModel
+{
+    public string Cpf { get; set; } = "";
+    public string Senha { get; set; } = "";
+    // E-mail institucional (só usado no login de funcionário; clientes ignoram)
+    public string Email { get; set; } = "";
+}

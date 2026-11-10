@@ -1,14 +1,15 @@
 ﻿/* Variáveis de cores do site */
 :root {
-    --reserva-fundo: #181817; /* variável de cor --reserva-fundo */
-    --reserva-painel: #2B2925; /* variável de cor --reserva-painel */
-    --reserva-painel-hover: #34312B; /* variável de cor --reserva-painel-hover */
-    --reserva-dourado: #D3B779; /* variável de cor --reserva-dourado */
-    --reserva-dourado-claro: #E8D5A5; /* variável de cor --reserva-dourado-claro */
-    --reserva-texto: #F7F3EA; /* variável de cor --reserva-texto */
-    --reserva-secundario: #C8C0B1; /* variável de cor --reserva-secundario */
-    --reserva-borda: #49443A; /* variável de cor --reserva-borda */
-    --reserva-verde: #91D0A5; /* variável de cor --reserva-verde */
+    --reserva-fundo: #090909; /* variável de cor --reserva-fundo */
+    --reserva-painel: #151515; /* variável de cor --reserva-painel */
+    --reserva-painel-hover: #201c14; /* variável de cor --reserva-painel-hover */
+    --reserva-dourado: #C6A45C; /* variável de cor --reserva-dourado */
+    --reserva-dourado-claro: #E8D5A3; /* variável de cor --reserva-dourado-claro */
+    --reserva-texto: var(--reserva-texto); /* variável de cor --reserva-texto */
+    --reserva-secundario: #BDB7AA; /* variável de cor --reserva-secundario */
+    --reserva-borda: var(--reserva-borda);
+    --reserva-sobre-dourado: #090909; /* variável de cor --reserva-borda */
+    --reserva-verde: #7DB58A; /* variável de cor --reserva-verde */
     --reserva-vermelho: #F09B95; /* variável de cor --reserva-vermelho */
     --reserva-amarelo: #F0D28A; /* variável de cor --reserva-amarelo */
 }
@@ -20,7 +21,7 @@
     width: 100%; /* largura */
     min-width: 0; /* largura mínima */
     overflow: hidden; /* conteúdo excedente */
-    color: #F7F3EA; /* cor do texto */
+    color: var(--reserva-texto); /* cor do texto */
     font-family: 'Poppins', sans-serif; /* fonte */
 }
 
@@ -32,13 +33,13 @@
     flex-wrap: wrap; /* quebra de linha dos itens */
     gap: 20px; /* espaço entre itens */
     padding: 25px; /* espaçamento interno */
-    border-bottom: 1px solid #49443A; /* borda inferior */
+    border-bottom: 1px solid var(--reserva-borda); /* borda inferior */
 }
 
 /* Estilo de: .reservas-lista-kicker */
 .reservas-lista-kicker {
     margin: 0 0 10px; /* espaçamento externo */
-    color: #D3B779; /* cor do texto */
+    color: var(--reserva-dourado); /* cor do texto */
     font-size: 10px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
     letter-spacing: 2px; /* espaço entre letras */
@@ -47,7 +48,7 @@
 /* Estilo de: .reservas-lista-cabecalho h2 */
 .reservas-lista-cabecalho h2 {
     margin: 0 0 10px; /* espaçamento externo */
-    color: #F7F3EA; /* cor do texto */
+    color: var(--reserva-texto); /* cor do texto */
     font-family: 'Josefin Sans', sans-serif; /* fonte */
     font-size: clamp(24px, 3vw, 32px); /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
@@ -57,7 +58,7 @@
 .reservas-lista-descricao {
     max-width: 540px; /* largura máxima */
     margin: 0; /* espaçamento externo */
-    color: #C8C0B1; /* cor do texto */
+    color: var(--reserva-secundario); /* cor do texto */
     font-size: 12px; /* tamanho da fonte */
     line-height: 1.8; /* altura da linha */
 }
@@ -72,7 +73,7 @@
     border: 1px solid #756442; /* borda */
     border-radius: 20px; /* cantos arredondados */
     background: #302C23; /* fundo */
-    color: #E8D5A5; /* cor do texto */
+    color: var(--reserva-dourado-claro); /* cor do texto */
     font-size: 11px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
     white-space: nowrap; /* quebra de linha do texto */
@@ -92,10 +93,10 @@
     justify-content: center; /* alinhamento horizontal */
     min-height: 42px; /* altura mínima */
     padding: 11px 18px; /* espaçamento interno */
-    border: 1px solid #D3B779; /* borda */
+    border: 1px solid var(--reserva-dourado); /* borda */
     border-radius: 8px; /* cantos arredondados */
-    background: #D3B779; /* fundo */
-    color: #1F1F1D; /* cor do texto */
+    background: var(--reserva-dourado); /* fundo */
+    color: var(--reserva-sobre-dourado); /* cor do texto */
     font-size: 12px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
     text-decoration: none; /* decoração do texto */
@@ -105,9 +106,9 @@
 /* Estilo de: .reservas-botao-novo:hover */
 .reservas-botao-novo:hover {
     transform: translateY(-1px); /* transformação (movimento) */
-    border-color: #E8D5A5; /* cor da borda */
-    background: #E8D5A5; /* fundo */
-    color: #1F1F1D; /* cor do texto */
+    border-color: var(--reserva-dourado-claro); /* cor da borda */
+    background: var(--reserva-dourado-claro); /* fundo */
+    color: var(--reserva-sobre-dourado); /* cor do texto */
 }
 
 /* Estilo de: .reservas-tabela-wrap */
@@ -119,7 +120,7 @@
 /* Estilo de: .reservas-tabela */
 .reservas-tabela {
     width: 100%; /* largura */
-    border: 1px solid #49443A; /* borda */
+    border: 1px solid var(--reserva-borda); /* borda */
     border-collapse: separate; /* bordas da tabela unidas */
     border-spacing: 0; /* propriedade border-spacing */
     border-radius: 10px; /* cantos arredondados */
@@ -135,8 +136,8 @@
 /* Estilo de: .reservas-tabela th */
 .reservas-tabela th {
     padding: 15px 12px; /* espaçamento interno */
-    border-bottom: 1px solid #49443A; /* borda inferior */
-    color: #C8C0B1; /* cor do texto */
+    border-bottom: 1px solid var(--reserva-borda); /* borda inferior */
+    color: var(--reserva-secundario); /* cor do texto */
     font-size: 9px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
     letter-spacing: .8px; /* espaço entre letras */
@@ -148,7 +149,7 @@
 .reservas-tabela td {
     padding: 16px 12px; /* espaçamento interno */
     border-bottom: 1px solid #3A3831; /* borda inferior */
-    color: #F7F3EA; /* cor do texto */
+    color: var(--reserva-texto); /* cor do texto */
     vertical-align: middle; /* alinhamento vertical */
     overflow-wrap: anywhere; /* quebra de palavras longas */
 }
@@ -171,7 +172,7 @@
 
 /* Estilo de: .reserva-cliente */
 .reserva-cliente {
-    color: #E8D5A5 !important; /* cor do texto */
+    color: var(--reserva-dourado-claro) !important; /* cor do texto */
     font-weight: 600; /* peso da fonte */
 }
 
@@ -185,7 +186,7 @@
 .reserva-data span {
     display: block; /* tipo de exibição */
     margin-top: 4px; /* margem superior */
-    color: #D3B779; /* cor do texto */
+    color: var(--reserva-dourado); /* cor do texto */
     font-size: 10px; /* tamanho da fonte */
 }
 
@@ -209,11 +210,23 @@
     color: #A7D5AE; /* cor do texto */
 }
 
-/* Estilo de: .status-pendente */
+/* Estilo de: .status-pendente — destaque forte na listagem do restaurante */
 .status-pendente {
-    border-color: #756442; /* cor da borda */
-    background: #302C23; /* fundo */
-    color: #E8D5A5; /* cor do texto */
+    border-color: #E0B45A; /* cor da borda */
+    background: #5A4318; /* fundo */
+    color: #FFE9B0; /* cor do texto */
+    box-shadow: 0 0 0 1px rgba(224, 180, 90, 0.35);
+    font-weight: 700;
+}
+
+/* Linha inteira da reserva Pendente (área do restaurante) */
+tr.reserva-linha-pendente {
+    background: rgba(224, 180, 90, 0.14);
+    outline: 1px solid rgba(224, 180, 90, 0.35);
+}
+
+tr.reserva-linha-pendente td {
+    border-color: rgba(224, 180, 90, 0.25);
 }
 
 /* Estilo de: .status-cancelada */
@@ -225,9 +238,9 @@
 
 /* Estilo de: .status-outro */
 .status-outro {
-    border-color: #49443A; /* cor da borda */
+    border-color: var(--reserva-borda); /* cor da borda */
     background: #302E28; /* fundo */
-    color: #C8C0B1; /* cor do texto */
+    color: var(--reserva-secundario); /* cor do texto */
 }
 
 /* Estilo de: .reservas-acoes */
@@ -245,10 +258,10 @@
     justify-content: center; /* alinhamento horizontal */
     min-height: 30px; /* altura mínima */
     padding: 6px 9px; /* espaçamento interno */
-    border: 1px solid #49443A; /* borda */
+    border: 1px solid var(--reserva-borda); /* borda */
     border-radius: 6px; /* cantos arredondados */
     background: #302E28; /* fundo */
-    color: #E8D5A5; /* cor do texto */
+    color: var(--reserva-dourado-claro); /* cor do texto */
     font-size: 9px; /* tamanho da fonte */
     text-decoration: none; /* decoração do texto */
     white-space: nowrap; /* quebra de linha do texto */
@@ -257,7 +270,7 @@
 
 /* Estilo de: .reserva-acao:hover */
 .reserva-acao:hover {
-    border-color: #D3B779; /* cor da borda */
+    border-color: var(--reserva-dourado); /* cor da borda */
     background: #3A352A; /* fundo */
     color: #FFFFFF; /* cor do texto */
 }
@@ -293,7 +306,7 @@
     border: 1px solid #756442; /* borda */
     border-radius: 16px; /* cantos arredondados */
     background: #302C23; /* fundo */
-    color: #D3B779; /* cor do texto */
+    color: var(--reserva-dourado); /* cor do texto */
     font-family: 'Josefin Sans', sans-serif; /* fonte */
     font-size: 25px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
@@ -302,7 +315,7 @@
 /* Estilo de: .reservas-vazio h3 */
 .reservas-vazio h3 {
     margin: 0 0 12px; /* espaçamento externo */
-    color: #F7F3EA; /* cor do texto */
+    color: var(--reserva-texto); /* cor do texto */
     font-family: 'Josefin Sans', sans-serif; /* fonte */
     font-size: 25px; /* tamanho da fonte */
     font-weight: 600; /* peso da fonte */
@@ -312,7 +325,7 @@
 .reservas-vazio p {
     max-width: 440px; /* largura máxima */
     margin: 0 auto 24px; /* espaçamento externo */
-    color: #C8C0B1; /* cor do texto */
+    color: var(--reserva-secundario); /* cor do texto */
     font-size: 12px; /* tamanho da fonte */
     line-height: 1.8; /* altura da linha */
 }
@@ -320,7 +333,7 @@
 /* Estilo de: .reservas-lista-rodape */
 .reservas-lista-rodape {
     padding: 17px 25px; /* espaçamento interno */
-    border-top: 1px solid #49443A; /* borda superior */
+    border-top: 1px solid var(--reserva-borda); /* borda superior */
     color: #A9A294; /* cor do texto */
     font-size: 10px; /* tamanho da fonte */
     text-align: center; /* alinhamento do texto */
@@ -355,7 +368,7 @@
     .reservas-tabela tbody tr {
         margin-bottom: 16px; /* margem inferior */
         overflow: hidden; /* conteúdo excedente */
-        border: 1px solid #49443A; /* borda */
+        border: 1px solid var(--reserva-borda); /* borda */
         border-radius: 10px; /* cantos arredondados */
         background: #24231F; /* fundo */
     }
@@ -379,7 +392,7 @@
     /* Estilo de: .reservas-tabela td::before */
     .reservas-tabela td::before {
         content: attr(data-label); /* propriedade content */
-        color: #C8C0B1; /* cor do texto */
+        color: var(--reserva-secundario); /* cor do texto */
         font-size: 9px; /* tamanho da fonte */
         font-weight: 600; /* peso da fonte */
         letter-spacing: .5px; /* espaço entre letras */
@@ -432,5 +445,154 @@
     /* Estilo de: .reservas-lista-rodape */
     .reservas-lista-rodape {
         padding: 16px; /* espaçamento interno */
+    }
+}
+
+
+/* Aviso destacado após junção automática de mesas */
+.reservas-alerta-sucesso {
+    display: block;
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    color: #E4F5E7;
+    background: rgba(111, 167, 122, 0.28);
+    border: 2px solid #6FA77A;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+
+/* —— Filtros da listagem (cliente e restaurante) —— */
+.reservas-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 25px 0;
+}
+
+.reservas-filtro-card {
+    margin: 16px 25px 0;
+    padding: 16px 18px;
+    border: 1px solid var(--reserva-borda);
+    border-radius: 12px;
+    background: rgba(43, 41, 37, 0.55);
+}
+
+.reservas-filtro-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.reservas-filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.reservas-filtro-campo label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--reserva-secundario);
+}
+
+.reservas-filtro-campo input,
+.reservas-filtro-campo select,
+.reservas-filtro-btn {
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.reservas-filtro-campo input,
+.reservas-filtro-campo select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--reserva-borda);
+    border-radius: 8px;
+    background: var(--reserva-fundo);
+    color: var(--reserva-texto);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.reservas-filtro-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.reservas-filtro-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: 1px solid var(--reserva-dourado);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--reserva-dourado-claro);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.reservas-filtro-btn:hover {
+    background: rgba(211, 183, 121, 0.12);
+    color: var(--reserva-texto);
+}
+
+.reservas-filtro-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(211, 183, 121, 0.35);
+}
+
+.reservas-filtro-btn--ativo,
+.reservas-filtro-btn--primario {
+    background: var(--reserva-dourado);
+    color: var(--reserva-sobre-dourado);
+    border-color: var(--reserva-dourado);
+}
+
+.reservas-filtro-btn--ativo:hover,
+.reservas-filtro-btn--primario:hover {
+    background: var(--reserva-dourado-claro);
+    border-color: var(--reserva-dourado-claro);
+    color: var(--reserva-sobre-dourado);
+}
+
+.reservas-filtro-btn--secundario {
+    background: transparent;
+    color: var(--reserva-dourado-claro);
+}
+
+.reservas-filtro-resultado {
+    margin: 12px 2px 0;
+    font-size: 0.85rem;
+    color: var(--reserva-secundario);
+}
+
+.reservas-filtros .reservas-botao-novo {
+    margin-left: auto;
+}
+
+@media (max-width: 820px) {
+    .reservas-filtro-form {
+        grid-template-columns: 1fr;
+    }
+
+    .reservas-filtro-acoes {
+        width: 100%;
+    }
+
+    .reservas-filtro-acoes .reservas-filtro-btn {
+        flex: 1 1 auto;
     }
 }

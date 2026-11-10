@@ -16,9 +16,13 @@
     <title>Edit - Cliente</title>
     @* Arquivo de estilo/fonte externo *@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 @* Corpo da página *@
-<body class="container py-4">
+<body class="container py-4 tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
     @* Navegação *@
     <nav class="mb-4">
         @* Link *@

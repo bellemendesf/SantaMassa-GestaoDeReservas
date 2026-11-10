@@ -1,4 +1,16 @@
-﻿        /* Estilo de: .clientes-topo */
+﻿/* Variáveis alinhadas à paleta da Home */
+:root {
+    --clientes-fundo: #090909;
+    --clientes-cartao: #151515;
+    --clientes-dourado: #C6A45C;
+    --clientes-dourado-claro: #E8D5A3;
+    --clientes-texto: var(--clientes-texto, #F7F3EA);
+    --clientes-secundario: #BDB7AA;
+    --clientes-borda: var(--clientes-borda, #49443A);
+    --clientes-sobre-dourado: #090909;
+}
+
+        /* Estilo de: .clientes-topo */
         .clientes-topo {
             display: flex; /* tipo de exibição */
             align-items: center; /* alinhamento vertical */
@@ -34,7 +46,7 @@
             border: 1px solid #756442; /* borda */
             border-radius: 20px; /* cantos arredondados */
             background: #302C23; /* fundo */
-            color: #E8D5A5; /* cor do texto */
+            color: var(--clientes-dourado-claro, #E8D5A3); /* cor do texto */
             font-size: 11px; /* tamanho da fonte */
             font-weight: 600; /* peso da fonte */
             white-space: nowrap; /* quebra de linha do texto */
@@ -54,10 +66,10 @@
             justify-content: center; /* alinhamento horizontal */
             min-height: 44px; /* altura mínima */
             padding: 11px 19px; /* espaçamento interno */
-            border: 1px solid #D3B779; /* borda */
+            border: 1px solid var(--clientes-dourado, #C6A45C); /* borda */
             border-radius: 8px; /* cantos arredondados */
-            background: #D3B779; /* fundo */
-            color: #1F1F1D; /* cor do texto */
+            background: var(--clientes-dourado, #C6A45C); /* fundo */
+            color: var(--clientes-sobre-dourado, #090909); /* cor do texto */
             font-family: 'Poppins', sans-serif; /* fonte */
             font-size: 12px; /* tamanho da fonte */
             font-weight: 600; /* peso da fonte */
@@ -68,16 +80,16 @@
         /* Estilo de: .clientes-botao-novo:hover */
         .clientes-botao-novo:hover {
             transform: translateY(-1px); /* transformação (movimento) */
-            border-color: #E8D5A5; /* cor da borda */
-            background: #E8D5A5; /* fundo */
-            color: #1F1F1D; /* cor do texto */
+            border-color: var(--clientes-dourado-claro, #E8D5A3); /* cor da borda */
+            background: var(--clientes-dourado-claro, #E8D5A3); /* fundo */
+            color: var(--clientes-sobre-dourado, #090909); /* cor do texto */
         }
 
         /* Estilo de: .clientes-tabela-wrap */
         .clientes-tabela-wrap {
             width: 100%; /* largura */
             overflow-x: auto; /* rolagem horizontal */
-            border: 1px solid #49443A; /* borda */
+            border: 1px solid var(--clientes-borda, #49443A); /* borda */
             border-radius: 10px; /* cantos arredondados */
         }
 
@@ -98,20 +110,20 @@
         /* Estilo de: .clientes-tabela th */
         .clientes-tabela th {
             padding: 16px 15px; /* espaçamento interno */
-            color: #C8C0B1; /* cor do texto */
+            color: var(--clientes-secundario, #BDB7AA); /* cor do texto */
             font-size: 10px; /* tamanho da fonte */
             font-weight: 600; /* peso da fonte */
             letter-spacing: 1px; /* espaço entre letras */
             text-align: left; /* alinhamento do texto */
             text-transform: uppercase; /* maiúsculas/minúsculas */
             white-space: nowrap; /* quebra de linha do texto */
-            border-bottom: 1px solid #49443A; /* borda inferior */
+            border-bottom: 1px solid var(--clientes-borda, #49443A); /* borda inferior */
         }
 
         /* Estilo de: .clientes-tabela td */
         .clientes-tabela td {
             padding: 16px 15px; /* espaçamento interno */
-            color: #F7F3EA; /* cor do texto */
+            color: var(--clientes-texto, #F7F3EA); /* cor do texto */
             border-bottom: 1px solid #3A3831; /* borda inferior */
             vertical-align: middle; /* alinhamento vertical */
         }
@@ -143,7 +155,7 @@
     .clientes-tabela-wrap {
     width: 100%; /* largura */
     overflow-x: hidden; /* rolagem horizontal */
-    border: 1px solid #49443A; /* borda */
+    border: 1px solid var(--clientes-borda, #49443A); /* borda */
     border-radius: 10px; /* cantos arredondados */
 }
 
@@ -155,7 +167,7 @@
 
         /* Estilo de: .cliente-nome */
         .cliente-nome {
-            color: #E8D5A5 !important; /* cor do texto */
+            color: var(--clientes-dourado-claro, #E8D5A3) !important; /* cor do texto */
             font-weight: 600; /* peso da fonte */
             white-space: nowrap; /* quebra de linha do texto */
         }
@@ -180,10 +192,10 @@
             justify-content: center; /* alinhamento horizontal */
             min-height: 31px; /* altura mínima */
             padding: 6px 10px; /* espaçamento interno */
-            border: 1px solid #49443A; /* borda */
+            border: 1px solid var(--clientes-borda, #49443A); /* borda */
             border-radius: 6px; /* cantos arredondados */
             background: #302E28; /* fundo */
-            color: #E8D5A5; /* cor do texto */
+            color: var(--clientes-dourado-claro, #E8D5A3); /* cor do texto */
             font-size: 10px; /* tamanho da fonte */
             font-weight: 500; /* peso da fonte */
             text-decoration: none; /* decoração do texto */
@@ -193,7 +205,7 @@
 
         /* Estilo de: .cliente-acoes a:hover */
         .cliente-acoes a:hover {
-            border-color: #D3B779; /* cor da borda */
+            border-color: var(--clientes-dourado, #C6A45C); /* cor da borda */
             background: #3A352A; /* fundo */
             color: #FFFFFF; /* cor do texto */
         }
@@ -229,7 +241,7 @@
             border: 1px solid #625640; /* borda */
             border-radius: 16px; /* cantos arredondados */
             background: #302C23; /* fundo */
-            color: #D3B779; /* cor do texto */
+            color: var(--clientes-dourado, #C6A45C); /* cor do texto */
             font-family: 'Josefin Sans', sans-serif; /* fonte */
             font-size: 25px; /* tamanho da fonte */
         }
@@ -237,7 +249,7 @@
         /* Estilo de: .clientes-vazio h2 */
         .clientes-vazio h2 {
             margin: 0 0 12px; /* espaçamento externo */
-            color: #F7F3EA; /* cor do texto */
+            color: var(--clientes-texto, #F7F3EA); /* cor do texto */
             font-family: 'Josefin Sans', sans-serif; /* fonte */
             font-size: 25px; /* tamanho da fonte */
             font-weight: 600; /* peso da fonte */
@@ -247,7 +259,7 @@
         .clientes-vazio p {
             max-width: 440px; /* largura máxima */
             margin: 0 auto 25px; /* espaçamento externo */
-            color: #C8C0B1; /* cor do texto */
+            color: var(--clientes-secundario, #BDB7AA); /* cor do texto */
             font-size: 12px; /* tamanho da fonte */
             line-height: 1.8; /* altura da linha */
         }
@@ -255,7 +267,7 @@
         /* Estilo de: .clientes-rodape */
         .clientes-rodape {
             padding: 17px 25px; /* espaçamento interno */
-            border-top: 1px solid #49443A; /* borda superior */
+            border-top: 1px solid var(--clientes-borda, #49443A); /* borda superior */
             color: #A9A294; /* cor do texto */
             font-size: 10px; /* tamanho da fonte */
             text-align: center; /* alinhamento do texto */

@@ -35,17 +35,19 @@
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/Clientes.css" asp-append-version="true">
+    @* Header padronizado (mesmo das outras telas da área do restaurante) *@
+    <link rel="stylesheet" href="~/css/Reserva.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/Listagens.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="detalhes-edicao-page">
-            <a asp-controller="AreaRestaurante"
-           asp-action="Index"
-           class="clientes-voltar">
-            ← Voltar à área do restaurante
-        </a>
+<body class="detalhes-edicao-page has-fixed-page-top tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
 
-    @* Conteúdo principal *@
+@await Component.InvokeAsync("ReservaPageTop")
+@* Conteúdo principal *@
     <main class="detalhes-edicao-container">
 
         @* Seção da página *@

@@ -28,10 +28,11 @@
                 <p class="cadastro-subtitulo">SANTA MASSA · EQUIPE</p>
                 <h1>Login de funcionário</h1>
                 <p class="cadastro-descricao">
-                    Digite seu CPF e senha para acessar a área do restaurante.
+                    Digite seu e-mail institucional (@@santamassa) e senha para acessar a área do restaurante.
                 </p>
             </header>
 
+            @* Mensagem de erro destacada (só aparece quando ViewBag.Error tem texto) *@
             @if (ViewBag.Error != null)
             {
                 <div class="cadastro-erros">@ViewBag.Error</div>
@@ -40,9 +41,20 @@
             <form asp-controller="Auth" asp-action="Login" method="post" class="cadastro-form">
                 @Html.AntiForgeryToken()
 
+                @* Login de funcionário: e-mail institucional + senha (sem CPF) *@
                 <div class="campo-cadastro">
-                    <label for="Cpf">CPF</label>
-                    <input id="Cpf" name="Cpf" class="form-control" value="@Model.Cpf" autocomplete="username" required>
+                    <label for="Email">E-mail institucional</label>
+                    <input id="Email"
+                           name="Email"
+                           type="email"
+                           class="form-control"
+                           value="@Model.Email"
+                           placeholder="nome@@santamassa.com.br"
+                           autocomplete="username"
+                           pattern=".*@@santamassa.*"
+                           title="Use um e-mail com @@santamassa (ex.: nome@@santamassa.com.br)"
+                           required>
+                    <small class="cadastro-aviso-campo">Somente e-mails com @@santamassa</small>
                 </div>
 
                 <div class="campo-cadastro">

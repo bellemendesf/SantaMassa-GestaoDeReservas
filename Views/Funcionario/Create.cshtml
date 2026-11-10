@@ -33,10 +33,14 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/Cadastro.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="cadastro-page">
+<body class="cadastro-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
     @* Conteúdo principal *@
     <main class="cadastro-container">
 
@@ -118,10 +122,13 @@
                            name="EmailInstitucional"
                            type="email"
                            value="@Model?.EmailInstitucional"
-                           placeholder="nome@santamassa.com.br"
+                           placeholder="nome@@santamassa.com.br"
                            autocomplete="email"
                            maxlength="50"
+                           pattern=".*@@santamassa.*"
+                           title="Use um e-mail com @@santamassa (ex.: nome@@santamassa.com.br)"
                            required>
+                    <small class="cadastro-aviso-campo">Somente e-mails com @@santamassa</small>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@

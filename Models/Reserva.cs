@@ -20,7 +20,7 @@ public class Reserva
     // Propriedade DataHora
     public DateTime DataHora { get; set; }
     // Validação: valor mínimo/máximo permitido
-    [Range(1, int.MaxValue, ErrorMessage = "Informe ao menos uma pessoa.")]
+    [Range(1, 30, ErrorMessage = "Informe entre 1 e 30 pessoas.")]
     // Propriedade QtdPessoas
     public int QtdPessoas { get; set; }
     // Propriedade Status

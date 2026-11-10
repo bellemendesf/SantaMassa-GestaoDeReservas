@@ -1,0 +1,1146 @@
+﻿/* =========================================================
+   Tema das áreas do cliente e do restaurante
+   Paleta alinhada à Home (wwwroot/css/Home.css):
+     fundo #090909 | card #151515 | hover #201c14 | header #181817
+     dourado #C6A45C | dourado claro #E8D5A3 | ouro texto #D3B779
+     texto #F7F3EA | cinza #BDB7AA | borda #49443A | sucesso #7DB58A
+   A classe .tema-claro permanece nas views (nome histórico);
+   Home / logins / cadastro de cliente NÃO usam esta folha.
+   ========================================================= */
+
+body.tema-claro {
+    --tc-dourado: #C6A45C;
+    --tc-dourado-hover: #D3B779;
+    --tc-dourado-claro: #E8D5A3;
+    --tc-escuro: #090909;
+    --tc-fundo: #090909;
+    --tc-fundo-suave: #151515;
+    --tc-cartao: #151515;
+    --tc-cartao-hover: #201c14;
+    --tc-texto: #F7F3EA;
+    --tc-texto-suave: #BDB7AA;
+    --tc-borda: #49443A;
+    --tc-perigo: #E07A5F;
+    --tc-perigo-hover: #C96A51;
+    --tc-header: #181817;
+    --tc-sombra: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --tc-focus: 0 0 0 3px rgba(198, 164, 92, 0.45);
+    --tc-sobre-dourado: #090909;
+    --tc-sucesso: #7DB58A;
+
+    /* Remapeia variáveis dos CSS existentes para a paleta da Home */
+    --sm-fundo: var(--tc-fundo);
+    --sm-fundo-secundario: var(--tc-fundo-suave);
+    --sm-painel: var(--tc-cartao);
+    --sm-painel-claro: var(--tc-cartao-hover);
+    --sm-dourado: var(--tc-dourado);
+    --sm-dourado-claro: var(--tc-dourado-claro);
+    --sm-texto: var(--tc-texto);
+    --sm-texto-secundario: var(--tc-texto-suave);
+    --sm-borda: var(--tc-borda);
+
+    --reserva-fundo: var(--tc-fundo);
+    --reserva-painel: var(--tc-cartao);
+    --reserva-painel-hover: var(--tc-cartao-hover);
+    --reserva-dourado: var(--tc-dourado);
+    --reserva-dourado-claro: var(--tc-dourado-claro);
+    --reserva-texto: var(--tc-texto);
+    --reserva-secundario: var(--tc-texto-suave);
+    --reserva-borda: var(--tc-borda);
+
+    /* Nomes iguais aos da Home: fundo escuro, texto claro (não inverter) */
+    --preto: var(--tc-escuro);
+    --branco: var(--tc-texto);
+    --cinza: var(--tc-texto-suave);
+    --dourado: var(--tc-dourado);
+    --dourado-claro: var(--tc-dourado-claro);
+    --dourado-suave: rgba(198, 164, 92, 0.28);
+    --fundo: var(--tc-fundo);
+    --cartao: var(--tc-cartao);
+    --texto: var(--tc-texto);
+    --borda: var(--tc-borda);
+
+    background: var(--tc-fundo) !important;
+    color: var(--tc-texto) !important;
+    font-family: "Poppins", sans-serif;
+}
+
+
+body.tema-claro .page-top,
+body.tema-claro .page-top--fixed {
+    background: var(--tc-header) !important;
+    border-bottom: 1px solid var(--tc-borda) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.30) !important;
+}
+
+body.tema-claro .page-brand,
+body.tema-claro .page-home-link,
+body.tema-claro .page-user-badge,
+body.tema-claro .page-home-link--btn {
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .page-brand:hover,
+body.tema-claro .page-home-link:hover,
+body.tema-claro .page-home-link--btn:hover {
+    color: var(--tc-dourado-claro) !important;
+}
+
+body.tema-claro .page-home-link:focus-visible,
+body.tema-claro .page-home-link--btn:focus-visible,
+body.tema-claro a:focus-visible,
+body.tema-claro button:focus-visible,
+body.tema-claro input:focus-visible,
+body.tema-claro select:focus-visible {
+    outline: none;
+    box-shadow: var(--tc-focus);
+}
+
+body.tema-claro.page-reserva,
+body.tema-claro.area-page,
+body.tema-claro.mesas-page,
+body.tema-claro.funcionarios-page,
+body.tema-claro.detalhes-edicao-page,
+body.tema-claro.cadastro-page {
+    background: var(--tc-fundo) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-lista,
+body.tema-claro .mesas-card,
+body.tema-claro .funcionarios-card,
+body.tema-claro .detalhes-edicao-card,
+body.tema-claro .area-card,
+body.tema-claro .cadastro-card,
+body.tema-claro .page-content,
+body.tema-claro .panel {
+    background: var(--tc-cartao) !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--tc-sombra) !important;
+}
+
+body.tema-claro .page-intro h1,
+body.tema-claro .page-lead,
+body.tema-claro .reservas-lista-cabecalho h2,
+body.tema-claro .reservas-lista-descricao,
+body.tema-claro .mesas-header h1,
+body.tema-claro .mesas-descricao,
+body.tema-claro .funcionarios-header h1,
+body.tema-claro .funcionarios-descricao,
+body.tema-claro .detalhes-edicao-header h1,
+body.tema-claro .detalhes-edicao-descricao,
+body.tema-claro .area-header h1,
+body.tema-claro .area-header p {
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .area-kicker,
+body.tema-claro .page-kicker {
+    /* Rotulos no estilo da Home: dourado sobre fundo escuro */
+    color: var(--tc-dourado) !important;
+}
+
+body.tema-claro .reservas-contador,
+body.tema-claro .clientes-contador,
+body.tema-claro .mesas-contagem {
+    background: rgba(198, 164, 92, 0.16) !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
+}
+
+body.tema-claro .reservas-tabela thead,
+body.tema-claro .mesas-table thead,
+body.tema-claro .clientes-tabela thead {
+    background: rgba(198, 164, 92, 0.16) !important;
+}
+
+body.tema-claro .reservas-tabela th,
+body.tema-claro .mesas-table th,
+body.tema-claro .clientes-tabela th {
+    color: var(--tc-texto) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .reservas-tabela td,
+body.tema-claro .mesas-table td,
+body.tema-claro .clientes-tabela td {
+    border-color: var(--tc-borda) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: var(--tc-cartao-hover) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: var(--tc-cartao-hover) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:hover,
+body.tema-claro .mesas-table tbody tr:hover,
+body.tema-claro .clientes-tabela tbody tr:hover {
+    background: rgba(198, 164, 92, 0.22) !important;
+}
+
+body.tema-claro tr.reserva-linha-pendente {
+    background: rgba(198, 164, 92, 0.22) !important;
+    outline: 1px solid var(--tc-dourado) !important;
+}
+
+/* Status */
+body.tema-claro .status-pendente {
+    background: var(--tc-dourado) !important;
+    border-color: var(--tc-dourado-hover) !important;
+    color: var(--tc-sobre-dourado) !important;
+}
+
+body.tema-claro .status-confirmada {
+    background: #1A2E22 !important;
+    border-color: var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
+}
+
+body.tema-claro .status-cancelada {
+    background: #2A1816 !important;
+    border-color: var(--tc-perigo) !important;
+    color: #E8A0A0 !important;
+}
+
+body.tema-claro .status-outro {
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-borda) !important;
+    color: var(--tc-texto) !important;
+}
+
+/* Botões primários = amarelo + texto escuro */
+body.tema-claro .reservas-botao-novo,
+body.tema-claro .btn-mesa-nova,
+body.tema-claro .funcionarios-botao-principal,
+body.tema-claro .mesas-botao-principal,
+body.tema-claro .detalhes-edicao-botao-principal,
+body.tema-claro .btn-cadastro-salvar,
+body.tema-claro .reservas-filtro-btn--primario,
+body.tema-claro .reservas-filtro-btn--ativo {
+    background: var(--tc-dourado) !important;
+    border-color: var(--tc-dourado) !important;
+    color: var(--tc-sobre-dourado) !important;
+}
+
+body.tema-claro .reservas-botao-novo:hover,
+body.tema-claro .btn-mesa-nova:hover,
+body.tema-claro .funcionarios-botao-principal:hover,
+body.tema-claro .mesas-botao-principal:hover,
+body.tema-claro .detalhes-edicao-botao-principal:hover,
+body.tema-claro .btn-cadastro-salvar:hover,
+body.tema-claro .reservas-filtro-btn--primario:hover,
+body.tema-claro .reservas-filtro-btn--ativo:hover {
+    background: var(--tc-dourado-hover) !important;
+    border-color: var(--tc-dourado-hover) !important;
+    color: var(--tc-sobre-dourado) !important;
+}
+
+/* Secundário / perigo = terracota */
+body.tema-claro .reservas-filtro-btn--secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .btn-cadastro-voltar,
+body.tema-claro .reservas-filtro-btn,
+body.tema-claro .reserva-acao-cancelar,
+body.tema-claro .botao-excluir {
+    background: var(--tc-cartao) !important;
+    border: 1px solid var(--tc-perigo) !important;
+    color: var(--tc-perigo) !important;
+}
+
+body.tema-claro .reservas-filtro-btn--secundario:hover,
+body.tema-claro .reservas-filtro-btn:hover,
+body.tema-claro .reserva-acao-cancelar:hover,
+body.tema-claro .botao-excluir:hover {
+    background: var(--tc-perigo) !important;
+    color: #FFFFFF !important;
+}
+
+body.tema-claro .reserva-acao,
+body.tema-claro .acao-detalhes {
+    background: var(--tc-cartao-hover) !important;
+    border: 1px solid var(--tc-dourado) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reserva-acao:hover,
+body.tema-claro .acao-detalhes:hover {
+    background: var(--tc-dourado) !important;
+    color: var(--tc-sobre-dourado) !important;
+}
+
+body.tema-claro input,
+body.tema-claro select,
+body.tema-claro textarea,
+body.tema-claro .reservas-filtro-campo input,
+body.tema-claro .reservas-filtro-campo select {
+    background: var(--tc-cartao) !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
+}
+
+body.tema-claro input:focus,
+body.tema-claro select:focus,
+body.tema-claro textarea:focus {
+    border-color: var(--tc-dourado) !important;
+    box-shadow: var(--tc-focus) !important;
+}
+
+body.tema-claro .reservas-filtro-campo label {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .alerta-erro,
+body.tema-claro .detalhes-edicao-alerta-erro.validation-summary-errors,
+body.tema-claro .cadastro-erros:not(.validation-summary-valid) {
+    background: #2A1816 !important;
+    border: 1px solid var(--tc-perigo) !important;
+    color: #E8A0A0 !important;
+}
+
+body.tema-claro .alerta-aviso,
+body.tema-claro .detalhes-edicao-alerta-aviso {
+    background: rgba(198, 164, 92, 0.22) !important;
+    border: 1px solid var(--tc-dourado) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .alerta-sucesso,
+body.tema-claro .reservas-alerta-sucesso,
+body.tema-claro .detalhes-edicao-alerta-sucesso {
+    background: #1A2E22 !important;
+    border: 1px solid var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
+}
+
+body.tema-claro .area-card:hover {
+    border-color: var(--tc-dourado) !important;
+    box-shadow: 0 12px 28px rgba(31, 31, 31, 0.12) !important;
+}
+
+body.tema-claro .area-card h2,
+body.tema-claro .area-card p,
+body.tema-claro .card-link {
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo {
+    color: var(--tc-perigo) !important;
+}
+
+body.tema-claro .mapa-salao {
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .mapa-entrada,
+body.tema-claro .mapa-cozinha {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .mapa-mesa {
+    color: var(--tc-texto) !important;
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .mapa-mesa.livre {
+    border-color: var(--tc-sucesso) !important;
+    background: rgba(76, 175, 80, 0.18) !important;
+    color: #A9D9B4 !important;
+}
+
+body.tema-claro .mapa-mesa.reservada {
+    border-color: var(--tc-perigo) !important;
+    background: rgba(198, 93, 59, 0.18) !important;
+    color: #E8A0A0 !important;
+}
+
+body.tema-claro .mapa-mesa.selecionada {
+    border-color: var(--tc-dourado) !important;
+    background: rgba(244, 208, 0, 0.35) !important;
+    color: var(--tc-texto) !important;
+    box-shadow: 0 0 0 2px rgba(198, 164, 92, 0.55) !important;
+}
+
+body.tema-claro .page-glow { display: none !important; }
+
+body.tema-claro .reservas-lista-cabecalho,
+body.tema-claro .mesas-header,
+body.tema-claro .funcionarios-header,
+body.tema-claro .detalhes-edicao-header {
+    border-bottom: 1px solid var(--tc-borda) !important;
+}
+
+body.tema-claro .reservas-filtro-card {
+    background: var(--tc-cartao) !important;
+    border: 1px solid var(--tc-borda) !important;
+    box-shadow: var(--tc-sombra) !important;
+}
+
+body.tema-claro .reservas-filtro-resultado {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .cadastro-subtitulo,
+body.tema-claro.cadastro-page h1,
+body.tema-claro.cadastro-page .cadastro-descricao,
+body.tema-claro.cadastro-page label,
+body.tema-claro .cadastro-aviso-campo {
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-lista-rodape,
+body.tema-claro .mesas-footer,
+body.tema-claro .funcionarios-footer,
+body.tema-claro .detalhes-edicao-rodape,
+body.tema-claro .clientes-rodape,
+body.tema-claro .area-footer,
+body.tema-claro .cadastro-rodape {
+    color: var(--tc-texto-suave) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+
+/* Correções de contraste / especificidade (tabelas e botão Filtrar) */
+body.tema-claro .reservas-tabela tbody tr,
+body.tema-claro .mesas-table tbody tr,
+body.tema-claro .clientes-tabela tbody tr,
+body.tema-claro .ambientes-tabela tbody tr {
+    background: var(--tc-cartao) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: var(--tc-cartao-hover) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:hover,
+body.tema-claro .mesas-table tbody tr:hover,
+body.tema-claro .clientes-tabela tbody tr:hover {
+    background: rgba(198, 164, 92, 0.22) !important;
+}
+
+body.tema-claro tr.reserva-linha-pendente,
+body.tema-claro .reservas-tabela tbody tr.reserva-linha-pendente {
+    background: rgba(198, 164, 92, 0.22) !important;
+}
+
+body.tema-claro .reservas-filtro-btn.reservas-filtro-btn--primario,
+body.tema-claro button.reservas-filtro-btn--primario,
+body.tema-claro .reservas-filtro-btn.reservas-filtro-btn--ativo {
+    background: var(--tc-dourado) !important;
+    border-color: var(--tc-dourado) !important;
+    color: var(--tc-sobre-dourado) !important;
+}
+
+body.tema-claro .reservas-filtro-card {
+    background: var(--tc-cartao) !important;
+}
+
+body.tema-claro .reservas-tabela-wrap,
+body.tema-claro .mesas-table-wrap {
+    background: transparent !important;
+}
+
+/* =========================================================
+   t36u — formulário Create/Edit, mapa e hardcodes restantes
+   Cobre .page-content form (fundo escuro + texto herdado escuro)
+   e componentes do MapaMesas.css carregados depois do TemaClaro.
+   ========================================================= */
+
+/* Formulário da nova reserva: card claro, texto escuro */
+body.tema-claro .page-content form,
+body.tema-claro .panel form {
+    background: var(--tc-cartao);
+    color: var(--tc-texto);
+    border: 1px solid var(--tc-borda);
+    box-shadow: var(--tc-sombra);
+}
+
+body.tema-claro .page-content form label,
+body.tema-claro .page-content form .form-label,
+body.tema-claro .panel form label,
+body.tema-claro .form-section label,
+body.tema-claro .form-section p,
+body.tema-claro .form-section h2,
+body.tema-claro .form-section h3,
+body.tema-claro .field label {
+    color: var(--tc-texto);
+}
+
+body.tema-claro .page-content form .form-control,
+body.tema-claro .page-content form .form-select,
+body.tema-claro .page-content form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+body.tema-claro .page-content form select,
+body.tema-claro .page-content form textarea,
+body.tema-claro .panel form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+body.tema-claro .panel form select,
+body.tema-claro .panel form textarea {
+    color: var(--tc-texto);
+    background-color: var(--tc-cartao);
+    border: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .page-content form input::placeholder,
+body.tema-claro .page-content form textarea::placeholder {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .page-content form .form-control:focus,
+body.tema-claro .page-content form .form-select:focus,
+body.tema-claro .page-content form input:focus,
+body.tema-claro .page-content form select:focus,
+body.tema-claro .page-content form textarea:focus {
+    color: var(--tc-texto);
+    background-color: var(--tc-cartao);
+    border-color: var(--tc-dourado);
+    box-shadow: var(--tc-focus);
+}
+
+body.tema-claro .page-content form select option,
+body.tema-claro .panel form select option {
+    color: var(--tc-texto);
+    background-color: var(--tc-cartao);
+}
+
+body.tema-claro .page-content form button[type="submit"],
+body.tema-claro .page-content form input[type="submit"],
+body.tema-claro .panel form button[type="submit"] {
+    background: var(--tc-dourado);
+    border-color: var(--tc-dourado);
+    color: var(--tc-sobre-dourado);
+}
+
+body.tema-claro .page-content form button[type="submit"]:hover,
+body.tema-claro .page-content form input[type="submit"]:hover {
+    background: var(--tc-dourado-hover);
+    border-color: var(--tc-dourado-hover);
+    color: var(--tc-sobre-dourado);
+}
+
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost {
+    color: var(--tc-perigo);
+    border-color: var(--tc-perigo);
+    background: var(--tc-cartao);
+}
+
+/* Campos de edição/detalhes (hardcode #1D1C19) */
+body.tema-claro .detalhes-edicao-campo label {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .detalhes-edicao-campo input,
+body.tema-claro .detalhes-edicao-campo select,
+body.tema-claro .detalhes-edicao-campo textarea {
+    background: var(--tc-cartao);
+    color: var(--tc-texto);
+    border: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .detalhes-edicao-campo input::placeholder {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .detalhes-edicao-campo select option {
+    background: var(--tc-cartao);
+    color: var(--tc-texto);
+}
+
+/* Cabeçalho de tabela Mesas ainda hardcoded #25221D */
+body.tema-claro .mesas-table thead th {
+    background: rgba(198, 164, 92, 0.16);
+    color: var(--tc-texto);
+    border-bottom-color: var(--tc-borda);
+}
+
+body.tema-claro .mesas-table tbody td {
+    border-bottom-color: var(--tc-borda);
+}
+
+/* Mapa: áreas, legenda, listagem e opções (MapaMesas.css) */
+body.tema-claro .mapa-area {
+    color: var(--tc-texto-suave);
+    background: var(--tc-fundo);
+    border-color: var(--tc-borda);
+}
+
+body.tema-claro .mapa-area.janela {
+    color: var(--tc-texto);
+    border-color: var(--tc-dourado);
+}
+
+body.tema-claro .mapa-area.saida {
+    color: #A9D9B4;
+    border-color: var(--tc-sucesso);
+}
+
+body.tema-claro .mapa-legenda {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .mesa-opcao {
+    color: var(--tc-texto);
+    background: var(--tc-cartao);
+    border-color: var(--tc-borda);
+}
+
+body.tema-claro .mesa-opcao small {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .mesa-opcao.selecionada {
+    border-color: var(--tc-dourado);
+    background: rgba(244, 208, 0, 0.22);
+}
+
+body.tema-claro .mesa-opcao.livre:hover {
+    border-color: var(--tc-dourado);
+}
+
+body.tema-claro #mapa-aviso:not(.alerta-erro):not(.alerta-sucesso),
+body.tema-claro .mapa-aviso:not(.alerta-erro):not(.alerta-sucesso) {
+    color: var(--tc-texto);
+    background: rgba(198, 164, 92, 0.22);
+    border: 1px solid var(--tc-dourado);
+}
+
+/* Listagens / fundo página mesas-funcionários (hardcode #181817 !important) */
+body.tema-claro.mesas-page,
+body.tema-claro.funcionarios-page,
+body.tema-claro.detalhes-edicao-page,
+body.tema-claro.area-page,
+body.tema-claro.cadastro-page {
+    background: var(--tc-fundo);
+    color: var(--tc-texto);
+}
+
+/* Evita padding-top duplicado quando sidebar empurra e header fixo já reserva espaço */
+body.tema-claro.com-sidebar-restaurante:has(.menu-restaurante).has-fixed-page-top.page-reserva {
+    padding-top: 82px;
+}
+
+body.tema-claro .page-kicker {
+    color: var(--tc-dourado);
+}
+
+body.tema-claro .page-intro h1,
+body.tema-claro .page-lead {
+    color: var(--tc-texto);
+}
+
+
+/* t36u — peças que ainda usavam fundo/texto do tema escuro */
+
+/* Variáveis que os CSS de detalhes/funcionários ainda consultam */
+body.tema-claro {
+    --cartao-item: var(--tc-cartao);
+    --texto-secundario: var(--tc-texto-suave);
+    --lista-dourado: var(--tc-dourado);
+    --lista-dourado-forte: var(--tc-dourado-hover);
+    --lista-dourado-hover: var(--tc-dourado-claro);
+    --lista-texto-escuro: var(--tc-sobre-dourado);
+    --lista-acao-fundo: var(--tc-cartao-hover);
+    --lista-acao-borda: var(--tc-dourado);
+    --lista-perigo: var(--tc-perigo);
+    --lista-perigo-fundo: #2A1816;
+    --lista-perigo-texto: #E8A0A0;
+}
+
+/* Terracota em texto sobre fundo claro: tom mais escuro para WCAG AA */
+body.tema-claro .page-kicker,
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo,
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost,
+body.tema-claro .reservas-filtro-btn:not(.reservas-filtro-btn--primario):not(.reservas-filtro-btn--ativo),
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .btn-cadastro-voltar {
+    color: var(--tc-dourado-claro);
+}
+
+/* Cabeçalho dos cards de detalhes / ambientes (gradiente escuro) */
+body.tema-claro .detalhes-edicao-header {
+    background: var(--tc-cartao);
+    color: var(--tc-texto);
+    border-top: 3px solid var(--tc-dourado);
+    border-bottom: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .detalhes-edicao-header h1,
+body.tema-claro .detalhes-edicao-descricao,
+body.tema-claro .detalhes-edicao-header p {
+    color: var(--tc-texto);
+}
+
+body.tema-claro .detalhes-edicao-descricao {
+    color: var(--tc-texto-suave);
+}
+
+/* Itens / cards internos ainda com --cartao-item escuro */
+body.tema-claro .detalhes-edicao-item,
+body.tema-claro .funcionario-item {
+    background: var(--tc-cartao);
+    border: 1px solid var(--tc-borda);
+    color: var(--tc-texto);
+}
+
+body.tema-claro .funcionario-item:hover,
+body.tema-claro .detalhes-edicao-item:hover {
+    background: var(--tc-cartao-hover);
+    border-color: var(--tc-dourado);
+}
+
+body.tema-claro .detalhes-edicao-item span,
+body.tema-claro .funcionario-id,
+body.tema-claro .funcionario-cpf,
+body.tema-claro .funcionario-contato span,
+body.tema-claro .funcionarios-resumo-label,
+body.tema-claro .funcionarios-resumo-legenda {
+    color: var(--tc-texto-suave);
+}
+
+body.tema-claro .detalhes-edicao-item strong,
+body.tema-claro .funcionario-nome,
+body.tema-claro .funcionario-contato strong,
+body.tema-claro .funcionarios-resumo-numero {
+    color: var(--tc-texto);
+}
+
+body.tema-claro .funcionario-avatar {
+    background: rgba(198, 164, 92, 0.22);
+    border-color: var(--tc-dourado);
+    color: var(--tc-texto);
+}
+
+body.tema-claro .funcionarios-footer span:first-child {
+    color: var(--tc-texto);
+}
+
+/* Formulário de mesas: labels douradas e erros claros demais */
+body.tema-claro .mesas-form label {
+    color: var(--tc-texto);
+}
+
+body.tema-claro .mesas-form input,
+body.tema-claro .mesas-form select,
+body.tema-claro .mesas-form textarea {
+    background-color: var(--tc-cartao);
+    color: var(--tc-texto);
+    border: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .mesas-form .mesas-erro,
+body.tema-claro .mesas-erro {
+    color: #E8A0A0;
+}
+
+body.tema-claro .mesas-contagem,
+body.tema-claro .mesas-contagem strong,
+body.tema-claro .reservas-contador,
+body.tema-claro .ambientes-contador,
+body.tema-claro .clientes-contador {
+    background: rgba(198, 164, 92, 0.16);
+    color: var(--tc-texto);
+    border-color: var(--tc-borda);
+}
+
+/* Status livre (verde claro no texto) */
+body.tema-claro .mesa-status.status-livre,
+body.tema-claro .status-livre {
+    color: #A9D9B4;
+    background: #1A2E22;
+    border-color: var(--tc-sucesso);
+}
+
+body.tema-claro .mapa-mesa.livre {
+    background: #1A2E22;
+    color: #A9D9B4;
+    border-color: var(--tc-sucesso);
+}
+
+/* Ambientes: estilos inline da view usam !important do tema escuro */
+body.tema-claro .ambientes-tabela thead,
+body.tema-claro .ambientes-tabela thead th {
+    background: rgba(198, 164, 92, 0.16);
+    color: var(--tc-texto);
+    border-color: var(--tc-borda);
+}
+
+body.tema-claro .ambientes-tabela td,
+body.tema-claro .ambientes-tabela tbody td,
+body.tema-claro td.ambiente-id,
+body.tema-claro td.ambiente-nome,
+body.tema-claro td.ambiente-capacidade,
+body.tema-claro .ambiente-id,
+body.tema-claro .ambiente-nome,
+body.tema-claro .ambiente-capacidade {
+    color: var(--tc-texto) !important;
+    background: transparent;
+    border-bottom-color: var(--tc-borda);
+}
+
+body.tema-claro .ambientes-tabela tbody tr {
+    background: var(--tc-cartao) !important;
+}
+
+body.tema-claro .ambiente-status {
+    background: #1A2E22 !important;
+    border-color: var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
+}
+
+body.tema-claro .ambiente-acoes a {
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-dourado) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .ambiente-acoes a[href*="Delete"],
+body.tema-claro .ambiente-acoes .botao-excluir,
+body.tema-claro .ambiente-acoes a.botao-excluir {
+    background: var(--tc-cartao) !important;
+    border-color: var(--tc-perigo) !important;
+    color: #E8A0A0 !important;
+}
+
+body.tema-claro .ambientes-rodape {
+    color: var(--tc-texto-suave);
+}
+
+
+/* t36u — reforço de especificidade (regras anteriores com !important) */
+body.tema-claro .page-kicker,
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo,
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost,
+body.tema-claro .reservas-filtro-btn:not(.reservas-filtro-btn--primario):not(.reservas-filtro-btn--ativo),
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .btn-cadastro-voltar,
+body.tema-claro a.detalhes-edicao-botao-secundario,
+body.tema-claro a.mesas-botao-secundario,
+body.tema-claro a.btn-cadastro-voltar {
+    color: var(--tc-dourado-claro) !important;
+}
+
+body.tema-claro .mesas-contagem,
+body.tema-claro .mesas-contagem strong,
+body.tema-claro .reservas-contador,
+body.tema-claro .ambientes-contador,
+body.tema-claro .clientes-contador,
+body.tema-claro span.ambientes-contador {
+    background: rgba(198, 164, 92, 0.16) !important;
+    color: var(--tc-texto) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .mapa-mesa.livre {
+    background: #1A2E22 !important;
+    color: #A9D9B4 !important;
+    border-color: var(--tc-sucesso) !important;
+}
+
+/* Mesa selecionada precisa vencer .livre quando as duas classes estão juntas */
+body.tema-claro .mapa-mesa.selecionada,
+body.tema-claro .mapa-mesa.livre.selecionada {
+    background: rgba(198, 164, 92, 0.16) !important;
+    color: var(--tc-texto) !important;
+    border-color: var(--tc-dourado) !important;
+    box-shadow: 0 0 0 2px rgba(198, 164, 92, 0.55) !important;
+}
+
+/* Mensagens de erro visíveis (os spans vazios field-validation-valid não aparecem) */
+body.tema-claro .text-danger,
+body.tema-claro .field-validation-error,
+body.tema-claro .alerta-campo,
+body.tema-claro .mesas-erro {
+    color: #E8A0A0 !important;
+}
+
+
+/* =========================================================
+   t36u-v2 — um único card, títulos, filtro, ações e formulário
+   ========================================================= */
+
+/* page-content é só o invólucro; o card fica em .panel / .reservas-lista / etc. */
+body.tema-claro .page-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+}
+
+/* O form não é um segundo card dentro do .panel */
+body.tema-claro .page-content form,
+body.tema-claro .panel form {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Um único card centralizado na Create (e forms com .panel) */
+body.tema-claro .panel {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 44px 40px;
+    background: var(--tc-cartao) !important;
+    border: 1px solid var(--tc-borda) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--tc-sombra) !important;
+}
+
+/* Espaçamento e hierarquia das seções do formulário */
+body.tema-claro .form-section + .form-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .form-section h2 {
+    margin: 0 0 6px;
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--tc-texto);
+}
+
+body.tema-claro .form-section > p {
+    margin: 0 0 18px;
+    color: var(--tc-texto-suave);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+body.tema-claro .form-grid {
+    display: grid;
+    gap: 16px 20px;
+}
+
+body.tema-claro .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+body.tema-claro .field label,
+body.tema-claro .form-section label,
+body.tema-claro .page-content form label,
+body.tema-claro .panel form label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--tc-texto);
+}
+
+body.tema-claro .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 8px;
+}
+
+/* Cancelar como botão secundário visível */
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--tc-perigo);
+    border-radius: 8px;
+    background: var(--tc-cartao);
+    color: #E8A0A0 !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+body.tema-claro .btn-ghost:hover,
+body.tema-claro a.btn-ghost:hover {
+    background: #2A1816;
+    color: #E8A0A0 !important;
+}
+
+body.tema-claro .btn-save,
+body.tema-claro .page-content form button[type="submit"],
+body.tema-claro .panel form button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 22px;
+    border: 1px solid var(--tc-dourado);
+    border-radius: 8px;
+    background: var(--tc-dourado);
+    color: var(--tc-sobre-dourado);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Filtro do restaurante: sem card extra, alinhado à tabela */
+body.tema-claro .reservas-filtro-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px 20px;
+    margin: 8px 25px 0 !important;
+    padding: 4px 0 8px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+body.tema-claro .reservas-filtro-form {
+    flex: 1 1 560px;
+}
+
+body.tema-claro .reservas-filtro-resultado {
+    margin: 0 0 10px auto !important;
+    color: var(--tc-texto-suave) !important;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Coluna Ações alinhada à direita, igual aos botões */
+body.tema-claro .reservas-tabela th:last-child,
+body.tema-claro .reservas-tabela td:last-child,
+body.tema-claro .mesas-table th:last-child,
+body.tema-claro .mesas-table td:last-child,
+body.tema-claro .ambientes-tabela th:last-child,
+body.tema-claro .ambientes-tabela td:last-child,
+body.tema-claro .clientes-tabela th:last-child,
+body.tema-claro .clientes-tabela td:last-child {
+    text-align: right;
+}
+
+/* Botões de linha: caixa alta menos chamativa, estilo consistente */
+body.tema-claro .reserva-acao,
+body.tema-claro .mesas-acoes a,
+body.tema-claro .ambiente-acoes a,
+body.tema-claro .acao-detalhes,
+body.tema-claro .funcionarios-botao.funcionarios-botao-secundario,
+body.tema-claro .funcionarios-botao.funcionarios-botao-editar {
+    text-transform: none !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    font-size: 0.82rem !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    padding: 0 14px !important;
+}
+
+/* Formulários soltos (Funcionário/Cliente Edit em body.container).
+   Só o formulário da página — não o form Sair nem os links da sidebar. */
+body.tema-claro.container {
+    max-width: none;
+    background: var(--tc-fundo) !important;
+    color: var(--tc-texto) !important;
+    min-height: 100vh;
+}
+
+body.tema-claro.container > h1,
+body.tema-claro.container > nav {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.tema-claro.container > form {
+    max-width: 760px;
+    margin: 16px auto 40px;
+    background: var(--tc-cartao);
+    border: 1px solid var(--tc-borda);
+    border-radius: 14px;
+    box-shadow: var(--tc-sombra);
+    padding: 28px 32px;
+}
+
+body.tema-claro.container > h1 {
+    color: var(--tc-texto);
+    font-family: "Josefin Sans", sans-serif;
+}
+
+body.tema-claro.container > form label,
+body.tema-claro.container > form .form-label,
+body.tema-claro.container > form small {
+    color: var(--tc-texto);
+}
+
+body.tema-claro.container > nav a {
+    color: #E8A0A0;
+}
+
+body.tema-claro.container > form .btn-primary {
+    background: var(--tc-dourado);
+    border-color: var(--tc-dourado);
+    color: var(--tc-sobre-dourado);
+}
+
+body.tema-claro.container > form .btn-secondary {
+    background: var(--tc-cartao);
+    border-color: var(--tc-perigo);
+    color: #E8A0A0;
+}
+
+@media (max-width: 768px) {
+    body.tema-claro .panel {
+        padding: 24px 18px 28px;
+    }
+
+    body.tema-claro .reservas-filtro-resultado {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}

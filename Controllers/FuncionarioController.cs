@@ -6,6 +6,8 @@ using Microsoft.Data.SqlClient;
 using GestaoReservas.Models;
 // Importa o atributo de autorização para proteger rotas
 using Microsoft.AspNetCore.Authorization;
+// Valida domínio @santamassa no e-mail institucional
+using GestaoReservas.Utilities;
 
 // Exige cookie de login (FuncionarioScheme) em todo o CRUD de funcionários
 [Authorize(AuthenticationSchemes = "FuncionarioScheme")]
@@ -39,6 +41,9 @@ public class FuncionarioController : Controller
         if (string.IsNullOrWhiteSpace(model.EmailInstitucional))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailInstitucional), "Informe o e-mail institucional.");
+        // Exige domínio @santamassa no e-mail institucional
+        else if (!EmailInstitucionalSantamassa.EhValido(model.EmailInstitucional))
+            ModelState.AddModelError(nameof(model.EmailInstitucional), EmailInstitucionalSantamassa.MensagemErro);
         // Verifica se o campo foi preenchido
         if (string.IsNullOrWhiteSpace(model.Senha))
             // Registra a mensagem de erro para a tela
@@ -96,6 +101,9 @@ public class FuncionarioController : Controller
         if (string.IsNullOrWhiteSpace(model.EmailInstitucional))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailInstitucional), "Informe o e-mail institucional.");
+        // Exige domínio @santamassa no e-mail institucional
+        else if (!EmailInstitucionalSantamassa.EhValido(model.EmailInstitucional))
+            ModelState.AddModelError(nameof(model.EmailInstitucional), EmailInstitucionalSantamassa.MensagemErro);
         // Se houver erro de validação, volta para o formulário
         if (!ModelState.IsValid) return View(model);
         // Tenta executar; erros são tratados abaixo

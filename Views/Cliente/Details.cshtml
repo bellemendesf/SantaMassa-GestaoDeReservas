@@ -18,8 +18,12 @@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/Listagens.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/Reserva.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
-<body class="detalhes-edicao-page has-fixed-page-top">
+<body class="detalhes-edicao-page has-fixed-page-top tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
 @await Component.InvokeAsync("ReservaPageTop")
     <main class="detalhes-edicao-container">
         <a asp-action="Index" class="detalhes-edicao-voltar">← Voltar à listagem de clientes</a>

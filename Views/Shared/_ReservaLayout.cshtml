@@ -1,4 +1,4 @@
-﻿
+
 @* Bloco C#: configurações da view (título, layout e variáveis) *@
 @{
     // Variável restaurante
@@ -45,10 +45,12 @@
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/ReservasIndex.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Listagens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MapaMesas.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="page-reserva has-fixed-page-top">
+<body class="page-reserva has-fixed-page-top tema-claro">
 @await Component.InvokeAsync("ReservaPageTop")
 
     @* Conteúdo principal *@
@@ -56,16 +58,14 @@
         @* Seção da página *@
         <section class="page-intro">
             @* Parágrafo de texto *@
-            <p class="page-kicker">SANTA MASSA · GESTÃO DE RESERVAS</p>
-
             @* Título principal *@
             <h1>@ViewData["Title"]</h1>
 
             @* Parágrafo de texto *@
             <p class="page-lead">
-                @(restaurante
+                @(ViewData["Lead"] as string ?? (restaurante
                     ? "Acompanhe e organize as reservas do restaurante."
-                    : "Suas reservas em um só lugar: visualize, altere ou cancele.")
+                    : "Suas reservas em um só lugar: visualize, altere ou cancele."))
             </p>
         </section>
 

@@ -68,10 +68,19 @@ public class AuthMemoryRepository : IAuthRepository
         this.clientes = clientes;
     }
 
+    // Login de funcionário por e-mail institucional (ignore case / trim) + senha
     public Funcionario? Login(LoginViewModel model)
     {
-        var f = funcionarios.Read().FirstOrDefault(x => x.Cpf == model.Cpf);
+        // Normaliza o e-mail digitado
+        var email = (model.Email ?? "").Trim();
+        // Sem e-mail → falha
+        if (string.IsNullOrWhiteSpace(email)) return null;
+        // Busca pelo e-mail institucional sem diferenciar maiúsculas
+        var f = funcionarios.Read().FirstOrDefault(x =>
+            string.Equals((x.EmailInstitucional ?? "").Trim(), email, StringComparison.OrdinalIgnoreCase));
+        // Não encontrou ou senha diferente (texto puro nos testes em memória)
         if (f == null || f.Senha != model.Senha) return null;
+        // Funcionário autenticado
         return f;
     }
 

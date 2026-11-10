@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using GestaoReservas.Models;
+using GestaoReservas.Utilities;
 
 public class AuthController : Controller
 {
@@ -50,10 +51,18 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
+        // Exige e-mail institucional com @santamassa antes de autenticar
+        if (!EmailInstitucionalSantamassa.EhValido(model.Email))
+        {
+            ViewBag.Error = EmailInstitucionalSantamassa.MensagemErro;
+            return View("LoginFuncionario", model);
+        }
+
+        // Autentica por e-mail institucional + senha (repositório)
         var funcionario = auth.Login(model);
         if (funcionario == null)
         {
-            ViewBag.Error = "CPF ou senha inválidos.";
+            ViewBag.Error = "E-mail ou senha inválidos.";
             return View("LoginFuncionario", model);
         }
 
@@ -69,7 +78,7 @@ public class AuthController : Controller
             ], EsquemaFuncionario)),
             new AuthenticationProperties { ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5) });
 
-        return RedirectToAction("Index", "AreaRestaurante");
+        return RedirectToAction("Reservas", "AreaRestaurante");
     }
 
     // CORREÇÃO do botão Sair do header: o token do formulário é gerado na página já logada

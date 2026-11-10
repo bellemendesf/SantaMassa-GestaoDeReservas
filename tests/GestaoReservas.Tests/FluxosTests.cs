@@ -101,13 +101,13 @@ public class FluxosTests
             {
                 Nome = "Funcionario teste",
                 Cpf = "111.222.333-44",
-                EmailInstitucional = "func@test.com",
+                EmailInstitucional = "func@santamassa.com.br",
                 Senha = "Func@123"
             });
         }
         var login = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
         {
-            ["cpf"] = "111.222.333-44",
+            ["Email"] = "func@santamassa.com.br",
             ["senha"] = "Func@123"
         });
         Assert.Equal(HttpStatusCode.Redirect, login.StatusCode);
@@ -198,7 +198,7 @@ public class FluxosTests
 
         var edit = new Dictionary<string, string>
         {
-            ["Id"] = "999", ["MesaIds"] = "2", ["QtdPessoas"] = "3", ["DataHora"] = "2027-01-03T20:00",
+            ["Id"] = "999", ["MesaIds"] = "2", ["QtdPessoas"] = "3", ["DataHora"] = "2027-01-04T20:00",
             ["Status"] = "Confirmada", ["FuncionarioID"] = "999", ["ClienteId"] = "999", ["Cliente.Nome"] = "Outro"
         };
         Assert.Equal(HttpStatusCode.Redirect, (await Post(client, $"/Reserva/Edit/{id}", $"/Reserva/Edit/{id}", edit)).StatusCode);
@@ -274,7 +274,7 @@ public class FluxosTests
         Dictionary<string, string> fields = new()
         {
             ["Nome"] = "Pessoa", ["Cpf"] = "12345678901", ["EmailPessoal"] = "pessoa@example.com",
-            ["Senha"] = "senha-original", ["Telefone"] = "17999999999", ["EmailInstitucional"] = "equipe@example.com"
+            ["Senha"] = "senha-original", ["Telefone"] = "17999999999", ["EmailInstitucional"] = "equipe@santamassa.com.br"
         };
         if (entity == "Funcionario")
             await LoginFuncionarioTeste(client, app.Services);
@@ -389,6 +389,17 @@ public class FluxosTests
         Assert.DoesNotContain("Reservada", mesmoDiaOutroAno);
     }
 
+
+    // Próximo domingo a partir de hoje (para testes de dia fechado).
+    private static string ProximoDomingoIso()
+    {
+        var d = DateTime.Today.AddDays(1);
+        while (d.DayOfWeek != DayOfWeek.Sunday) d = d.AddDays(1);
+        return d.ToString("yyyy-MM-dd");
+    }
+
+    private static string DiaDaquiA(int dias) => DateTime.Today.AddDays(dias).ToString("yyyy-MM-dd");
+
     // Cria mais mesas no ambiente 1 (a mesa 1 já vem de PrepararMesaTeste)
     private static void PrepararMaisMesas(IServiceProvider services, int ate)
     {
@@ -406,10 +417,203 @@ public class FluxosTests
         var token = WebUtility.HtmlDecode(Regex.Match(page, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value);
         var campos = new List<KeyValuePair<string, string>>
         {
-            new("DataHora", data), new("QtdPessoas", "6"), new("__RequestVerificationToken", token)
+            // Cabe nas mesas do teste (4 lugares cada) sem forçar junção automática acidental
+            new("DataHora", data), new("QtdPessoas", mesas.Length == 0 ? "6" : Math.Min(6, mesas.Length * 4).ToString()), new("__RequestVerificationToken", token)
         };
         campos.AddRange(mesas.Select(m => new KeyValuePair<string, string>("MesaIds", m.ToString())));
         return await client.PostAsync("/Reserva/Create", new FormUrlEncodedContent(campos));
+    }
+
+
+    // Cria mesas com capacidade específica no ambiente Interno (id 1)
+    private static void PrepararMesasComLugares(IServiceProvider services, params int[] lugaresPorMesa)
+    {
+        var mesaRepo = services.GetRequiredService<IMesaRepository>();
+        for (int i = 0; i < lugaresPorMesa.Length; i++)
+        {
+            mesaRepo.Create(new Mesa
+            {
+                Numero = i + 1,
+                AmbienteId = 1,
+                QtdLugares = lugaresPorMesa[i],
+                Status = "Livre",
+                AmbienteNome = "Interno"
+            });
+        }
+    }
+
+    private static async Task<HttpResponseMessage> PostReservaComQtd(HttpClient client, string data, int qtdPessoas, params int[] mesas)
+    {
+        var page = await client.GetStringAsync("/Reserva/Create");
+        var token = WebUtility.HtmlDecode(Regex.Match(page, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value);
+        var campos = new List<KeyValuePair<string, string>>
+        {
+            new("DataHora", data), new("QtdPessoas", qtdPessoas.ToString()), new("__RequestVerificationToken", token)
+        };
+        campos.AddRange(mesas.Select(m => new KeyValuePair<string, string>("MesaIds", m.ToString())));
+        return await client.PostAsync("/Reserva/Create", new FormUrlEncodedContent(campos));
+    }
+
+
+    [Fact]
+    public async Task CreateNaoJuntaMesaDeOutroAmbiente()
+    {
+        using var app = new AplicacaoTeste();
+        var amb = app.Services.GetRequiredService<IAmbienteRepository>();
+        amb.Create(new Ambiente { Nome = "Interno", Capacidade = 20, Status = "Disponivel" });
+        amb.Create(new Ambiente { Nome = "Externo", Capacidade = 20, Status = "Disponivel" });
+        var mesas = app.Services.GetRequiredService<IMesaRepository>();
+        mesas.Create(new Mesa { Numero = 1, AmbienteId = 1, QtdLugares = 2, Status = "Livre", AmbienteNome = "Interno" });
+        // Mesa grande em OUTRO ambiente — não pode ser usada na junção
+        mesas.Create(new Mesa { Numero = 1, AmbienteId = 2, QtdLugares = 8, Status = "Livre", AmbienteNome = "Externo" });
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var resp = await PostReservaComQtd(client, "2027-02-02", 4, 1);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        var html = WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync());
+        Assert.Contains("Interno", html);
+        Assert.Contains("mesas livres suficientes", html);
+    }
+
+    [Fact]
+    public async Task CreateRecusaMesasDeAmbientesDiferentes()
+    {
+        using var app = new AplicacaoTeste();
+        var amb = app.Services.GetRequiredService<IAmbienteRepository>();
+        amb.Create(new Ambiente { Nome = "Interno", Capacidade = 20, Status = "Disponivel" });
+        amb.Create(new Ambiente { Nome = "Externo", Capacidade = 20, Status = "Disponivel" });
+        var mesas = app.Services.GetRequiredService<IMesaRepository>();
+        mesas.Create(new Mesa { Numero = 1, AmbienteId = 1, QtdLugares = 2, Status = "Livre", AmbienteNome = "Interno" });
+        mesas.Create(new Mesa { Numero = 1, AmbienteId = 2, QtdLugares = 2, Status = "Livre", AmbienteNome = "Externo" });
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        // MesaIds 1 e 2 = Interno e Externo
+        var resp = await PostReservaComQtd(client, "2027-02-03", 4, 1, 2);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Contains("mesmo ambiente", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task CreateRecusaMesaExtraDesnecessaria()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 20, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 4, 4);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        // 4 pessoas com duas mesas de 4: uma já basta
+        var resp = await PostReservaComQtd(client, "2027-02-04", 4, 1, 2);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Contains("já comporta", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task CreateJuntaMesaAutomaticamenteQuandoCapacidadeInsuficiente()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 20, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 2, 2, 4);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        // 4 pessoas + só a mesa 1 (2 lugares) => junta outra mesa de 2
+        var resp = await PostReservaComQtd(client, "2026-12-01", 4, 1);
+        Assert.Equal(HttpStatusCode.Redirect, resp.StatusCode);
+        var reserva = Assert.Single(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Equal(4, reserva.QtdPessoas);
+        Assert.Equal(2, reserva.MesaIds.Count);
+        Assert.Contains(1, reserva.MesaIds);
+        Assert.Contains(2, reserva.MesaIds); // mesa vizinha de 2 lugares
+    }
+
+    [Fact]
+    public async Task CreateJuntaVariasMesasParaSetePessoas()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 30, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 2, 2, 3);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var resp = await PostReservaComQtd(client, "2026-12-02", 7, 1);
+        Assert.Equal(HttpStatusCode.Redirect, resp.StatusCode);
+        var reserva = Assert.Single(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Equal(7, reserva.QtdPessoas);
+        Assert.Equal(3, reserva.MesaIds.Count); // 2+2+3
+    }
+
+    [Fact]
+    public async Task CreateRecusaQuandoNaoHaMesasLivresSuficientes()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 10, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 2, 2);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var resp = await PostReservaComQtd(client, "2026-12-03", 7, 1);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Contains("mesas livres suficientes", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task CreateNaoUsaMesaOcupadaNaJuncao()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 20, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 2, 2, 2);
+        app.Services.GetRequiredService<IMesaRepository>().Read(2)!.Status = "Ocupada";
+        // Também marca a mesa 2 como reservada no dia por outra reserva
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaComQtd(client, "2026-12-04", 2, 3)).StatusCode);
+        // Agora só a mesa 1 livre de 2 + mesa 3 já reservada; mesa 2 ocupada => 4 pessoas não cabem
+        var resp = await PostReservaComQtd(client, "2026-12-04", 4, 1);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Single(app.Services.GetRequiredService<IReservaRepository>().Read());
+        Assert.Contains("mesas livres suficientes", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task EditAumentandoPessoasJuntaMesaExtra()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Interno", Capacidade = 20, Status = "Disponivel"
+        });
+        PrepararMesasComLugares(app.Services, 2, 2);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaComQtd(client, "2027-02-01", 2, 1)).StatusCode);
+        var repo = app.Services.GetRequiredService<IReservaRepository>();
+        Assert.Equal(new List<int> { 1 }, repo.Read(1)!.MesaIds);
+        var resp = await Post(client, "/Reserva/Edit/1", "/Reserva/Edit/1", new()
+        {
+            ["DataHora"] = "2027-02-01",
+            ["QtdPessoas"] = "4"
+        });
+        Assert.Equal(HttpStatusCode.Redirect, resp.StatusCode);
+        var atual = repo.Read(1)!;
+        Assert.Equal(4, atual.QtdPessoas);
+        Assert.Contains(1, atual.MesaIds);
+        Assert.Contains(2, atual.MesaIds);
     }
 
     [Fact]
@@ -423,25 +627,235 @@ public class FluxosTests
         var repo = app.Services.GetRequiredService<IReservaRepository>();
 
         // Reserva com as mesas 1 e 2 no mesmo dia
-        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaVariasMesas(client, "2027-03-10", 1, 2)).StatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaVariasMesas(client, "2027-01-05", 1, 2)).StatusCode);
         Assert.Equal(new List<int> { 1, 2 }, Assert.Single(repo.Read()).MesaIds);
 
-        // Mesa 2 já reservada no dia: a reserva inteira é recusada (nada gravado)
-        var recusada = await PostReservaVariasMesas(client, "2027-03-10", 2, 3);
+        // Outro cliente tenta as mesas 2 e 3 no mesmo dia: mesa 2 já reservada
+        await Post(client, "/Cliente/Create", "/Cliente/Create", new Dictionary<string, string>
+        {
+            ["Nome"] = "Cliente B", ["Cpf"] = "55566677788", ["Telefone"] = "17977776666",
+            ["EmailPessoal"] = "b@email.com", ["Senha"] = "Cliente@123"
+        });
+        Assert.Equal(HttpStatusCode.Redirect, (await Post(client, "/Auth/LoginCliente", "/Auth/LoginCliente", new Dictionary<string, string>
+        {
+            ["cpf"] = "55566677788", ["senha"] = "Cliente@123"
+        })).StatusCode);
+        var recusada = await PostReservaVariasMesas(client, "2027-01-05", 2, 3);
         Assert.Equal(HttpStatusCode.OK, recusada.StatusCode);
         Assert.Contains("não está livre", WebUtility.HtmlDecode(await recusada.Content.ReadAsStringAsync()));
         Assert.Single(repo.Read());
 
+        // Volta ao cliente original para os próximos passos
+        Assert.Equal(HttpStatusCode.Redirect, (await Post(client, "/Auth/LoginCliente", "/Auth/LoginCliente", new Dictionary<string, string>
+        {
+            ["cpf"] = "12345678901", ["senha"] = "Cliente@123"
+        })).StatusCode);
+
         // Outro dia: as mesmas mesas estão livres
-        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaVariasMesas(client, "2027-03-11", 2, 3)).StatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaVariasMesas(client, "2027-01-06", 2, 3)).StatusCode);
 
         // Sem mesa escolhida: não grava
-        Assert.Equal(HttpStatusCode.OK, (await PostReservaVariasMesas(client, "2027-03-12")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await PostReservaVariasMesas(client, "2027-01-07")).StatusCode);
         Assert.Equal(2, repo.Read().Count);
 
         // Mapa do dia mostra as duas mesas da primeira reserva como reservadas
-        var mapa = await client.GetStringAsync("/Reserva/MesasDisponiveis?dataHora=2027-03-10");
+        var mapa = await client.GetStringAsync("/Reserva/MesasDisponiveis?dataHora=2027-01-05");
         Assert.Equal(2, Regex.Matches(mapa, "Reservada").Count);
+    }
+
+    [Fact]
+    public async Task ClienteNaoPodeDiminuirQuantidadeDePessoasNaEdicao()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        PrepararMaisMesas(app.Services, 2);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaComQtd(client, "2027-02-05", 4, 1)).StatusCode);
+        var repo = app.Services.GetRequiredService<IReservaRepository>();
+        Assert.Equal(4, repo.Read(1)!.QtdPessoas);
+        var resp = await Post(client, "/Reserva/Edit/1", "/Reserva/Edit/1", new()
+        {
+            ["DataHora"] = "2027-02-05",
+            ["QtdPessoas"] = "2"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Equal(4, repo.Read(1)!.QtdPessoas);
+        Assert.Contains("diminuir", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+
+    [Fact]
+    public async Task ClienteNaoAcessaReservaDeOutroCliente()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        await Post(client, "/Reserva/Create", "/Reserva/Create", DadosReserva());
+        // Segundo cliente
+        await Post(client, "/Cliente/Create", "/Cliente/Create", new Dictionary<string, string>
+        {
+            ["Nome"] = "Outro", ["Cpf"] = "98765432100", ["Telefone"] = "17988887777",
+            ["EmailPessoal"] = "outro@email.com", ["Senha"] = "Cliente@123"
+        });
+        Assert.Equal(HttpStatusCode.Redirect, (await Post(client, "/Auth/LoginCliente", "/Auth/LoginCliente", new Dictionary<string, string>
+        {
+            ["cpf"] = "98765432100", ["senha"] = "Cliente@123"
+        })).StatusCode);
+        var resp = await client.GetAsync("/Reserva/Details/1");
+        Assert.Equal(HttpStatusCode.NotFound, resp.StatusCode);
+    }
+
+    [Fact]
+    public async Task MapaReconheceSalaoInternoComoInterno()
+    {
+        using var app = new AplicacaoTeste();
+        app.Services.GetRequiredService<IAmbienteRepository>().Create(new Ambiente
+        {
+            Nome = "Salão Interno", Capacidade = 20, Status = "Disponivel"
+        });
+        app.Services.GetRequiredService<IMesaRepository>().Create(new Mesa
+        {
+            Numero = 1, AmbienteId = 1, QtdLugares = 4, Status = "Livre", AmbienteNome = "Salão Interno"
+        });
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var html = await client.GetStringAsync("/Reserva/Create");
+        // Opção Interno habilitada (não "cadastre em Ambientes")
+        Assert.Contains("data-chave=\"Interno\"", html);
+        Assert.DoesNotContain("Interno (cadastre em Ambientes)", html);
+    }
+
+    [Fact]
+    public async Task StatusReservadaDaMesaNaoBloqueiaOutroDia()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        app.Services.GetRequiredService<IMesaRepository>().Read(1)!.Status = "Reservada";
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var dia = "2027-01-06";
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaComQtd(client, dia, 2, 1)).StatusCode);
+        var mapa = await client.GetStringAsync($"/Reserva/MesasDisponiveis?dataHora={dia}");
+        Assert.Contains("Reservada", mapa); // reservada NAQUELE dia pela reserva
+        var outro = await client.GetStringAsync("/Reserva/MesasDisponiveis?dataHora=2027-01-07");
+        Assert.Contains("Livre", outro);
+        Assert.DoesNotContain("Reservada", outro);
+    }
+
+    [Fact]
+    public async Task CreateRecusaDomingoEDataAlemDe90Dias()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var domingo = await PostReservaComQtd(client, ProximoDomingoIso(), 2, 1);
+        Assert.Equal(HttpStatusCode.OK, domingo.StatusCode);
+        Assert.Contains("domingos", WebUtility.HtmlDecode(await domingo.Content.ReadAsStringAsync()));
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+
+        var longe = await PostReservaComQtd(client, DiaDaquiA(91), 2, 1);
+        Assert.Equal(HttpStatusCode.OK, longe.StatusCode);
+        Assert.Contains("90 dias", WebUtility.HtmlDecode(await longe.Content.ReadAsStringAsync()));
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+    }
+
+    [Fact]
+    public async Task CreateRecusaSegundaReservaAtivaNoMesmoDia()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        PrepararMaisMesas(app.Services, 2);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        Assert.Equal(HttpStatusCode.Redirect, (await PostReservaComQtd(client, "2027-01-08", 2, 1)).StatusCode);
+        var resp = await PostReservaComQtd(client, "2027-01-08", 2, 2);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Contains("já possui uma reserva ativa", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+        Assert.Single(app.Services.GetRequiredService<IReservaRepository>().Read());
+    }
+
+    [Fact]
+    public async Task CreateRecusaMaisDe30Pessoas()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        PrepararMaisMesas(app.Services, 10);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var resp = await PostReservaComQtd(client, "2027-01-09", 31, 1);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        var html = WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync());
+        Assert.True(html.Contains("30") || html.Contains("pessoas"), html);
+    }
+
+    [Fact]
+    public async Task ExcluirMesaComReservaCanceladaEBloqueada()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        await Post(client, "/Reserva/Create", "/Reserva/Create", DadosReserva());
+        await Post(client, "/Reserva/Delete/1", "/Reserva/Delete/1", new() { ["Id"] = "1" });
+        Assert.Equal("Cancelada", app.Services.GetRequiredService<IReservaRepository>().Read(1)!.Status);
+        await LoginFuncionarioTeste(client, app.Services);
+        var resp = await Post(client, "/Mesa/Delete/1", "/Mesa/Delete/1", new() { ["Id"] = "1" });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.NotNull(app.Services.GetRequiredService<IMesaRepository>().Read(1));
+        Assert.Contains("reservas vinculadas", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task CreateRecusaDataPassada()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var fields = DadosReserva();
+        // Data de ontem: não pode criar reserva no passado (hoje continua permitido).
+        fields["DataHora"] = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+        var response = await Post(client, "/Reserva/Create", "/Reserva/Create", fields);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Empty(app.Services.GetRequiredService<IReservaRepository>().Read());
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("não pode ser anterior", WebUtility.HtmlDecode(html));
+    }
+
+    [Fact]
+    public async Task EditRecusaTrocaParaDataPassada()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        await Post(client, "/Reserva/Create", "/Reserva/Create", DadosReserva());
+        var repo = app.Services.GetRequiredService<IReservaRepository>();
+        var original = repo.Read(1)!.DataHora;
+        var resp = await Post(client, "/Reserva/Edit/1", "/Reserva/Edit/1", new()
+        {
+            ["DataHora"] = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"),
+            ["QtdPessoas"] = "3"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        Assert.Equal(original, repo.Read(1)!.DataHora);
+        Assert.Contains("não pode ser anterior", WebUtility.HtmlDecode(await resp.Content.ReadAsStringAsync()));
+    }
+
+    [Fact]
+    public async Task MesasDisponiveisDataPassadaRetornaVazio()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var ontem = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+        var json = await client.GetStringAsync($"/Reserva/MesasDisponiveis?dataHora={ontem}");
+        Assert.Equal("[]", json);
     }
 
     [Fact]
@@ -453,12 +867,12 @@ public class FluxosTests
         using var client = app.Cliente();
         await LoginClienteTeste(client, app.Services);
         var repo = app.Services.GetRequiredService<IReservaRepository>();
-        await PostReservaVariasMesas(client, "2027-04-01", 1, 2);
-        await PostReservaVariasMesas(client, "2027-04-02", 2);
+        await PostReservaVariasMesas(client, "2027-01-08", 1, 2);
+        await PostReservaVariasMesas(client, "2027-01-09", 2);
         // Mudar a 1ª reserva para o dia 02 não pode: a mesa 2 já está reservada nesse dia
-        var resp = await Post(client, "/Reserva/Edit/1", "/Reserva/Edit/1", new() { ["DataHora"] = "2027-04-02", ["QtdPessoas"] = "3" });
+        var resp = await Post(client, "/Reserva/Edit/1", "/Reserva/Edit/1", new() { ["DataHora"] = "2027-01-09", ["QtdPessoas"] = "3" });
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal(new DateTime(2027, 4, 1), repo.Read(1)!.DataHora);
+        Assert.Equal(new DateTime(2027, 1, 8), repo.Read(1)!.DataHora);
     }
 
     [Theory]
@@ -508,6 +922,307 @@ public class FluxosTests
         // O mapa da reserva do cliente continua funcionando (fica no ReservaController)
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/Reserva/Create")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/Reserva/MesasDisponiveis?dataHora=2027-01-02")).StatusCode);
+    }
+
+    // Item 2: listagem do restaurante mostra Pendente primeiro e com destaque
+    [Fact]
+    public async Task AreaRestauranteReservasOrdenaPendentePrimeiro()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        var reservas = app.Services.GetRequiredService<IReservaRepository>();
+        var clientes = app.Services.GetRequiredService<IClienteRepository>();
+        // Cliente base para as reservas de teste
+        clientes.Create(new Cliente
+        {
+            Nome = "Cliente ordem",
+            Cpf = "555.666.777-88",
+            EmailPessoal = "ordem@email.com",
+            Senha = "Cliente@123",
+            Telefone = "17999999999"
+        });
+        var clienteId = clientes.Read().Single(c => c.Cpf == "555.666.777-88").Id;
+        // Cria Confirmada primeiro (ordem original 0), depois Pendente (ordem original 1)
+        reservas.Create(new Reserva
+        {
+            ClienteId = clienteId,
+            DataHora = new DateTime(2027, 1, 5),
+            QtdPessoas = 2,
+            Status = "Confirmada",
+            MesaIds = new List<int> { 1 }
+        });
+        // Create da memória força Pendente; ajusta status depois
+        var conf = reservas.Read().Last();
+        reservas.UpdateStatus(conf.Id, "Confirmada");
+        reservas.Create(new Reserva
+        {
+            ClienteId = clienteId,
+            DataHora = new DateTime(2027, 1, 6),
+            QtdPessoas = 2,
+            Status = "Pendente",
+            MesaIds = new List<int> { 1 }
+        });
+        // Segunda Pendente (ordem original depois da primeira Pendente)
+        reservas.Create(new Reserva
+        {
+            ClienteId = clienteId,
+            DataHora = new DateTime(2027, 1, 7),
+            QtdPessoas = 2,
+            Status = "Pendente",
+            MesaIds = new List<int> { 1 }
+        });
+
+        using var client = app.Cliente();
+        await LoginFuncionarioTeste(client, app.Services);
+        var html = await (await client.GetAsync("/AreaRestaurante/Reservas")).Content.ReadAsStringAsync();
+        // Posição: primeira Pendente antes da Confirmada; destaque de linha
+        var iPend1 = html.IndexOf("2027-01-06", StringComparison.Ordinal);
+        if (iPend1 < 0) iPend1 = html.IndexOf("06/01/2027", StringComparison.Ordinal);
+        var iPend2 = html.IndexOf("2027-01-07", StringComparison.Ordinal);
+        if (iPend2 < 0) iPend2 = html.IndexOf("07/01/2027", StringComparison.Ordinal);
+        var iConf = html.IndexOf("2027-01-05", StringComparison.Ordinal);
+        if (iConf < 0) iConf = html.IndexOf("05/01/2027", StringComparison.Ordinal);
+        Assert.True(iPend1 >= 0 && iPend2 >= 0 && iConf >= 0, "Datas das reservas devem aparecer na página.");
+        Assert.True(iPend1 < iPend2, "Dentro do grupo Pendente, mantém a ordem original.");
+        Assert.True(iPend1 < iConf, "Pendente deve aparecer antes de Confirmada.");
+        Assert.Contains("reserva-linha-pendente", html);
+        Assert.Contains("status-pendente", html);
+    }
+
+    // Item 4: e-mail institucional do funcionário exige @santamassa no cadastro
+    [Fact]
+    public async Task FuncionarioCadastroExigeEmailSantamassa()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        await LoginFuncionarioTeste(client, app.Services);
+        var fields = new Dictionary<string, string>
+        {
+            ["Nome"] = "Sem Dominio",
+            ["Cpf"] = "999.888.777-66",
+            ["EmailInstitucional"] = "fulano@gmail.com",
+            ["Senha"] = "Func@123"
+        };
+        var resp = await Post(client, "/Funcionario/Create", "/Funcionario/Create", fields);
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var html = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("@santamassa", html);
+        Assert.DoesNotContain("999.888.777-66", app.Services.GetRequiredService<IFuncionarioRepository>().Read().Select(f => f.Cpf));
+    }
+
+    // Item 4: login de funcionário rejeita e-mail sem @santamassa
+    [Fact]
+    public async Task LoginFuncionarioRejeitaEmailSemSantamassa()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        app.Services.GetRequiredService<IFuncionarioRepository>().Create(new Funcionario
+        {
+            Nome = "Func Ok",
+            Cpf = "222.333.444-55",
+            EmailInstitucional = "ok@santamassa.com.br",
+            Senha = "Func@123"
+        });
+        var resp = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
+        {
+            ["Email"] = "ok@gmail.com",
+            ["senha"] = "Func@123"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var html = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("@santamassa", html);
+        Assert.DoesNotContain("/AreaRestaurante", resp.Headers.Location?.ToString() ?? "");
+    }
+
+    // Login de funcionário por e-mail + senha (caminho feliz)
+    [Fact]
+    public async Task LoginFuncionarioPorEmailOk()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        app.Services.GetRequiredService<IFuncionarioRepository>().Create(new Funcionario
+        {
+            Nome = "Ana Login",
+            Cpf = "333.444.555-66",
+            EmailInstitucional = "ana@santamassa.com.br",
+            Senha = "Func@123"
+        });
+        var resp = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
+        {
+            ["Email"] = "ana@santamassa.com.br",
+            ["senha"] = "Func@123"
+        });
+        Assert.Equal(HttpStatusCode.Redirect, resp.StatusCode);
+        Assert.Contains("/AreaRestaurante", resp.Headers.Location!.ToString());
+    }
+
+    // Mesmo e-mail com letras maiúsculas deve autenticar
+    [Fact]
+    public async Task LoginFuncionarioEmailMaiusculasOk()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        app.Services.GetRequiredService<IFuncionarioRepository>().Create(new Funcionario
+        {
+            Nome = "Carlos Login",
+            Cpf = "444.555.666-77",
+            EmailInstitucional = "carlos@santamassa.com.br",
+            Senha = "Func@123"
+        });
+        var resp = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
+        {
+            ["Email"] = "CARLOS@SANTAMASSA.COM.BR",
+            ["senha"] = "Func@123"
+        });
+        Assert.Equal(HttpStatusCode.Redirect, resp.StatusCode);
+        Assert.Contains("/AreaRestaurante", resp.Headers.Location!.ToString());
+    }
+
+    // Senha errada não autentica
+    [Fact]
+    public async Task LoginFuncionarioSenhaErradaRecusada()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        app.Services.GetRequiredService<IFuncionarioRepository>().Create(new Funcionario
+        {
+            Nome = "Juliana Login",
+            Cpf = "555.666.777-88",
+            EmailInstitucional = "juliana@santamassa.com.br",
+            Senha = "Func@123"
+        });
+        var resp = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
+        {
+            ["Email"] = "juliana@santamassa.com.br",
+            ["senha"] = "SenhaErrada!"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var html = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("E-mail ou senha", html);
+        Assert.Null(resp.Headers.Location);
+    }
+
+    // Senha de cliente não autentica no login de funcionário (mesmo com e-mail @santamassa)
+    [Fact]
+    public async Task SenhaDeClienteNaoEntraComoFuncionario()
+    {
+        using var app = new AplicacaoTeste();
+        using var client = app.Cliente();
+        // Cliente com e-mail que passa na validação de domínio, mas não é funcionário
+        app.Services.GetRequiredService<IClienteRepository>().Create(new Cliente
+        {
+            Nome = "Cliente Espelho",
+            Cpf = "666.777.888-99",
+            EmailPessoal = "cliente@santamassa.com.br",
+            Senha = "Cliente@123",
+            Telefone = "17988887777"
+        });
+        var resp = await Post(client, "/Auth/Login", "/Auth/Login", new Dictionary<string, string>
+        {
+            ["Email"] = "cliente@santamassa.com.br",
+            ["senha"] = "Cliente@123"
+        });
+        Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+        var html = await resp.Content.ReadAsStringAsync();
+        Assert.Contains("E-mail ou senha", html);
+        Assert.Null(resp.Headers.Location);
+    }
+
+    // Cliente: filtro Próximas (padrão) vs Histórico
+    [Fact]
+    public async Task ClienteFiltroProximasEHistorico()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        using var client = app.Cliente();
+        await LoginClienteTeste(client, app.Services);
+        var clienteId = app.Services.GetRequiredService<IClienteRepository>().Read().Single(c => c.Cpf == "12345678901").Id;
+        var reservas = app.Services.GetRequiredService<IReservaRepository>();
+        // Passada
+        reservas.Create(new Reserva
+        {
+            ClienteId = clienteId,
+            DataHora = new DateTime(2026, 10, 10),
+            QtdPessoas = 2,
+            MesaIds = new List<int> { 1 }
+        });
+        // Futura
+        reservas.Create(new Reserva
+        {
+            ClienteId = clienteId,
+            DataHora = new DateTime(2027, 1, 15),
+            QtdPessoas = 2,
+            MesaIds = new List<int> { 1 }
+        });
+
+        var proximas = await (await client.GetAsync("/Reserva/Index")).Content.ReadAsStringAsync();
+        Assert.Contains("Próximas", proximas);
+        Assert.Contains("Histórico", proximas);
+        Assert.Contains("15/01/2027", proximas);
+        Assert.DoesNotContain("10/10/2026", proximas);
+        Assert.Contains("reservas-filtro-btn--ativo", proximas);
+
+        var historico = await (await client.GetAsync("/Reserva/Index?filtro=historico")).Content.ReadAsStringAsync();
+        Assert.Contains("10/10/2026", historico);
+        Assert.DoesNotContain("15/01/2027", historico);
+    }
+
+    // Restaurante: filtro por nome (acentos/caixa) e status
+    [Fact]
+    public async Task RestauranteFiltroNomeEStatus()
+    {
+        using var app = new AplicacaoTeste();
+        PrepararMesaTeste(app.Services);
+        var clientes = app.Services.GetRequiredService<IClienteRepository>();
+        clientes.Create(new Cliente
+        {
+            Nome = "Jose Silva",
+            Cpf = "101.202.303-40",
+            EmailPessoal = "jose@email.com",
+            Senha = "Cliente@123",
+            Telefone = "17991112222"
+        });
+        clientes.Create(new Cliente
+        {
+            Nome = "Maria Souza",
+            Cpf = "202.303.404-50",
+            EmailPessoal = "maria2@email.com",
+            Senha = "Cliente@123",
+            Telefone = "17993334444"
+        });
+        var joseId = clientes.Read().Single(c => c.Cpf == "101.202.303-40").Id;
+        var mariaId = clientes.Read().Single(c => c.Cpf == "202.303.404-50").Id;
+        var reservas = app.Services.GetRequiredService<IReservaRepository>();
+        reservas.Create(new Reserva
+        {
+            ClienteId = joseId,
+            DataHora = new DateTime(2027, 2, 10),
+            QtdPessoas = 2,
+            MesaIds = new List<int> { 1 }
+        });
+        reservas.Create(new Reserva
+        {
+            ClienteId = mariaId,
+            DataHora = new DateTime(2027, 2, 11),
+            QtdPessoas = 2,
+            MesaIds = new List<int> { 1 }
+        });
+        var rMaria = reservas.Read().Last();
+        reservas.UpdateStatus(rMaria.Id, "Confirmada");
+
+        using var client = app.Cliente();
+        await LoginFuncionarioTeste(client, app.Services);
+
+        var porNome = await (await client.GetAsync("/AreaRestaurante/Reservas?nome=JOSE")).Content.ReadAsStringAsync();
+        Assert.Contains("Jose Silva", porNome);
+        Assert.DoesNotContain("Maria Souza", porNome);
+
+        var porStatus = await (await client.GetAsync("/AreaRestaurante/Reservas?status=Confirmada")).Content.ReadAsStringAsync();
+        Assert.Contains("Maria Souza", porStatus);
+        Assert.DoesNotContain("Jose Silva", porStatus);
+
+        var vazio = await (await client.GetAsync("/AreaRestaurante/Reservas?nome=zzzz&status=Cancelada")).Content.ReadAsStringAsync();
+        Assert.Contains("Nenhuma reserva encontrada", vazio);
     }
 
     [Fact]

@@ -31,10 +31,14 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="detalhes-edicao-page">
+<body class="detalhes-edicao-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
     @* Conteúdo principal *@
     <main class="detalhes-edicao-container">
 

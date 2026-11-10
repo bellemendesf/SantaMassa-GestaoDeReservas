@@ -19,16 +19,20 @@ public class MesaController : Controller
     private readonly IMesaRepository repository;
     // Dependência IAmbienteRepository recebida pelo construtor
     private readonly IAmbienteRepository ambienteRepository;
+    // Usado para impedir exclusão de mesa com histórico de reservas (N:N).
+    private readonly IReservaRepository reservaRepository;
 
     // Construtor: recebe as dependências por injeção
     public MesaController(
         IMesaRepository repository,
-        IAmbienteRepository ambienteRepository)
+        IAmbienteRepository ambienteRepository,
+        IReservaRepository reservaRepository)
     {
         // Guarda a dependência repository recebida
         this.repository = repository;
         // Guarda a dependência ambienteRepository recebida
         this.ambienteRepository = ambienteRepository;
+        this.reservaRepository = reservaRepository;
     }
 
     // Método auxiliar CarregarAmbientes
@@ -236,6 +240,15 @@ public ActionResult Edit(int id, Mesa model)
             return NotFound();
 
         // Tenta executar; erros são tratados abaixo
+        // Também confere no app (memória/SQL): qualquer reserva vinculada bloqueia a exclusão.
+        if (reservaRepository.Read().Any(r => r.MesaIds.Contains(id)))
+        {
+            ModelState.AddModelError("",
+                "Não é possível excluir esta mesa porque existem reservas vinculadas (mesmo canceladas). Se quiser indisponibilizá-la, altere o status para Ocupada.");
+            CarregarAmbientes(model.AmbienteId);
+            return View("Delete", model);
+        }
+
         try
         {
             // Chama o repositório: Delete

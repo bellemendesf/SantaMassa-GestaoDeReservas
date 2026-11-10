@@ -1,14 +1,15 @@
 ﻿
 /* Variáveis de cores do site */
 :root {
-    --sm-fundo: #181817; /* variável de cor --sm-fundo */
-    --sm-painel: #2B2925; /* variável de cor --sm-painel */
-    --sm-painel-claro: #34312B; /* variável de cor --sm-painel-claro */
-    --sm-dourado: #D3B779; /* variável de cor --sm-dourado */
-    --sm-dourado-claro: #E8D5A5; /* variável de cor --sm-dourado-claro */
-    --sm-texto: #F7F3EA; /* variável de cor --sm-texto */
-    --sm-secundario: #C8C0B1; /* variável de cor --sm-secundario */
-    --sm-borda: #49443A; /* variável de cor --sm-borda */
+    --sm-fundo: #090909; /* variável de cor --sm-fundo */
+    --sm-painel: #151515; /* variável de cor --sm-painel */
+    --sm-painel-claro: #201c14; /* variável de cor --sm-painel-claro */
+    --sm-dourado: #C6A45C; /* variável de cor --sm-dourado */
+    --sm-dourado-claro: #E8D5A3; /* variável de cor --sm-dourado-claro */
+    --sm-texto: var(--sm-texto); /* variável de cor --sm-texto */
+    --sm-secundario: #BDB7AA; /* variável de cor --sm-secundario */
+    --sm-borda: var(--sm-borda);
+    --sm-sobre-dourado: #090909; /* variável de cor --sm-borda */
 }
 
 /* Estilo de: * */
@@ -23,7 +24,7 @@ body.mesas-page {
     padding: 38px 24px; /* espaçamento interno */
     color: var(--sm-texto); /* cor do texto */
     background:
-        radial-gradient(ellipse at top, #393226 0%, transparent 48%),
+        radial-gradient(ellipse at top, #393226 0%, var(--sm-fundo) 70%),
         var(--sm-fundo);
     font-family: "Poppins", sans-serif; /* fonte */
 }
@@ -105,7 +106,7 @@ body.mesas-page {
     justify-content: center; /* alinhamento horizontal */
     min-height: 48px; /* altura mínima */
     padding: 13px 22px; /* espaçamento interno */
-    color: #211D15; /* cor do texto */
+    color: var(--sm-sobre-dourado); /* cor do texto */
     background: var(--sm-dourado); /* fundo */
     border: 1px solid var(--sm-dourado); /* borda */
     border-radius: 7px; /* cantos arredondados */
@@ -117,7 +118,7 @@ body.mesas-page {
 
 /* Estilo de: .btn-mesa-nova:hover */
 .btn-mesa-nova:hover {
-    color: #211D15; /* cor do texto */
+    color: var(--sm-sobre-dourado); /* cor do texto */
     background: var(--sm-dourado-claro); /* fundo */
     border-color: var(--sm-dourado-claro); /* cor da borda */
     transform: translateY(-1px); /* transformação (movimento) */
@@ -215,7 +216,7 @@ body.mesas-page {
 
 /* Estilo de: .status-reservada */
 .status-reservada {
-    color: #E8D5A5; /* cor do texto */
+    color: var(--sm-dourado-claro); /* cor do texto */
     background: rgba(211, 183, 121, 0.12); /* fundo */
     border-color: rgba(211, 183, 121, 0.3); /* cor da borda */
 }
@@ -351,7 +352,7 @@ body.mesas-page {
 
 /* Estilo de: .mesas-form label */
 .mesas-form label {
-    color: #E8D5A5; /* cor do texto */
+    color: var(--sm-dourado-claro); /* cor do texto */
     font-family: 'Poppins', sans-serif; /* fonte */
     font-size: 13px; /* tamanho da fonte */
     font-weight: 500; /* peso da fonte */
@@ -364,9 +365,9 @@ body.mesas-page {
     width: 100%; /* largura */
     min-height: 49px; /* altura mínima */
     padding: 12px 15px; /* espaçamento interno */
-    background-color: #22211E; /* cor de fundo */
-    color: #F7F3EA; /* cor do texto */
-    border: 1px solid #49443A; /* borda */
+    background-color: var(--sm-fundo-secundario, #151515); /* cor de fundo */
+    color: var(--sm-texto); /* cor do texto */
+    border: 1px solid var(--sm-borda); /* borda */
     border-radius: 9px; /* cantos arredondados */
     outline: none; /* contorno de foco */
     font-family: 'Poppins', sans-serif; /* fonte */
@@ -383,7 +384,7 @@ body.mesas-page {
 .mesas-form input:focus,
 /* Estilo de: .mesas-form select:focus */
 .mesas-form select:focus {
-    border-color: #D3B779; /* cor da borda */
+    border-color: var(--sm-dourado); /* cor da borda */
     box-shadow: 0 0 0 3px rgb(211 183 121 / 13%); /* sombra */
 }
 
@@ -394,8 +395,8 @@ body.mesas-page {
 
 /* Estilo de: .mesas-form select option */
 .mesas-form select option {
-    background-color: #22211E; /* cor de fundo */
-    color: #F7F3EA; /* cor do texto */
+    background-color: var(--sm-fundo-secundario, #151515); /* cor de fundo */
+    color: var(--sm-texto); /* cor do texto */
 }
 
 /* Estilo de: .mesas-form .mesas-erro */
@@ -456,17 +457,17 @@ body.mesas-page {
 /* Cadastrar mesa */
 /* Estilo de: .mesas-botao-principal */
 .mesas-botao-principal {
-    background: #D3B779; /* fundo */
-    color: #1F1F1D; /* cor do texto */
-    border: 1px solid #D3B779; /* borda */
+    background: var(--sm-dourado); /* fundo */
+    color: var(--sm-sobre-dourado); /* cor do texto */
+    border: 1px solid var(--sm-dourado); /* borda */
     box-shadow: 0 4px 12px rgb(0 0 0 / 18%); /* sombra */
 }
 
 /* Estilo de: .mesas-botao-principal:hover */
 .mesas-botao-principal:hover {
-    background: #E8D5A5; /* fundo */
-    border-color: #E8D5A5; /* cor da borda */
-    color: #1F1F1D; /* cor do texto */
+    background: var(--sm-dourado-claro); /* fundo */
+    border-color: var(--sm-dourado-claro); /* cor da borda */
+    color: var(--sm-sobre-dourado); /* cor do texto */
     transform: translateY(-2px); /* transformação (movimento) */
     box-shadow: 0 6px 16px rgb(0 0 0 / 25%); /* sombra */
 }
@@ -475,14 +476,14 @@ body.mesas-page {
 /* Estilo de: .mesas-botao-secundario */
 .mesas-botao-secundario {
     background: transparent; /* fundo */
-    color: #E8D5A5; /* cor do texto */
+    color: var(--sm-dourado-claro); /* cor do texto */
     border: 1px solid #625640; /* borda */
 }
 
 /* Estilo de: .mesas-botao-secundario:hover */
 .mesas-botao-secundario:hover {
-    background: #34312B; /* fundo */
-    border-color: #D3B779; /* cor da borda */
+    background: var(--sm-painel-claro); /* fundo */
+    border-color: var(--sm-dourado); /* cor da borda */
     color: #FFFFFF; /* cor do texto */
     transform: translateY(-2px); /* transformação (movimento) */
 }
@@ -490,7 +491,7 @@ body.mesas-page {
 .mesas-botao-principal:focus-visible,
 /* Estilo de: .mesas-botao-secundario:focus-visible */
 .mesas-botao-secundario:focus-visible {
-    outline: 2px solid #E8D5A5; /* contorno de foco */
+    outline: 2px solid var(--sm-dourado-claro); /* contorno de foco */
     outline-offset: 3px; /* propriedade outline-offset */
 }
 

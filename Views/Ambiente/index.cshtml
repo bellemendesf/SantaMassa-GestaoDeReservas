@@ -316,17 +316,18 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
-<body class="detalhes-edicao-page has-fixed-page-top">
+<body class="detalhes-edicao-page has-fixed-page-top tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
 @await Component.InvokeAsync("ReservaPageTop")
     @* Conteúdo principal *@
     <main class="detalhes-edicao-container listagem-larga">
-
-        <a asp-controller="AreaRestaurante" asp-action="Index" class="detalhes-edicao-voltar">← Voltar à área do restaurante</a>
-
-        @* Seção da página *@
+@* Seção da página *@
         <section class="detalhes-edicao-card">
 
             @* Cabeçalho *@

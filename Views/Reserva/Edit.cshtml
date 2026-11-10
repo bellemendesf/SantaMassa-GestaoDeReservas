@@ -10,7 +10,12 @@
     bool restaurante = string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), "AreaRestaurante", StringComparison.OrdinalIgnoreCase);
     // Variável voltar
     string voltar = restaurante ? "Reservas" : "Index";
-    var dataMinimaReserva = DateTime.Today.ToString("yyyy-MM-dd");
+    // Se a reserva já é de data passada, o min fica nessa data para o input date não ficar inválido no navegador.
+    // O servidor ainda bloqueia trocar para OUTRA data passada.
+    var dataMinimaReserva = (Model.DataHora != default && Model.DataHora.Date < DateTime.Today)
+        ? Model.DataHora.ToString("yyyy-MM-dd")
+        : DateTime.Today.ToString("yyyy-MM-dd");
+    var dataMaximaReserva = DateTime.Today.AddDays(90).ToString("yyyy-MM-dd");
 }
 
 @* Tipo do documento (HTML5) *@
@@ -35,9 +40,13 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
 @* Corpo da página *@
-<body class="detalhes-edicao-page">
+<body class="detalhes-edicao-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+
     @* Conteúdo principal *@
     <main class="detalhes-edicao-container">
         @* Link (asp-action @voltar) *@
@@ -53,7 +62,9 @@
                 <h1>Editar reserva</h1>
                 @* Parágrafo de texto *@
                 <p class="detalhes-edicao-descricao">
-                    Altere os dados necessários e salve as modificações.
+                    @(restaurante
+                        ? "Altere o status da reserva."
+                        : "Altere o dia ou aumente a quantidade de pessoas. Não é possível diminuir a quantidade; se precisar de menos lugares, cancele e faça uma nova reserva. Se aumentar e faltar lugar, o sistema junta mesas livres do mesmo ambiente.")
                 </p>
             </header>
 
@@ -66,7 +77,7 @@
                     @* N:N: as mesas não são enviadas; o servidor mantém as mesas originais da reserva. *@
 
                     @* Resumo dos erros de validação *@
-                    <div asp-validation-summary="All" class="detalhes-edicao-erros"></div>
+                    <div asp-validation-summary="All" class="detalhes-edicao-erros detalhes-edicao-alerta-erro"></div>
 
                     @* Bloco (classe detalhes-edicao-campo) *@
                     <div class="detalhes-edicao-campo">
@@ -76,7 +87,7 @@
                         <input type="text" value="@string.Join(", ", Model.MesasDescricao)" readonly />
                         @* Texto de ajuda *@
                         <small class="detalhes-edicao-ajuda">
-                            As mesas não podem ser alteradas.
+                            Você não troca as mesas manualmente; se faltar capacidade, o sistema junta mesas livres.
                         </small>
                     </div>
 
@@ -85,7 +96,7 @@
                         @* RESERVA POR DIA: apenas o dia é editável, sem horário. *@
                         <label asp-for="DataHora">Data</label>
                         @* Campo de entrada (asp-for DataHora) *@
-                        <input asp-for="DataHora" type="date" min="@dataMinimaReserva" readonly="@restaurante" />
+                        <input asp-for="DataHora" type="date" min="@dataMinimaReserva" max="@dataMaximaReserva" readonly="@restaurante" />
                         @* Texto destacado *@
                         <span asp-validation-for="DataHora" class="detalhes-edicao-erros"></span>
                     </div>
@@ -94,8 +105,20 @@
                     <div class="detalhes-edicao-campo">
                         @* Rótulo do campo (asp-for QtdPessoas) *@
                         <label asp-for="QtdPessoas">Quantidade de pessoas</label>
-                        @* Campo de entrada (asp-for QtdPessoas) *@
-                        <input asp-for="QtdPessoas" type="number" min="1" readonly="@restaurante" />
+                        @* Cliente: min = quantidade atual (não pode diminuir). Restaurante: campo só leitura. *@
+                        <input asp-for="QtdPessoas" type="number"
+                               min="@(restaurante ? 1 : Model.QtdPessoas)"
+                               max="30"
+                               readonly="@restaurante" />
+                        @if (!restaurante)
+                        {
+                            <small class="detalhes-edicao-ajuda">
+                                Mínimo permitido: @Model.QtdPessoas pessoa(s). Só é possível aumentar.
+                            </small>
+                            <p class="detalhes-edicao-alerta-aviso" style="margin-top:10px;">
+                                Não é possível diminuir a quantidade de pessoas nesta reserva.
+                            </p>
+                        }
                         @* Texto destacado *@
                         <span asp-validation-for="QtdPessoas" class="detalhes-edicao-erros"></span>
                     </div>
@@ -157,5 +180,32 @@
             </footer>
         </section>
     </main>
+@if (!restaurante)
+{
+<script>
+    (function () {
+        const campo = document.getElementById("DataHora");
+        if (!campo) return;
+        const aviso = document.createElement("p");
+        aviso.className = "detalhes-edicao-alerta-aviso";
+        aviso.hidden = true;
+        campo.parentElement.appendChild(aviso);
+        function checar() {
+            if (!campo.value) { aviso.hidden = true; return; }
+            const p = campo.value.split("-");
+            const d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+            if (d.getDay() === 0) {
+                aviso.hidden = false;
+                aviso.textContent = "O restaurante não funciona aos domingos. Escolha um dia de segunda a sábado.";
+            } else {
+                aviso.hidden = true;
+                aviso.textContent = "";
+            }
+        }
+        campo.addEventListener("change", checar);
+        campo.addEventListener("input", checar);
+    })();
+</script>
+}
 </body>
 </html>

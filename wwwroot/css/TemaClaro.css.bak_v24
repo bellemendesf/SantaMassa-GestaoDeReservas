@@ -1,0 +1,890 @@
+/* =========================================================
+   Tema claro — áreas do cliente e do restaurante
+   Paleta t35u: amarelo #F4D000 | escuro #1F1F1F | creme #FFF8E1
+                 cards #FFFFFF | terracota #C65D3B
+   Home / logins / cadastro de cliente NÃO usam .tema-claro
+   ========================================================= */
+
+body.tema-claro {
+    --tc-amarelo: #F4D000;
+    --tc-amarelo-hover: #E6C400;
+    --tc-escuro: #1F1F1F;
+    --tc-fundo: #FFF8E1;
+    --tc-fundo-suave: #FFFBEA;
+    --tc-cartao: #FFFFFF;
+    --tc-texto: #1F1F1F;
+    --tc-texto-suave: #4A4A4A;
+    --tc-borda: #E8DFC0;
+    --tc-terracota: #C65D3B;
+    --tc-terracota-hover: #B04F30;
+    --tc-header: #FFFFFF;
+    --tc-sombra: 0 10px 28px rgba(31, 31, 31, 0.08);
+    --tc-focus: 0 0 0 3px rgba(244, 208, 0, 0.45);
+    --tc-sobre-amarelo: #1F1F1F;
+
+    /* Remapeia variáveis dos CSS existentes (ex-dourado → amarelo) */
+    --sm-fundo: var(--tc-fundo);
+    --sm-fundo-secundario: var(--tc-fundo-suave);
+    --sm-painel: var(--tc-cartao);
+    --sm-painel-claro: #FFFDF5;
+    --sm-dourado: var(--tc-amarelo);
+    --sm-dourado-claro: var(--tc-escuro);
+    --sm-texto: var(--tc-texto);
+    --sm-texto-secundario: var(--tc-texto-suave);
+    --sm-borda: var(--tc-borda);
+
+    --reserva-fundo: var(--tc-fundo);
+    --reserva-painel: var(--tc-cartao);
+    --reserva-painel-hover: #FFFDF5;
+    --reserva-dourado: var(--tc-amarelo);
+    --reserva-dourado-claro: var(--tc-escuro);
+    --reserva-texto: var(--tc-texto);
+    --reserva-secundario: var(--tc-texto-suave);
+    --reserva-borda: var(--tc-borda);
+
+    --preto: var(--tc-fundo);
+    --branco: var(--tc-texto);
+    --cinza: var(--tc-texto-suave);
+    --dourado: var(--tc-amarelo);
+    --dourado-claro: var(--tc-escuro);
+    --dourado-suave: rgba(244, 208, 0, 0.25);
+    --fundo: var(--tc-fundo);
+    --cartao: var(--tc-cartao);
+    --texto: var(--tc-texto);
+    --borda: var(--tc-borda);
+
+    background: var(--tc-fundo) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .page-top,
+body.tema-claro .page-top--fixed {
+    background: var(--tc-header) !important;
+    border-bottom: 1px solid var(--tc-borda) !important;
+    box-shadow: 0 2px 10px rgba(31, 31, 31, 0.06) !important;
+}
+
+body.tema-claro .page-brand,
+body.tema-claro .page-home-link,
+body.tema-claro .page-user-badge,
+body.tema-claro .page-home-link--btn {
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .page-brand:hover,
+body.tema-claro .page-home-link:hover,
+body.tema-claro .page-home-link--btn:hover {
+    color: var(--tc-terracota) !important;
+}
+
+body.tema-claro .page-home-link:focus-visible,
+body.tema-claro .page-home-link--btn:focus-visible,
+body.tema-claro a:focus-visible,
+body.tema-claro button:focus-visible,
+body.tema-claro input:focus-visible,
+body.tema-claro select:focus-visible {
+    outline: none;
+    box-shadow: var(--tc-focus);
+}
+
+body.tema-claro.page-reserva,
+body.tema-claro.area-page,
+body.tema-claro.mesas-page,
+body.tema-claro.funcionarios-page,
+body.tema-claro.detalhes-edicao-page,
+body.tema-claro.cadastro-page {
+    background: var(--tc-fundo) !important;
+    color: var(--tc-texto) !important;
+}
+
+body.tema-claro .reservas-lista,
+body.tema-claro .mesas-card,
+body.tema-claro .funcionarios-card,
+body.tema-claro .detalhes-edicao-card,
+body.tema-claro .area-card,
+body.tema-claro .cadastro-card,
+body.tema-claro .page-content,
+body.tema-claro .panel {
+    background: var(--tc-cartao) !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--tc-sombra) !important;
+}
+
+body.tema-claro .page-intro h1,
+body.tema-claro .page-lead,
+body.tema-claro .reservas-lista-cabecalho h2,
+body.tema-claro .reservas-lista-descricao,
+body.tema-claro .mesas-header h1,
+body.tema-claro .mesas-descricao,
+body.tema-claro .funcionarios-header h1,
+body.tema-claro .funcionarios-descricao,
+body.tema-claro .detalhes-edicao-header h1,
+body.tema-claro .detalhes-edicao-descricao,
+body.tema-claro .area-header h1,
+body.tema-claro .area-header p {
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .area-kicker,
+body.tema-claro .page-kicker {
+    /* Não usar amarelo como texto sobre creme — usar escuro/terracota */
+    color: var(--tc-terracota) !important;
+}
+
+body.tema-claro .reservas-contador,
+body.tema-claro .clientes-contador,
+body.tema-claro .mesas-contagem {
+    background: #FFF3B0 !important;
+    color: var(--tc-escuro) !important;
+    border: 1px solid #F0E080 !important;
+}
+
+body.tema-claro .reservas-tabela thead,
+body.tema-claro .mesas-table thead,
+body.tema-claro .clientes-tabela thead {
+    background: #FFF3B0 !important;
+}
+
+body.tema-claro .reservas-tabela th,
+body.tema-claro .mesas-table th,
+body.tema-claro .clientes-tabela th {
+    color: var(--tc-escuro) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .reservas-tabela td,
+body.tema-claro .mesas-table td,
+body.tema-claro .clientes-tabela td {
+    border-color: #F0E8C8 !important;
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: #FFFDF5 !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: #FFFDF5 !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:hover,
+body.tema-claro .mesas-table tbody tr:hover,
+body.tema-claro .clientes-tabela tbody tr:hover {
+    background: #FFF6C2 !important;
+}
+
+body.tema-claro tr.reserva-linha-pendente {
+    background: #FFF6C2 !important;
+    outline: 1px solid #F4D000 !important;
+}
+
+/* Status */
+body.tema-claro .status-pendente {
+    background: #F4D000 !important;
+    border-color: #E6C400 !important;
+    color: #1F1F1F !important;
+}
+
+body.tema-claro .status-confirmada {
+    background: #E8F5E9 !important;
+    border-color: #4CAF50 !important;
+    color: #1B5E20 !important;
+}
+
+body.tema-claro .status-cancelada {
+    background: #FCE8E2 !important;
+    border-color: #C65D3B !important;
+    color: #8A3A22 !important;
+}
+
+body.tema-claro .status-outro {
+    background: #F5F5F5 !important;
+    border-color: #BDBDBD !important;
+    color: #1F1F1F !important;
+}
+
+/* Botões primários = amarelo + texto escuro */
+body.tema-claro .reservas-botao-novo,
+body.tema-claro .btn-mesa-nova,
+body.tema-claro .funcionarios-botao-principal,
+body.tema-claro .mesas-botao-principal,
+body.tema-claro .detalhes-edicao-botao-principal,
+body.tema-claro .btn-cadastro-salvar,
+body.tema-claro .reservas-filtro-btn--primario,
+body.tema-claro .reservas-filtro-btn--ativo {
+    background: var(--tc-amarelo) !important;
+    border-color: var(--tc-amarelo) !important;
+    color: var(--tc-sobre-amarelo) !important;
+}
+
+body.tema-claro .reservas-botao-novo:hover,
+body.tema-claro .btn-mesa-nova:hover,
+body.tema-claro .funcionarios-botao-principal:hover,
+body.tema-claro .mesas-botao-principal:hover,
+body.tema-claro .detalhes-edicao-botao-principal:hover,
+body.tema-claro .btn-cadastro-salvar:hover,
+body.tema-claro .reservas-filtro-btn--primario:hover,
+body.tema-claro .reservas-filtro-btn--ativo:hover {
+    background: var(--tc-amarelo-hover) !important;
+    border-color: var(--tc-amarelo-hover) !important;
+    color: var(--tc-sobre-amarelo) !important;
+}
+
+/* Secundário / perigo = terracota */
+body.tema-claro .reservas-filtro-btn--secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .btn-cadastro-voltar,
+body.tema-claro .reservas-filtro-btn,
+body.tema-claro .reserva-acao-cancelar,
+body.tema-claro .botao-excluir {
+    background: #FFFFFF !important;
+    border: 1px solid var(--tc-terracota) !important;
+    color: var(--tc-terracota) !important;
+}
+
+body.tema-claro .reservas-filtro-btn--secundario:hover,
+body.tema-claro .reservas-filtro-btn:hover,
+body.tema-claro .reserva-acao-cancelar:hover,
+body.tema-claro .botao-excluir:hover {
+    background: var(--tc-terracota) !important;
+    color: #FFFFFF !important;
+}
+
+body.tema-claro .reserva-acao,
+body.tema-claro .acao-detalhes {
+    background: #FFFDF5 !important;
+    border: 1px solid var(--tc-amarelo) !important;
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .reserva-acao:hover,
+body.tema-claro .acao-detalhes:hover {
+    background: var(--tc-amarelo) !important;
+    color: var(--tc-sobre-amarelo) !important;
+}
+
+body.tema-claro input,
+body.tema-claro select,
+body.tema-claro textarea,
+body.tema-claro .reservas-filtro-campo input,
+body.tema-claro .reservas-filtro-campo select {
+    background: #FFFFFF !important;
+    color: var(--tc-escuro) !important;
+    border: 1px solid #E0D6B0 !important;
+}
+
+body.tema-claro input:focus,
+body.tema-claro select:focus,
+body.tema-claro textarea:focus {
+    border-color: var(--tc-amarelo) !important;
+    box-shadow: var(--tc-focus) !important;
+}
+
+body.tema-claro .reservas-filtro-campo label {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .alerta-erro,
+body.tema-claro .detalhes-edicao-alerta-erro.validation-summary-errors,
+body.tema-claro .cadastro-erros:not(.validation-summary-valid) {
+    background: #FCE8E2 !important;
+    border: 1px solid #C65D3B !important;
+    color: #8A3A22 !important;
+}
+
+body.tema-claro .alerta-aviso,
+body.tema-claro .detalhes-edicao-alerta-aviso {
+    background: #FFF6C2 !important;
+    border: 1px solid #F4D000 !important;
+    color: #1F1F1F !important;
+}
+
+body.tema-claro .alerta-sucesso,
+body.tema-claro .reservas-alerta-sucesso,
+body.tema-claro .detalhes-edicao-alerta-sucesso {
+    background: #E8F5E9 !important;
+    border: 1px solid #4CAF50 !important;
+    color: #1B5E20 !important;
+}
+
+body.tema-claro .area-card:hover {
+    border-color: var(--tc-amarelo) !important;
+    box-shadow: 0 12px 28px rgba(31, 31, 31, 0.12) !important;
+}
+
+body.tema-claro .area-card h2,
+body.tema-claro .area-card p,
+body.tema-claro .card-link {
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo {
+    color: var(--tc-terracota) !important;
+}
+
+body.tema-claro .mapa-salao {
+    background: #FFFDF5 !important;
+    border-color: var(--tc-borda) !important;
+}
+
+body.tema-claro .mapa-entrada,
+body.tema-claro .mapa-cozinha {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .mapa-mesa {
+    color: var(--tc-escuro) !important;
+    background: #F5F0E0 !important;
+    border-color: #E0D6B0 !important;
+}
+
+body.tema-claro .mapa-mesa.livre {
+    border-color: #4CAF50 !important;
+    background: rgba(76, 175, 80, 0.18) !important;
+    color: #1B5E20 !important;
+}
+
+body.tema-claro .mapa-mesa.reservada {
+    border-color: #C65D3B !important;
+    background: rgba(198, 93, 59, 0.18) !important;
+    color: #8A3A22 !important;
+}
+
+body.tema-claro .mapa-mesa.selecionada {
+    border-color: #F4D000 !important;
+    background: rgba(244, 208, 0, 0.35) !important;
+    color: #1F1F1F !important;
+    box-shadow: 0 0 0 2px rgba(244, 208, 0, 0.55) !important;
+}
+
+body.tema-claro .page-glow { display: none !important; }
+
+body.tema-claro .reservas-lista-cabecalho,
+body.tema-claro .mesas-header,
+body.tema-claro .funcionarios-header,
+body.tema-claro .detalhes-edicao-header {
+    border-bottom: 1px solid var(--tc-borda) !important;
+}
+
+body.tema-claro .reservas-filtro-card {
+    background: #FFFFFF !important;
+    border: 1px solid var(--tc-borda) !important;
+    box-shadow: var(--tc-sombra) !important;
+}
+
+body.tema-claro .reservas-filtro-resultado {
+    color: var(--tc-texto-suave) !important;
+}
+
+body.tema-claro .cadastro-subtitulo,
+body.tema-claro.cadastro-page h1,
+body.tema-claro.cadastro-page .cadastro-descricao,
+body.tema-claro.cadastro-page label,
+body.tema-claro .cadastro-aviso-campo {
+    color: var(--tc-escuro) !important;
+}
+
+body.tema-claro .reservas-lista-rodape,
+body.tema-claro .mesas-footer,
+body.tema-claro .funcionarios-footer,
+body.tema-claro .detalhes-edicao-rodape,
+body.tema-claro .clientes-rodape,
+body.tema-claro .area-footer,
+body.tema-claro .cadastro-rodape {
+    color: var(--tc-texto-suave) !important;
+    border-color: var(--tc-borda) !important;
+}
+
+
+/* Correções de contraste / especificidade (tabelas e botão Filtrar) */
+body.tema-claro .reservas-tabela tbody tr,
+body.tema-claro .mesas-table tbody tr,
+body.tema-claro .clientes-tabela tbody tr,
+body.tema-claro .ambientes-tabela tbody tr {
+    background: #FFFFFF !important;
+    color: #1F1F1F !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:nth-child(even),
+body.tema-claro .mesas-table tbody tr:nth-child(even),
+body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
+    background: #FFFDF5 !important;
+}
+
+body.tema-claro .reservas-tabela tbody tr:hover,
+body.tema-claro .mesas-table tbody tr:hover,
+body.tema-claro .clientes-tabela tbody tr:hover {
+    background: #FFF6C2 !important;
+}
+
+body.tema-claro tr.reserva-linha-pendente,
+body.tema-claro .reservas-tabela tbody tr.reserva-linha-pendente {
+    background: #FFF6C2 !important;
+}
+
+body.tema-claro .reservas-filtro-btn.reservas-filtro-btn--primario,
+body.tema-claro button.reservas-filtro-btn--primario,
+body.tema-claro .reservas-filtro-btn.reservas-filtro-btn--ativo {
+    background: #F4D000 !important;
+    border-color: #F4D000 !important;
+    color: #1F1F1F !important;
+}
+
+body.tema-claro .reservas-filtro-card {
+    background: #FFFFFF !important;
+}
+
+body.tema-claro .reservas-tabela-wrap,
+body.tema-claro .mesas-table-wrap {
+    background: transparent !important;
+}
+
+/* =========================================================
+   t36u — formulário Create/Edit, mapa e hardcodes restantes
+   Cobre .page-content form (fundo escuro + texto herdado escuro)
+   e componentes do MapaMesas.css carregados depois do TemaClaro.
+   ========================================================= */
+
+/* Formulário da nova reserva: card claro, texto escuro */
+body.tema-claro .page-content form,
+body.tema-claro .panel form {
+    background: #FFFFFF;
+    color: #1F1F1F;
+    border: 1px solid var(--tc-borda);
+    box-shadow: var(--tc-sombra);
+}
+
+body.tema-claro .page-content form label,
+body.tema-claro .page-content form .form-label,
+body.tema-claro .panel form label,
+body.tema-claro .form-section label,
+body.tema-claro .form-section p,
+body.tema-claro .form-section h2,
+body.tema-claro .form-section h3,
+body.tema-claro .field label {
+    color: #1F1F1F;
+}
+
+body.tema-claro .page-content form .form-control,
+body.tema-claro .page-content form .form-select,
+body.tema-claro .page-content form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+body.tema-claro .page-content form select,
+body.tema-claro .page-content form textarea,
+body.tema-claro .panel form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+body.tema-claro .panel form select,
+body.tema-claro .panel form textarea {
+    color: #1F1F1F;
+    background-color: #FFFFFF;
+    border: 1px solid #E0D6B0;
+}
+
+body.tema-claro .page-content form input::placeholder,
+body.tema-claro .page-content form textarea::placeholder {
+    color: #6B6B6B;
+}
+
+body.tema-claro .page-content form .form-control:focus,
+body.tema-claro .page-content form .form-select:focus,
+body.tema-claro .page-content form input:focus,
+body.tema-claro .page-content form select:focus,
+body.tema-claro .page-content form textarea:focus {
+    color: #1F1F1F;
+    background-color: #FFFFFF;
+    border-color: #F4D000;
+    box-shadow: var(--tc-focus);
+}
+
+body.tema-claro .page-content form select option,
+body.tema-claro .panel form select option {
+    color: #1F1F1F;
+    background-color: #FFFFFF;
+}
+
+body.tema-claro .page-content form button[type="submit"],
+body.tema-claro .page-content form input[type="submit"],
+body.tema-claro .panel form button[type="submit"] {
+    background: #F4D000;
+    border-color: #F4D000;
+    color: #1F1F1F;
+}
+
+body.tema-claro .page-content form button[type="submit"]:hover,
+body.tema-claro .page-content form input[type="submit"]:hover {
+    background: #E6C400;
+    border-color: #E6C400;
+    color: #1F1F1F;
+}
+
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost {
+    color: #C65D3B;
+    border-color: #C65D3B;
+    background: #FFFFFF;
+}
+
+/* Campos de edição/detalhes (hardcode #1D1C19) */
+body.tema-claro .detalhes-edicao-campo label {
+    color: #4A4A4A;
+}
+
+body.tema-claro .detalhes-edicao-campo input,
+body.tema-claro .detalhes-edicao-campo select,
+body.tema-claro .detalhes-edicao-campo textarea {
+    background: #FFFFFF;
+    color: #1F1F1F;
+    border: 1px solid #E0D6B0;
+}
+
+body.tema-claro .detalhes-edicao-campo input::placeholder {
+    color: #6B6B6B;
+}
+
+body.tema-claro .detalhes-edicao-campo select option {
+    background: #FFFFFF;
+    color: #1F1F1F;
+}
+
+/* Cabeçalho de tabela Mesas ainda hardcoded #25221D */
+body.tema-claro .mesas-table thead th {
+    background: #FFF3B0;
+    color: #1F1F1F;
+    border-bottom-color: #E8DFC0;
+}
+
+body.tema-claro .mesas-table tbody td {
+    border-bottom-color: #F0E8C8;
+}
+
+/* Mapa: áreas, legenda, listagem e opções (MapaMesas.css) */
+body.tema-claro .mapa-area {
+    color: #4A4A4A;
+    background: #FFF8E1;
+    border-color: #E0D6B0;
+}
+
+body.tema-claro .mapa-area.janela {
+    color: #1F1F1F;
+    border-color: #F4D000;
+}
+
+body.tema-claro .mapa-area.saida {
+    color: #1B5E20;
+    border-color: #4CAF50;
+}
+
+body.tema-claro .mapa-legenda {
+    color: #4A4A4A;
+}
+
+body.tema-claro .mesa-opcao {
+    color: #1F1F1F;
+    background: #FFFFFF;
+    border-color: #E0D6B0;
+}
+
+body.tema-claro .mesa-opcao small {
+    color: #4A4A4A;
+}
+
+body.tema-claro .mesa-opcao.selecionada {
+    border-color: #F4D000;
+    background: rgba(244, 208, 0, 0.22);
+}
+
+body.tema-claro .mesa-opcao.livre:hover {
+    border-color: #F4D000;
+}
+
+body.tema-claro #mapa-aviso:not(.alerta-erro):not(.alerta-sucesso),
+body.tema-claro .mapa-aviso:not(.alerta-erro):not(.alerta-sucesso) {
+    color: #1F1F1F;
+    background: #FFF6C2;
+    border: 1px solid #F4D000;
+}
+
+/* Listagens / fundo página mesas-funcionários (hardcode #181817 !important) */
+body.tema-claro.mesas-page,
+body.tema-claro.funcionarios-page,
+body.tema-claro.detalhes-edicao-page,
+body.tema-claro.area-page,
+body.tema-claro.cadastro-page {
+    background: #FFF8E1;
+    color: #1F1F1F;
+}
+
+/* Evita padding-top duplicado quando sidebar empurra e header fixo já reserva espaço */
+body.tema-claro.com-sidebar-restaurante:has(.menu-restaurante).has-fixed-page-top.page-reserva {
+    padding-top: 82px;
+}
+
+body.tema-claro .page-kicker {
+    color: #C65D3B;
+}
+
+body.tema-claro .page-intro h1,
+body.tema-claro .page-lead {
+    color: #1F1F1F;
+}
+
+
+/* t36u — peças que ainda usavam fundo/texto do tema escuro */
+
+/* Variáveis que os CSS de detalhes/funcionários ainda consultam */
+body.tema-claro {
+    --cartao-item: #FFFFFF;
+    --texto-secundario: #4A4A4A;
+    --lista-dourado: #F4D000;
+    --lista-dourado-forte: #E6C400;
+    --lista-dourado-hover: #1F1F1F;
+    --lista-texto-escuro: #1F1F1F;
+    --lista-acao-fundo: #FFFDF5;
+    --lista-acao-borda: #F4D000;
+    --lista-perigo: #C65D3B;
+    --lista-perigo-fundo: #FCE8E2;
+    --lista-perigo-texto: #8A3A22;
+}
+
+/* Terracota em texto sobre fundo claro: tom mais escuro para WCAG AA */
+body.tema-claro .page-kicker,
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo,
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost,
+body.tema-claro .reservas-filtro-btn:not(.reservas-filtro-btn--primario):not(.reservas-filtro-btn--ativo),
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .btn-cadastro-voltar {
+    color: #8A3A22;
+}
+
+/* Cabeçalho dos cards de detalhes / ambientes (gradiente escuro) */
+body.tema-claro .detalhes-edicao-header {
+    background: #FFFFFF;
+    color: #1F1F1F;
+    border-top: 3px solid #F4D000;
+    border-bottom: 1px solid var(--tc-borda);
+}
+
+body.tema-claro .detalhes-edicao-header h1,
+body.tema-claro .detalhes-edicao-descricao,
+body.tema-claro .detalhes-edicao-header p {
+    color: #1F1F1F;
+}
+
+body.tema-claro .detalhes-edicao-descricao {
+    color: #4A4A4A;
+}
+
+/* Itens / cards internos ainda com --cartao-item escuro */
+body.tema-claro .detalhes-edicao-item,
+body.tema-claro .funcionario-item {
+    background: #FFFFFF;
+    border: 1px solid var(--tc-borda);
+    color: #1F1F1F;
+}
+
+body.tema-claro .funcionario-item:hover,
+body.tema-claro .detalhes-edicao-item:hover {
+    background: #FFFDF5;
+    border-color: #F4D000;
+}
+
+body.tema-claro .detalhes-edicao-item span,
+body.tema-claro .funcionario-id,
+body.tema-claro .funcionario-cpf,
+body.tema-claro .funcionario-contato span,
+body.tema-claro .funcionarios-resumo-label,
+body.tema-claro .funcionarios-resumo-legenda {
+    color: #4A4A4A;
+}
+
+body.tema-claro .detalhes-edicao-item strong,
+body.tema-claro .funcionario-nome,
+body.tema-claro .funcionario-contato strong,
+body.tema-claro .funcionarios-resumo-numero {
+    color: #1F1F1F;
+}
+
+body.tema-claro .funcionario-avatar {
+    background: #FFF6C2;
+    border-color: #F4D000;
+    color: #1F1F1F;
+}
+
+body.tema-claro .funcionarios-footer span:first-child {
+    color: #1F1F1F;
+}
+
+/* Formulário de mesas: labels douradas e erros claros demais */
+body.tema-claro .mesas-form label {
+    color: #1F1F1F;
+}
+
+body.tema-claro .mesas-form input,
+body.tema-claro .mesas-form select,
+body.tema-claro .mesas-form textarea {
+    background-color: #FFFFFF;
+    color: #1F1F1F;
+    border: 1px solid #E0D6B0;
+}
+
+body.tema-claro .mesas-form .mesas-erro,
+body.tema-claro .mesas-erro {
+    color: #8A3A22;
+}
+
+body.tema-claro .mesas-contagem,
+body.tema-claro .mesas-contagem strong,
+body.tema-claro .reservas-contador,
+body.tema-claro .ambientes-contador,
+body.tema-claro .clientes-contador {
+    background: #FFF3B0;
+    color: #1F1F1F;
+    border-color: #F0E080;
+}
+
+/* Status livre (verde claro no texto) */
+body.tema-claro .mesa-status.status-livre,
+body.tema-claro .status-livre {
+    color: #1B5E20;
+    background: #E8F5E9;
+    border-color: #4CAF50;
+}
+
+body.tema-claro .mapa-mesa.livre {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border-color: #4CAF50;
+}
+
+/* Ambientes: estilos inline da view usam !important do tema escuro */
+body.tema-claro .ambientes-tabela thead,
+body.tema-claro .ambientes-tabela thead th {
+    background: #FFF3B0;
+    color: #1F1F1F;
+    border-color: #E8DFC0;
+}
+
+body.tema-claro .ambientes-tabela td,
+body.tema-claro .ambientes-tabela tbody td,
+body.tema-claro td.ambiente-id,
+body.tema-claro td.ambiente-nome,
+body.tema-claro td.ambiente-capacidade,
+body.tema-claro .ambiente-id,
+body.tema-claro .ambiente-nome,
+body.tema-claro .ambiente-capacidade {
+    color: #1F1F1F !important;
+    background: transparent;
+    border-bottom-color: #F0E8C8;
+}
+
+body.tema-claro .ambientes-tabela tbody tr {
+    background: #FFFFFF !important;
+}
+
+body.tema-claro .ambiente-status {
+    background: #E8F5E9 !important;
+    border-color: #4CAF50 !important;
+    color: #1B5E20 !important;
+}
+
+body.tema-claro .ambiente-acoes a {
+    background: #FFFDF5 !important;
+    border-color: #F4D000 !important;
+    color: #1F1F1F !important;
+}
+
+body.tema-claro .ambiente-acoes a[href*="Delete"],
+body.tema-claro .ambiente-acoes .botao-excluir,
+body.tema-claro .ambiente-acoes a.botao-excluir {
+    background: #FFFFFF !important;
+    border-color: #C65D3B !important;
+    color: #8A3A22 !important;
+}
+
+body.tema-claro .ambientes-rodape {
+    color: #4A4A4A;
+}
+
+
+/* t36u — reforço de especificidade (regras anteriores com !important) */
+body.tema-claro .page-kicker,
+body.tema-claro .reservas-lista-kicker,
+body.tema-claro .mesas-kicker,
+body.tema-claro .funcionarios-kicker,
+body.tema-claro .detalhes-edicao-kicker,
+body.tema-claro .back-link,
+body.tema-claro .mesas-voltar,
+body.tema-claro .funcionarios-voltar,
+body.tema-claro .detalhes-edicao-voltar,
+body.tema-claro .clientes-voltar,
+body.tema-claro .cadastro-voltar-topo,
+body.tema-claro .btn-ghost,
+body.tema-claro a.btn-ghost,
+body.tema-claro .reservas-filtro-btn:not(.reservas-filtro-btn--primario):not(.reservas-filtro-btn--ativo),
+body.tema-claro .detalhes-edicao-botao-secundario,
+body.tema-claro .mesas-botao-secundario,
+body.tema-claro .btn-cadastro-voltar,
+body.tema-claro a.detalhes-edicao-botao-secundario,
+body.tema-claro a.mesas-botao-secundario,
+body.tema-claro a.btn-cadastro-voltar {
+    color: #8A3A22 !important;
+}
+
+body.tema-claro .mesas-contagem,
+body.tema-claro .mesas-contagem strong,
+body.tema-claro .reservas-contador,
+body.tema-claro .ambientes-contador,
+body.tema-claro .clientes-contador,
+body.tema-claro span.ambientes-contador {
+    background: #FFF3B0 !important;
+    color: #1F1F1F !important;
+    border-color: #F0E080 !important;
+}
+
+body.tema-claro .mapa-mesa.livre {
+    background: #E8F5E9 !important;
+    color: #1B5E20 !important;
+    border-color: #4CAF50 !important;
+}
+
+/* Mesa selecionada precisa vencer .livre quando as duas classes estão juntas */
+body.tema-claro .mapa-mesa.selecionada,
+body.tema-claro .mapa-mesa.livre.selecionada {
+    background: #FFF3B0 !important;
+    color: #1F1F1F !important;
+    border-color: #F4D000 !important;
+    box-shadow: 0 0 0 2px rgba(244, 208, 0, 0.55) !important;
+}
+
+/* Mensagens de erro visíveis (os spans vazios field-validation-valid não aparecem) */
+body.tema-claro .text-danger,
+body.tema-claro .field-validation-error,
+body.tema-claro .alerta-campo,
+body.tema-claro .mesas-erro {
+    color: #8A3A22 !important;
+}

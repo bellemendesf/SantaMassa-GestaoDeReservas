@@ -164,28 +164,69 @@ public class ReservaSqlRepository : DataConnection, IReservaRepository
         }
     }
 
-    // Atualiza a reserva: o cliente só altera o dia e a quantidade de pessoas (as mesas continuam as mesmas)
+    // Atualiza dia e quantidade; se o sistema juntou mesas extras, só INSERE as novas (não remove as originais).
     public void Update(Reserva reserva)
     {
-        using (var cmd = new SqlCommand())
+        conn.Open();
+        try
         {
-            cmd.Connection = conn;
-            // Reserva cancelada (status 2) não é alterada
-            cmd.CommandText = @"UPDATE reservas SET qtd_pessoas = @QtdPessoas, data_hora = @DataHora
-                WHERE numero = @Id AND ISNULL(status, 0) <> 2;";
-            cmd.Parameters.AddWithValue("@Id", reserva.Id);
-            cmd.Parameters.AddWithValue("@QtdPessoas", reserva.QtdPessoas);
-            cmd.Parameters.AddWithValue("@DataHora", reserva.DataHora);
-
-            conn.Open();
+            using var tx = conn.BeginTransaction();
             try
             {
-                cmd.ExecuteNonQuery();
+                // Reserva cancelada (status 2) não é alterada
+                using (var cmd = new SqlCommand(@"UPDATE reservas SET qtd_pessoas = @QtdPessoas, data_hora = @DataHora
+                    WHERE numero = @Id AND ISNULL(status, 0) <> 2;", conn, tx))
+                {
+                    cmd.Parameters.AddWithValue("@Id", reserva.Id);
+                    cmd.Parameters.AddWithValue("@QtdPessoas", reserva.QtdPessoas);
+                    cmd.Parameters.AddWithValue("@DataHora", reserva.DataHora);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Mesas já ligadas a esta reserva
+                var atuais = new HashSet<int>();
+                using (var cmdAtuais = new SqlCommand(
+                    "SELECT nr_mesas FROM Reservas_Mesas WHERE numero_reservas = @Id", conn, tx))
+                {
+                    cmdAtuais.Parameters.AddWithValue("@Id", reserva.Id);
+                    using var reader = cmdAtuais.ExecuteReader();
+                    while (reader.Read()) atuais.Add(reader.GetInt32(0));
+                }
+
+                // Só acrescenta mesas novas (junção automática); nunca apaga as que o cliente já tinha.
+                foreach (var mesaId in reserva.MesaIds.Distinct().Where(id => id > 0 && !atuais.Contains(id)))
+                {
+                    using var conferir = new SqlCommand(@"SELECT COUNT(*)
+                        FROM Reservas_Mesas rm WITH (UPDLOCK, HOLDLOCK)
+                        INNER JOIN reservas r ON r.numero = rm.numero_reservas
+                        WHERE rm.nr_mesas = @MesaId
+                          AND ISNULL(r.status, 0) <> 2
+                          AND CAST(r.data_hora AS date) = CAST(@DataHora AS date)
+                          AND r.numero <> @Id", conn, tx);
+                    conferir.Parameters.AddWithValue("@MesaId", mesaId);
+                    conferir.Parameters.AddWithValue("@DataHora", reserva.DataHora);
+                    conferir.Parameters.AddWithValue("@Id", reserva.Id);
+                    if ((int)conferir.ExecuteScalar()! > 0)
+                        throw new InvalidOperationException("A mesa escolhida não está livre nesta data.");
+
+                    using var cmdMesa = new SqlCommand(
+                        "INSERT INTO Reservas_Mesas (numero_reservas, nr_mesas) VALUES (@Reserva, @Mesa)", conn, tx);
+                    cmdMesa.Parameters.AddWithValue("@Reserva", reserva.Id);
+                    cmdMesa.Parameters.AddWithValue("@Mesa", mesaId);
+                    cmdMesa.ExecuteNonQuery();
+                }
+
+                tx.Commit();
             }
-            finally
+            catch
             {
-                conn.Close();
+                tx.Rollback();
+                throw;
             }
+        }
+        finally
+        {
+            conn.Close();
         }
     }
 

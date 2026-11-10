@@ -249,49 +249,22 @@ public List<Mesa> Read()
     // Tenta executar; erros são tratados abaixo
     try
     {
-        // Verifica se existe alguma reserva NÃO cancelada
-        // vinculada à mesa (N:N: pela tabela Reservas_Mesas).
+        // Qualquer vínculo em Reservas_Mesas (inclusive canceladas) impede a exclusão — preserva o histórico.
         using (var verificar = new SqlCommand(@"
             SELECT COUNT(*)
             FROM Reservas_Mesas rm
-            INNER JOIN reservas r ON r.numero = rm.numero_reservas
-            WHERE rm.nr_mesas = @Id
-              AND ISNULL(r.status, 0) <> 2;", transactionConnection, transaction))
+            WHERE rm.nr_mesas = @Id;", transactionConnection, transaction))
         {
-            // Preenche o parâmetro @Id
             verificar.Parameters.AddWithValue("@Id", id);
-
-            // Variável reservasAtivas
-            int reservasAtivas = (int)verificar.ExecuteScalar()!;
-
-            // Condição
-            if (reservasAtivas > 0)
+            int vinculos = (int)verificar.ExecuteScalar()!;
+            if (vinculos > 0)
             {
-                // Lança um erro com a mensagem
                 throw new InvalidOperationException(
-                    "Não é possível excluir esta mesa porque existem reservas não canceladas vinculadas a ela.");
+                    "Não é possível excluir esta mesa porque existem reservas vinculadas (mesmo canceladas). Se quiser indisponibilizá-la, altere o status para Ocupada.");
             }
         }
 
-        // Remove os vínculos da tabela associativa
-        // somente para reservas canceladas.
-        using (var excluirVinculos = new SqlCommand(@"
-            DELETE rm
-            FROM Reservas_Mesas rm
-            INNER JOIN reservas r
-                ON r.numero = rm.numero_reservas
-            WHERE rm.nr_mesas = @Id
-              AND r.status = 2;", transactionConnection, transaction))
-        {
-            // Preenche o parâmetro @Id
-            excluirVinculos.Parameters.AddWithValue("@Id", id);
-            // Executa o comando excluirVinculos
-            excluirVinculos.ExecuteNonQuery();
-        }
-
-        // N:N: a reserva não guarda mais a mesa direto (sem mesas_nr); basta remover os vínculos acima.
-
-        // Exclui a mesa somente depois de tratar os vínculos.
+        // Sem vínculos: pode excluir a mesa.
         using (var excluirMesa = new SqlCommand(
             "DELETE FROM mesas WHERE nr = @Id;",
             transactionConnection, transaction))

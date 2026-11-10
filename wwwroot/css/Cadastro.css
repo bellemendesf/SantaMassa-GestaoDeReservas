@@ -34,7 +34,7 @@ body.cadastro-page {
         radial-gradient(
             circle at 50% 0%,
             rgba(198, 164, 92, 0.09),
-            transparent 38%
+            var(--preto) 55%
         ),
         var(--preto);
     color: var(--texto); /* cor do texto */
@@ -186,6 +186,16 @@ body.cadastro-page {
     font-size: 0.84rem;
 }
 
+/* Esconde ValidationSummary válido/vazio no cadastro/login */
+.cadastro-erros.validation-summary-valid,
+.cadastro-erros:empty {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
 /* Estilo de: .cadastro-erros ul */
 .cadastro-erros ul {
     margin: 0; /* espaçamento externo */
@@ -292,4 +302,13 @@ body.cadastro-page {
     .cadastro-form {
         gap: 17px; /* espaço entre itens */
     }
+}
+
+
+/* Aviso curto sob o campo de e-mail institucional */
+.cadastro-aviso-campo {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: var(--sm-texto-secundario, #C8C0B1);
 }

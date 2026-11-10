@@ -32,7 +32,8 @@ body.home {
     right: 0;
     z-index: 1030;
     background: var(--preto);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    /* Sem box-shadow preta no header fixo (evita linha no fundo escuro) */
+    box-shadow: none;
 }
 
 body.has-home-fixed-header {

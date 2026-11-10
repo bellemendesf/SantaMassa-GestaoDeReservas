@@ -213,7 +213,7 @@ SELECT * FROM mesas
 SELECT * FROM reservas
 SELECT * FROM Reservas_Mesas
 GO
-1. Visualização dos funcionários com seus dados pessoais
+--1. Visualização dos funcionários com seus dados pessoais--
 CREATE VIEW v_funcionarios
 AS
 SELECT
@@ -230,7 +230,7 @@ GO
 SELECT * FROM v_funcionarios
 GO
 
-2. Visualização dos clientes com seus dados pessoais
+--2. Visualização dos clientes com seus dados pessoais
 CREATE VIEW v_clientes
 AS
 SELECT
@@ -247,7 +247,8 @@ GO
 -- Teste de execução --
 SELECT * FROM v_clientes
 GO
-3. Visualização dos ambientes
+
+--3. Visualização dos ambientes
 CREATE VIEW v_ambientes
 AS
 SELECT
@@ -261,7 +262,7 @@ GO
 -- Teste de execução --
 SELECT * FROM v_ambientes
 GO
-4. Visualização das mesas com seus respectivos ambientes
+--4. Visualização das mesas com seus respectivos ambientes
 CREATE VIEW v_mesas
 AS
 SELECT
@@ -277,7 +278,7 @@ GO
 -- Teste de execução --
 SELECT * FROM v_mesas
 GO
-5. Visualização das reservas com os dados dos clientes
+--5. Visualização das reservas com os dados dos clientes
 CREATE VIEW v_reservas
 AS
 SELECT
@@ -299,7 +300,8 @@ GO
 -- Teste de execução --
 SELECT * FROM v_reservas
 GO
-6. Visualização das associações entre reservas e mesas
+
+--6. Visualização das associações entre reservas e mesas
 CREATE VIEW v_reservas_mesas
 AS
 SELECT

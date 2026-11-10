@@ -1,15 +1,15 @@
-/* Padronização: Minhas reservas, Mesas, Ambientes, Funcionários, Reservas (restaurante) */
+﻿/* Padronização: Minhas reservas, Mesas, Ambientes, Funcionários, Reservas (restaurante) */
 
 :root {
-    --lista-dourado: #c6a45c;
-    --lista-dourado-forte: #d9b24a;
-    --lista-dourado-hover: #ecc96a;
-    --lista-texto-escuro: #0a0908;
-    --lista-acao-fundo: #3a3220;
-    --lista-acao-borda: #c6a45c;
-    --lista-perigo: #e05a4f;
-    --lista-perigo-fundo: #4a2420;
-    --lista-perigo-texto: #ffc9c4;
+    --lista-dourado: #C6A45C;
+    --lista-dourado-forte: #C6A45C;
+    --lista-dourado-hover: #E8D5A3;
+    --lista-texto-escuro: #090909;
+    --lista-acao-fundo: #201c14;
+    --lista-acao-borda: #C6A45C;
+    --lista-perigo: #E07A5F;
+    --lista-perigo-fundo: #2A1816;
+    --lista-perigo-texto: #E8A0A0;
 }
 
 body.mesas-page,
