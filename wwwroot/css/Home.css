@@ -26,23 +26,25 @@ body.home {
 }
 
 .home-fixed-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1030;
+    /* Header no fluxo da página: deixa de ficar fixo por cima do conteúdo */
+    position: relative;
+    /* Garante que o bloco ocupe a largura toda, como antes */
+    width: 100%;
+    /* Fundo preto, igual ao resto da home */
     background: var(--preto);
-    /* Sem box-shadow preta no header fixo (evita linha no fundo escuro) */
+    /* Sem sombra, para não criar linha no fundo escuro */
     box-shadow: none;
 }
 
+/* O recuo superior estimado não é mais necessário: o header já empurra o conteúdo */
 body.has-home-fixed-header {
-    padding-top: var(--home-fixed-header-height, 320px);
+    padding-top: 0;
 }
 
 @media (max-width: 800px) {
     body.has-home-fixed-header {
-        padding-top: var(--home-fixed-header-height-mobile, 380px);
+        /* Também zera o recuo no celular; o header segue no fluxo */
+        padding-top: 0;
     }
 }
 
@@ -580,5 +582,64 @@ body.has-home-fixed-header {
     /* Estilo de: .home-info-horario */
     .home-info-horario {
         padding-left: 48px; /* propriedade padding-left */
+    }
+}
+
+/* Telas baixas (notebook 1366x768, 1280x720 e zoom 125%/150% do Windows):
+   reduz só o espaçamento vertical para a home caber melhor, sem mudar cores. */
+@media (max-height: 900px) {
+    /* Barra de endereço/horário um pouco mais baixa */
+    .home-info-topo {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    /* Logo da barra superior menor neste recorte de altura */
+    .home-info-logo {
+        height: 52px;
+    }
+
+    /* Cabeçalho com o nome Santa Massa mais compacto */
+    .home-top {
+        padding-top: 16px;
+        padding-bottom: 4px;
+    }
+
+    /* Logo central um pouco menor para ganhar altura */
+    .home-logo {
+        height: 110px;
+    }
+
+    /* Bloco de boas-vindas com menos padding vertical */
+    .home-hero {
+        padding: 20px 24px 28px;
+    }
+
+    /* Menos espaço abaixo do texto de apoio */
+    .home-lead {
+        margin-bottom: 24px;
+    }
+
+    /* Cartão um pouco menos alto */
+    .home-card {
+        min-height: 190px;
+    }
+}
+
+/* Telas bem baixas (ex.: 1366x768 com escala 125% do Windows) */
+@media (max-height: 700px) {
+    /* Logo central ainda menor */
+    .home-logo {
+        height: 88px;
+    }
+
+    /* Ainda menos padding no bloco de boas-vindas */
+    .home-hero {
+        padding: 14px 20px 20px;
+    }
+
+    /* Cartão mais baixo para reduzir a rolagem */
+    .home-card {
+        min-height: 160px;
     }
 }

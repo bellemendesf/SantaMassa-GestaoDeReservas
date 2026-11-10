@@ -460,7 +460,7 @@ EXEC AtualizaFunc
     4, 'João Santos', '98765432100',
     'joao@santamassa.com', 'hash_teste'
 GO
-5. Procedure para inserir um ambiente na tabela Ambientes.
+--5. Procedure para inserir um ambiente na tabela Ambientes.--
 CREATE OR ALTER PROCEDURE InsereAmb
     @nome VARCHAR(100),
     @status VARCHAR(20),
@@ -476,7 +476,7 @@ GO
 EXEC InsereAmb 'Terraço', 'Ativo', 30
 GO
 
-6. Procedure para atualizar os dados de um ambiente na tabela Ambientes.
+--6. Procedure para atualizar os dados de um ambiente na tabela Ambientes.--
 CREATE OR ALTER PROCEDURE AtualizaAmb
     @codigo INT,
     @nome VARCHAR(100),

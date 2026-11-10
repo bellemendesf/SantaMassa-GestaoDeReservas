@@ -81,6 +81,7 @@
 }
 
 .mapa-mesa.selecionada {
+    cursor: pointer; /* clicar de novo desmarca a mesa */
     border-color: var(--mapa-dourado, #C6A45C);
     background: rgba(211, 183, 121, 0.22);
     box-shadow: 0 0 0 2px rgba(211, 183, 121, 0.45);

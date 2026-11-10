@@ -1,4 +1,4 @@
-@* Tipo de dado (modelo) que esta view recebe do controller *@
+﻿@* Tipo de dado (modelo) que esta view recebe do controller *@
 @model GestaoReservas.Models.Reserva
 
 @* Bloco C#: configurações da view (título, layout e variáveis) *@
@@ -343,12 +343,31 @@
             });
         }
 
+        // Zera a seleção do cliente (estado, junções automáticas e aviso).
+        function limparSelecao() {
+            // Tira todas as mesas do conjunto selecionado
+            selecionadas.clear();
+            // Tira as mesas que o sistema tinha juntado sozinho
+            autoJuntadas.clear();
+            // Esconde o aviso de junção, se existir
+            if (avisoJuncao) {
+                avisoJuncao.hidden = true;
+                avisoJuncao.textContent = "";
+            }
+        }
+
         // Marca ou desmarca uma mesa (só permite mesa extra se ainda faltar capacidade).
         function alternarMesa(id) {
+            // Compara sempre como texto: o conjunto guarda os ids em string
+            id = String(id);
+            // Clique na mesa já marcada: só desmarca. Não chama completarCapacidade, senão a mesa volta sozinha.
             if (selecionadas.has(id)) {
                 selecionadas.delete(id);
                 autoJuntadas.delete(id);
-                completarCapacidade();
+                if (avisoJuncao) {
+                    avisoJuncao.hidden = true;
+                    avisoJuncao.textContent = "";
+                }
                 pintarMapa();
                 atualizarCampos();
                 return;
@@ -599,14 +618,21 @@
             }
         }
 
+        // Clique no desenho: mesa livre ou já selecionada (para poder desmarcar)
         root.addEventListener("click", e => {
-            const cel = e.target.closest(".mapa-mesa.livre");
-            if (cel && cel.dataset.mesaId) alternarMesa(cel.dataset.mesaId);
+            const cel = e.target.closest(".mapa-mesa.livre, .mapa-mesa.selecionada");
+            if (cel && cel.dataset.mesaId) alternarMesa(String(cel.dataset.mesaId));
         });
 
         campoData.addEventListener("change", carregarMesas);
         campoData.addEventListener("input", carregarMesas);
-        campoArea.addEventListener("change", () => { mostrarSalao(); pintarMapa(); });
+        // Troca de ambiente: limpa a seleção para o cliente escolher neste salão
+        campoArea.addEventListener("change", () => {
+            limparSelecao();
+            mostrarSalao();
+            pintarMapa();
+            atualizarCampos();
+        });
         // Ao mudar a quantidade de pessoas, tenta juntar mesas se faltar lugar
         if (campoQtd) {
             const aoMudarQtd = () => {

@@ -1,0 +1,584 @@
+﻿
+/* Variáveis de cores do site */
+:root {
+    --preto: #090909; /* variável de cor --preto */
+    --preto-card: #151515; /* variável de cor --preto-card */
+    --preto-hover: #201c14; /* variável de cor --preto-hover */
+    --dourado: #C6A45C; /* variável de cor --dourado */
+    --dourado-claro: #E8D5A3; /* variável de cor --dourado-claro */
+    --branco: #F7F3EA; /* variável de cor --branco */
+    --cinza: #BDB7AA; /* variável de cor --cinza */
+}
+
+/* Estilo de: * */
+* {
+    box-sizing: border-box; /* cálculo do tamanho */
+}
+
+/* Estilo de: body.home */
+body.home {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--preto);
+    color: var(--branco);
+    font-family: "Poppins", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.home-fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background: var(--preto);
+    /* Sem box-shadow preta no header fixo (evita linha no fundo escuro) */
+    box-shadow: none;
+}
+
+body.has-home-fixed-header {
+    padding-top: var(--home-fixed-header-height, 320px);
+}
+
+@media (max-width: 800px) {
+    body.has-home-fixed-header {
+        padding-top: var(--home-fixed-header-height-mobile, 380px);
+    }
+}
+
+/* Cabeçalho centralizado */
+/* Estilo de: .home-top */
+.home-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 20px 8px;
+    text-align: center;
+}
+
+/* Estilo de: .home-logo */
+.home-logo {
+    width: 145px; /* largura */
+    height: 145px; /* altura */
+    object-fit: contain; /* ajuste da imagem */
+    display: block; /* tipo de exibição */
+    transition: transform 0.3s ease; /* animação suave */
+}
+
+/* Estilo de: .home-logo:hover */
+.home-logo:hover {
+    transform: scale(1.04); /* transformação (movimento) */
+}
+
+/* Nome do funcionário autenticado no header da home */
+.home-usuario-logado {
+    margin: 0;
+    padding: 10px 18px;
+    border: 1px solid var(--dourado);
+    border-radius: 8px;
+    background: var(--preto-card);
+    color: var(--dourado-claro);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.home-sair-wrap {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+}
+
+.home-sair-form {
+    margin: 0;
+}
+
+.home-sair-btn {
+    min-height: 44px;
+    padding: 0 28px;
+    border: 1px solid var(--dourado);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--dourado-claro);
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.home-sair-btn:hover {
+    background: var(--dourado);
+    border-color: var(--dourado);
+    color: var(--preto);
+}
+
+/* Estilo de: .home-brand */
+.home-brand {
+    color: var(--dourado); /* cor do texto */
+    font-family: "Josefin Sans", sans-serif; /* fonte */
+    font-weight: 700; /* peso da fonte */
+    letter-spacing: 0.18em; /* espaço entre letras */
+    text-transform: uppercase; /* maiúsculas/minúsculas */
+    font-size: clamp(1.6rem, 4vw, 2.2rem); /* tamanho da fonte */
+}
+
+/* Conteúdo principal */
+/* Estilo de: .home-hero */
+.home-hero {
+    position: relative; /* posicionamento */
+    z-index: 1; /* camada */
+    width: 100%; /* largura */
+    max-width: 900px; /* largura máxima */
+    margin: 0 auto; /* espaçamento externo */
+    padding: 38px 24px 70px; /* espaçamento interno */
+    text-align: center; /* alinhamento do texto */
+}
+
+/* Estilo de: .home-kicker */
+.home-kicker {
+    margin: 0 0 18px; /* espaçamento externo */
+    color: var(--dourado); /* cor do texto */
+    font-size: 0.76rem; /* tamanho da fonte */
+    font-weight: 500; /* peso da fonte */
+    letter-spacing: 0.18em; /* espaço entre letras */
+    line-height: 1.8; /* altura da linha */
+    text-transform: uppercase; /* maiúsculas/minúsculas */
+}
+
+/* Estilo de: .home-hero h1 */
+.home-hero h1 {
+    margin: 0 0 18px; /* espaçamento externo */
+    color: var(--branco); /* cor do texto */
+    font-family: "Josefin Sans", sans-serif; /* fonte */
+    font-weight: 600; /* peso da fonte */
+    font-size: clamp(2.2rem, 5vw, 3.6rem); /* tamanho da fonte */
+    line-height: 1.15; /* altura da linha */
+}
+
+/* Estilo de: .home-lead */
+.home-lead {
+    max-width: 500px; /* largura máxima */
+    margin: 0 auto 38px; /* espaçamento externo */
+    color: var(--cinza); /* cor do texto */
+    font-size: 1rem; /* tamanho da fonte */
+    line-height: 1.8; /* altura da linha */
+}
+
+/* Cartões de acesso */
+/* Estilo de: .home-actions */
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
+    align-items: stretch;
+}
+
+.home-card--solo {
+    flex: 1 1 280px;
+    max-width: 380px;
+}
+
+.home-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    min-height: 220px;
+    height: 100%;
+    padding: 28px 22px 24px;
+    border: 1px solid #5c5238;
+    border-radius: 10px;
+    background: var(--preto-card);
+    color: var(--branco);
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.home-card h2 {
+    margin: 0 0 12px;
+    color: var(--dourado-claro);
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.35;
+    min-height: 2.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-card p {
+    margin: 0 0 20px;
+    flex: 1;
+    color: var(--cinza);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: 28ch;
+}
+
+.home-card-cta,
+.home-card span {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 148px;
+    min-height: 42px;
+    padding: 0 20px;
+    border: 1px solid var(--dourado);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--dourado);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.home-card:hover {
+    border-color: var(--dourado);
+    background: var(--preto-hover);
+}
+
+.home-card:hover .home-card-cta,
+.home-card:hover span {
+    background: var(--dourado);
+    color: var(--preto);
+}
+
+/* Teclado e acessibilidade */
+/* Estilo de: .home-card:focus-visible */
+.home-card:focus-visible {
+    outline: 2px solid var(--dourado-claro); /* contorno de foco */
+    outline-offset: 5px; /* propriedade outline-offset */
+}
+
+/* Telas pequenas */
+/* Regras para telas que atendem: (max-width: 600px) */
+@media (max-width: 600px) {
+    /* Estilo de: .home-top */
+    .home-top {
+        padding-top: 32px; /* propriedade padding-top */
+    }
+
+    /* Estilo de: .home-logo */
+    .home-logo {
+        width: 120px; /* largura */
+        height: 120px; /* altura */
+    }
+
+    /* Estilo de: .home-brand */
+    .home-brand {
+        letter-spacing: 0.12em; /* espaço entre letras */
+    }
+
+    /* Estilo de: .home-hero */
+    .home-hero {
+        padding: 35px 20px 50px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .home-kicker */
+    .home-kicker {
+        font-size: 0.68rem; /* tamanho da fonte */
+        letter-spacing: 0.1em; /* espaço entre letras */
+    }
+
+    /* Estilo de: .home-actions */
+    .home-actions {
+        grid-template-columns: 1fr; /* colunas da grade */
+        gap: 16px; /* espaço entre itens */
+        max-width: 380px; /* largura máxima */
+    }
+
+    /* Estilo de: .home-card */
+    .home-card {
+        min-height: 190px; /* altura mínima */
+        padding: 26px 20px; /* espaçamento interno */
+    }
+}
+
+/* Regras para telas que atendem: (prefers-reduced-motion: reduce) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    /* Estilo de: *::after */
+    *::after {
+        transition: none !important; /* animação suave */
+    }
+}
+
+/* Estilo de: .home-subbrand */
+.home-subbrand {
+    margin-top: -8px; /* margem superior */
+    color: var(--cinza); /* cor do texto */
+    font-size: 0.7rem; /* tamanho da fonte */
+    letter-spacing: 0.35em; /* espaço entre letras */
+}
+
+/* Estilo de: .home-divider */
+.home-divider {
+    width: 76px; /* largura */
+    height: 1px; /* altura */
+    margin-top: 8px; /* margem superior */
+    background: var(--dourado); /* fundo */
+}
+/* Cabeçalho com endereço e horário */
+/* Estilo de: .home-info-topo */
+.home-info-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 14px 5%;
+    background: var(--preto-card);
+    border-bottom: 1px solid #49443a;
+    color: var(--branco);
+    font-family: "Poppins", sans-serif;
+}
+
+/* Estilo de: .home-info-endereco */
+.home-info-endereco {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 12px; /* espaço entre itens */
+    min-width: 0; /* largura mínima */
+}
+
+/* Estilo de: .home-info-icone */
+.home-info-icone {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    justify-content: center; /* alinhamento horizontal */
+    flex-shrink: 0; /* propriedade flex-shrink */
+    width: 36px; /* largura */
+    height: 36px; /* altura */
+    border: 1px solid #49443A; /* borda */
+    border-radius: 50%; /* cantos arredondados */
+    color: #D3B779; /* cor do texto */
+    font-size: 1.25rem; /* tamanho da fonte */
+}
+
+/* Estilo de: .home-info-label */
+.home-info-label {
+    display: block; /* tipo de exibição */
+    margin-bottom: 4px; /* margem inferior */
+    color: #D3B779; /* cor do texto */
+    font-size: 0.65rem; /* tamanho da fonte */
+    font-weight: 600; /* peso da fonte */
+    letter-spacing: 0.1em; /* espaço entre letras */
+}
+
+.home-info-endereco p,
+/* Estilo de: .home-info-horario p */
+.home-info-horario p {
+    margin: 0; /* espaçamento externo */
+    color: #F7F3EA; /* cor do texto */
+    font-size: 0.78rem; /* tamanho da fonte */
+    line-height: 1.6; /* altura da linha */
+}
+
+/* Estilo de: .home-info-horario */
+.home-info-horario {
+    flex-shrink: 0; /* propriedade flex-shrink */
+}
+
+/* Estilo de: .home-info-horario p */
+.home-info-horario p {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 8px; /* espaço entre itens */
+}
+
+/* Estilo de: .home-info-ponto */
+.home-info-ponto {
+    width: 7px; /* largura */
+    height: 7px; /* altura */
+    flex-shrink: 0; /* propriedade flex-shrink */
+    border-radius: 50%; /* cantos arredondados */
+    background: #7DB58A; /* fundo */
+}
+/* Estilo de: .home-info-topo */
+.home-info-topo {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    justify-content: space-between; /* alinhamento horizontal */
+    gap: 28px; /* espaço entre itens */
+    padding: 14px 5%; /* espaçamento interno */
+    background: #181817; /* fundo */
+    border-bottom: 1px solid #49443A; /* borda inferior */
+    color: #F7F3EA; /* cor do texto */
+    font-family: "Poppins", sans-serif; /* fonte */
+}
+
+/* Estilo de: .home-info-esquerda */
+.home-info-esquerda {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 24px; /* espaço entre itens */
+    min-width: 0; /* largura mínima */
+}
+
+/* Estilo de: .home-info-logo */
+.home-info-logo {
+    display: block; /* tipo de exibição */
+    width: 82px; /* largura */
+    height: 68px; /* altura */
+    flex-shrink: 0; /* propriedade flex-shrink */
+    object-fit: contain; /* ajuste da imagem */
+    border-radius: 6px; /* cantos arredondados */
+}
+
+/* Estilo de: .home-info-endereco */
+.home-info-endereco {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 12px; /* espaço entre itens */
+    min-width: 0; /* largura mínima */
+}
+
+/* Estilo de: .home-info-icone */
+.home-info-icone {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    justify-content: center; /* alinhamento horizontal */
+    flex-shrink: 0; /* propriedade flex-shrink */
+    width: 36px; /* largura */
+    height: 36px; /* altura */
+    border: 1px solid #49443A; /* borda */
+    border-radius: 50%; /* cantos arredondados */
+    color: #D3B779; /* cor do texto */
+    font-size: 1.25rem; /* tamanho da fonte */
+}
+
+/* Estilo de: .home-info-label */
+.home-info-label {
+    display: block; /* tipo de exibição */
+    margin-bottom: 4px; /* margem inferior */
+    color: #D3B779; /* cor do texto */
+    font-size: 0.65rem; /* tamanho da fonte */
+    font-weight: 600; /* peso da fonte */
+    letter-spacing: 0.1em; /* espaço entre letras */
+}
+
+.home-info-endereco p,
+/* Estilo de: .home-info-horario p */
+.home-info-horario p {
+    margin: 0; /* espaçamento externo */
+    color: #F7F3EA; /* cor do texto */
+    font-size: 0.78rem; /* tamanho da fonte */
+    line-height: 1.6; /* altura da linha */
+}
+
+/* Estilo de: .home-info-horario */
+.home-info-horario {
+    flex-shrink: 0; /* propriedade flex-shrink */
+}
+
+/* Estilo de: .home-info-horario p */
+.home-info-horario p {
+    display: flex; /* tipo de exibição */
+    align-items: center; /* alinhamento vertical */
+    gap: 8px; /* espaço entre itens */
+}
+
+/* Estilo de: .home-info-ponto */
+.home-info-ponto {
+    width: 7px; /* largura */
+    height: 7px; /* altura */
+    flex-shrink: 0; /* propriedade flex-shrink */
+    border-radius: 50%; /* cantos arredondados */
+    background: #7DB58A; /* fundo */
+}
+
+/* Responsividade */
+/* Regras para telas que atendem: (max-width: 800px) */
+@media (max-width: 800px) {
+    /* Estilo de: .home-info-topo */
+    .home-info-topo {
+        align-items: flex-start; /* alinhamento vertical */
+        flex-direction: column; /* direção dos itens */
+        gap: 18px; /* espaço entre itens */
+        padding: 18px 20px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .home-info-esquerda */
+    .home-info-esquerda {
+        gap: 16px; /* espaço entre itens */
+        width: 100%; /* largura */
+    }
+
+    /* Estilo de: .home-info-logo */
+    .home-info-logo {
+        width: 68px; /* largura */
+        height: 60px; /* altura */
+    }
+
+    /* Estilo de: .home-info-endereco p */
+    .home-info-endereco p {
+        overflow-wrap: anywhere; /* quebra de palavras longas */
+    }
+
+    /* Estilo de: .home-info-horario */
+    .home-info-horario {
+        padding-left: 84px; /* propriedade padding-left */
+    }
+}
+
+/* Regras para telas que atendem: (max-width: 420px) */
+@media (max-width: 420px) {
+    /* Estilo de: .home-info-esquerda */
+    .home-info-esquerda {
+        align-items: flex-start; /* alinhamento vertical */
+        gap: 12px; /* espaço entre itens */
+    }
+
+    /* Estilo de: .home-info-logo */
+    .home-info-logo {
+        width: 55px; /* largura */
+        height: 52px; /* altura */
+    }
+
+    /* Estilo de: .home-info-icone */
+    .home-info-icone {
+        display: none; /* tipo de exibição */
+    }
+
+    /* Estilo de: .home-info-horario */
+    .home-info-horario {
+        padding-left: 67px; /* propriedade padding-left */
+    }
+}
+/* Ajuste para celulares */
+/* Regras para telas que atendem: (max-width: 700px) */
+@media (max-width: 700px) {
+    /* Estilo de: .home-info-topo */
+    .home-info-topo {
+        align-items: flex-start; /* alinhamento vertical */
+        flex-direction: column; /* direção dos itens */
+        gap: 16px; /* espaço entre itens */
+        padding: 18px 20px; /* espaçamento interno */
+    }
+
+    /* Estilo de: .home-info-endereco p */
+    .home-info-endereco p {
+        overflow-wrap: anywhere; /* quebra de palavras longas */
+    }
+
+    /* Estilo de: .home-info-horario */
+    .home-info-horario {
+        padding-left: 48px; /* propriedade padding-left */
+    }
+}
