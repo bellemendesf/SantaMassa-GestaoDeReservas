@@ -1,4 +1,4 @@
-
+﻿
 @* Importação usada pelas views *@
 @using GestaoReservas.Models
 @* Tipo de dado (modelo) que esta view recebe do controller *@
@@ -191,7 +191,7 @@
                             <th>Cliente</th>
                         }
                         <th>Mesas</th>
-                        <th>Data</th>
+                        <th>Data e horário</th>
                         <th>Pessoas</th>
                         <th>Status</th>
                         <th>Ações</th>
@@ -222,8 +222,8 @@
                                     <div>@mesa</div>
                                 }
                             </td>
-                            <td data-label="Data" class="reserva-data">
-                                @reserva.DataHora.ToString("dd/MM/yyyy")
+                            <td data-label="Data e horário" class="reserva-data">
+                                @HorarioFuncionamento.Formatar(reserva.DataHora)
                             </td>
                             <td data-label="Pessoas">
                                 @reserva.QtdPessoas

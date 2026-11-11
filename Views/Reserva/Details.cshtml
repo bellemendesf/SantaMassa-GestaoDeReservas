@@ -103,9 +103,9 @@
                     @* Bloco (classe detalhes-edicao-item) *@
                     <div class="detalhes-edicao-item">
                         @* Texto destacado *@
-                        <span>Data</span>
-                        @* Texto em negrito *@
-                        <strong>@Model.DataHora.ToString("dd/MM/yyyy")</strong>
+                        <span>Data e horário</span>
+                        @* Mostra o horário quando a reserva tem um da grade (18:30–23:30) *@
+                        <strong>@HorarioFuncionamento.Formatar(Model.DataHora)</strong>
                     </div>
 
                     @* Bloco (classe detalhes-edicao-item) *@

@@ -9,7 +9,8 @@
     --sm-dourado-claro: #E8D5A3; /* variável de cor --sm-dourado-claro */
     --sm-texto: var(--sm-texto); /* variável de cor --sm-texto */
     --sm-texto-secundario: #BDB7AA; /* variável de cor --sm-texto-secundario */
-    --sm-borda: var(--sm-borda); /* variável de cor --sm-borda */
+    --sm-borda: var(--sm-borda); /* variável de cor --sm-borda */
+
     --sm-sobre-dourado: #090909; /* texto escuro só em botão dourado */
 }
 
@@ -565,4 +566,27 @@ span.alerta-campo.text-danger:not(:empty) {
     .page-content form .form-group {
         margin-bottom: 19px !important; /* margem inferior */
     }
+}
+
+/* Texto das mesas escolhidas, logo acima do mapa (não é mais um input) */
+.mesas-escolha-texto {
+    margin: 0 0 18px;
+}
+
+/* Rótulo no estilo dos outros campos do formulário */
+.mesas-escolha-rotulo {
+    margin: 0 0 6px;
+    color: var(--sm-dourado, #C6A45C);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Resumo das mesas em texto claro sobre o fundo escuro */
+.mesas-resumo-texto {
+    margin: 0;
+    color: var(--sm-texto, #F7F3EA);
+    font-size: 0.98rem;
+    line-height: 1.5;
 }

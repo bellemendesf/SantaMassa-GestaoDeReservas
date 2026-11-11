@@ -216,7 +216,18 @@ public class ReservaController : Controller
         model.Status = "Pendente";
         ModelState.Remove(nameof(model.Status));
         PreencherClienteLogado(model);
-        if (model.DataHora != default) model.DataHora = model.DataHora.Date;
+        // Junta a data do formulário com o horário da grade (a coluna data_hora já é datetime).
+        var horaEscolhida = HorarioFuncionamento.Parse(model.Horario);
+        if (horaEscolhida == null)
+            ModelState.AddModelError(nameof(model.Horario), "Escolha um horário entre 18:30 e 23:30, de 30 em 30 minutos.");
+        else if (model.DataHora != default)
+        {
+            // Monta data + horário e confere se está no funcionamento e, se for hoje, se ainda não passou
+            model.DataHora = HorarioFuncionamento.Combinar(model.DataHora, horaEscolhida.Value);
+            var erroHorario = HorarioFuncionamento.Validar(model.DataHora, DateTime.Now);
+            if (erroHorario != null)
+                ModelState.AddModelError(nameof(model.Horario), erroHorario);
+        }
         // Data: hoje ok; sem domingo; máximo 90 dias à frente.
         var erroDia = ValidarDiaReserva(model.DataHora);
         if (erroDia != null)
@@ -325,14 +336,15 @@ public class ReservaController : Controller
         // Parte das mesas originais: o cliente não remove mesas; o sistema pode JUNTAR outras se faltar lugar.
         model.MesaIds = original.MesaIds.ToList();
         model.MesasDescricao = original.MesasDescricao.ToList();
-        // RESERVA POR DIA: na edição também guarda só a data (sem horário).
-        if (model.DataHora != default) model.DataHora = model.DataHora.Date;
+        // O cliente não altera o horário na edição: preserva o horário original (também nas reservas antigas sem horário).
+        var dataInformada = model.DataHora == default ? original.DataHora.Date : model.DataHora.Date;
+        model.DataHora = dataInformada.Add(original.DataHora.TimeOfDay);
         // Esses dados não fazem parte da edição pelo cliente.
         foreach (var key in ModelState.Keys.Where(k =>
             // Atribui k
             k == "Id" || k == "Cliente" || k.StartsWith("Cliente.") ||
             // Atribui k
-            k == "ClienteId" || k == "Status" || k.StartsWith("MesaIds")).ToList())
+            k == "ClienteId" || k == "Status" || k == "Horario" || k.StartsWith("MesaIds")).ToList())
             // Ignora a validação deste campo
             ModelState.Remove(key);
         // Se a data mudou, aplica as mesmas regras de dia (passado/domingo/90 dias) e 1 reserva ativa/dia.

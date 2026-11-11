@@ -99,6 +99,12 @@
                         <input asp-for="DataHora" type="date" min="@dataMinimaReserva" max="@dataMaximaReserva" readonly="@restaurante" />
                         @* Texto destacado *@
                         <span asp-validation-for="DataHora" class="detalhes-edicao-erros"></span>
+                        @* Horário só leitura: o cliente não troca o horário na edição *@
+                        <small class="detalhes-edicao-ajuda">
+                            @(HorarioFuncionamento.TemHorarioDefinido(Model.DataHora)
+                                ? "Horário da reserva: " + Model.DataHora.ToString("HH:mm") + ". Não é possível alterar o horário nesta edição."
+                                : "Esta reserva não tem horário definido (foi feita antes dessa opção). O horário não é alterado nesta edição.")
+                        </small>
                     </div>
 
                     @* Bloco (classe detalhes-edicao-campo) *@

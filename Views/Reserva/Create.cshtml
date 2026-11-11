@@ -5,7 +5,7 @@
 @{
     Layout = "~/Views/Shared/_ReservaLayout.cshtml";
     ViewData["Title"] = "Nova reserva";
-    ViewData["Lead"] = "Escolha o dia, o ambiente e as mesas para a sua reserva.";
+    ViewData["Lead"] = "Escolha o dia, o horário, o ambiente e as mesas para a sua reserva.";
     var mapaIds = ViewBag.MapaAmbienteIds as Dictionary<string, int> ?? new Dictionary<string, int>();
     int IdAmbienteMapa(string nome) => mapaIds.TryGetValue(nome, out var id) ? id : 0;
     var dataMinimaReserva = DateTime.Today.ToString("yyyy-MM-dd");
@@ -32,32 +32,30 @@
             @* Subtítulo *@
             <h2>Detalhes da reserva</h2>
             @* Parágrafo de texto *@
-            <p>Mesa, dia e quantidade de pessoas.</p>
+            <p>Dia, horário e quantidade de pessoas.</p>
             @* Bloco (classe form-grid) *@
             <div class="form-grid">
                 @* Bloco (classe field) *@
                 <div class="field">
-                    @* N:N: o cliente pode escolher MAIS DE UMA mesa; cada mesa vira um campo escondido "MesaIds". *@
-                    <label for="mesas-resumo">Mesas escolhidas</label>
-                    <input id="mesas-resumo" type="text" readonly placeholder="Escolha no mapa abaixo (uma ou mais)" />
-                    <div id="mesas-escolhidas">
-                        @foreach (var mesaId in Model.MesaIds)
-                        {
-                            <input type="hidden" name="MesaIds" value="@mesaId" />
-                        }
-                    </div>
-                    @* Texto destacado *@
-                    <span asp-validation-for="MesaIds" class="alerta-campo text-danger"></span>
-                </div>
-        
-                @* Bloco (classe field) *@
-                <div class="field">
-                    @* RESERVA POR DIA: o cliente escolhe apenas o dia, sem horário. *@
+                    @* O cliente escolhe o dia; o horário vai no campo ao lado. *@
                     <label asp-for="DataHora">Data</label>
                     @* Campo de entrada (asp-for DataHora) *@
                     <input asp-for="DataHora" type="date" min="@dataMinimaReserva" max="@dataMaximaReserva"
                            value="@(Model.DataHora == default ? "" : Model.DataHora.ToString("yyyy-MM-dd"))" />
                     <span asp-validation-for="DataHora" class="alerta-campo text-danger"></span>
+                </div>
+                @* Horário da reserva (grade 18:30–23:30, de 30 em 30 min) *@
+                <div class="field">
+                    <label asp-for="Horario">Horário</label>
+                    <select asp-for="Horario" id="Horario">
+                        <option value="">Selecione o horário</option>
+                        @foreach (var hora in HorarioFuncionamento.Horarios)
+                        {
+                            var textoHora = hora.ToString("HH:mm");
+                            <option value="@textoHora">@textoHora</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Horario" class="alerta-campo text-danger"></span>
                 </div>
                 @* Bloco (classe field) *@
                 <div class="field">
@@ -77,6 +75,19 @@
             <h2>Mapa de mesas</h2>
             @* Parágrafo de texto *@
             <p>Escolha o dia, a área e uma mesa livre. Só é possível marcar outra mesa se a escolhida não comportar a quantidade de pessoas; nesse caso o sistema junta mesas livres do mesmo ambiente.</p>
+
+            @* As mesas escolhidas aparecem só como texto; os ids seguem nos campos hidden MesaIds. *@
+            <div class="mesas-escolha-texto">
+                <p class="mesas-escolha-rotulo">Mesas escolhidas</p>
+                <p id="mesas-resumo" class="mesas-resumo-texto">Nenhuma mesa escolhida ainda. Clique nas mesas livres do mapa para selecionar.</p>
+                <div id="mesas-escolhidas">
+                    @foreach (var mesaId in Model.MesaIds)
+                    {
+                        <input type="hidden" name="MesaIds" value="@mesaId" />
+                    }
+                </div>
+                <span asp-validation-for="MesaIds" class="alerta-campo text-danger"></span>
+            </div>
 
             <div class="field">
                 <label for="area-mapa">Ambiente</label>
@@ -551,7 +562,10 @@
                 const m = mesasDoDia.find(x => String(idMesa(x)) === id);
                 nomes.push(m ? "Mesa " + numMesa(m) + " (" + nomeAmbMesa(m) + ")" : "Mesa " + id);
             });
-            resumoMesas.value = nomes.join(", ");
+            // O resumo agora é um texto (não é mais um input)
+            resumoMesas.textContent = nomes.length
+                ? nomes.join(", ")
+                : "Nenhuma mesa escolhida ainda. Clique nas mesas livres do mapa para selecionar.";
         }
 
         // Retorna true se a data (yyyy-MM-dd) for anterior a hoje.
@@ -624,8 +638,35 @@
             if (cel && cel.dataset.mesaId) alternarMesa(String(cel.dataset.mesaId));
         });
 
+        // Se a data for hoje, desativa no select os horários que já passaram
+        function atualizarOpcoesHorario() {
+            const sel = document.getElementById("Horario");
+            if (!sel || !campoData) return;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const partes = (campoData.value || "").split("-");
+            let ehHoje = false;
+            if (partes.length === 3) {
+                const escolhida = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+                ehHoje = escolhida.getTime() === hoje.getTime();
+            }
+            const agora = new Date();
+            const agoraMin = agora.getHours() * 60 + agora.getMinutes();
+            [...sel.options].forEach(opt => {
+                if (!opt.value) return;
+                const bits = opt.value.split(":");
+                const min = Number(bits[0]) * 60 + Number(bits[1]);
+                // Desativa o horário que já passou quando a reserva é para hoje
+                opt.disabled = ehHoje && min <= agoraMin;
+            });
+            if (sel.value && sel.selectedOptions[0] && sel.selectedOptions[0].disabled) sel.value = "";
+        }
+
         campoData.addEventListener("change", carregarMesas);
         campoData.addEventListener("input", carregarMesas);
+        campoData.addEventListener("change", atualizarOpcoesHorario);
+        campoData.addEventListener("input", atualizarOpcoesHorario);
+        atualizarOpcoesHorario();
         // Troca de ambiente: limpa a seleção para o cliente escolher neste salão
         campoArea.addEventListener("change", () => {
             limparSelecao();

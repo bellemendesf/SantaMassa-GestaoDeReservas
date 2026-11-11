@@ -17,8 +17,10 @@ public class Reserva
     public List<int> MesaIds { get; set; } = new();
     // Texto de cada mesa para as telas (ex.: "Mesa 3 · Interno · 4 lugares")
     public List<string> MesasDescricao { get; set; } = new();
-    // Propriedade DataHora
+    // Propriedade DataHora (coluna datetime: guarda a data e o horário escolhido)
     public DateTime DataHora { get; set; }
+    // Só o formulário de criação: o valor é gravado em DataHora. Não é coluna extra no banco.
+    public string? Horario { get; set; }
     // Validação: valor mínimo/máximo permitido
     [Range(1, 30, ErrorMessage = "Informe entre 1 e 30 pessoas.")]
     // Propriedade QtdPessoas
