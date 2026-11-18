@@ -51,10 +51,11 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        // Exige e-mail institucional com @santamassa antes de autenticar
-        if (!EmailInstitucionalSantamassa.EhValido(model.Email))
+        // Mesma regra do cadastro (domínio @santamassa e formato, sem pontos consecutivos no domínio)
+        var erroEmail = ValidacaoEntrada.ErroEmailInstitucional(model.Email);
+        if (erroEmail != null)
         {
-            ViewBag.Error = EmailInstitucionalSantamassa.MensagemErro;
+            ViewBag.Error = erroEmail;
             return View("LoginFuncionario", model);
         }
 

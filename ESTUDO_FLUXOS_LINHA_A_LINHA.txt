@@ -1,0 +1,888 @@
+================================================================================
+GESTÃO RESERVAS (SANTA MASSA) — MATERIAL DE ESTUDO AUTÔNOMO
+Versão expandida — estudar SEM abrir o código no IDE
+Projeto: ASP.NET Core MVC · .NET · SQL Server · GestaoReservas
+================================================================================
+
+COMO USAR ESTE ARQUIVO
+----------------------
+1. Leia na ordem: Visão geral → Banco → Program → Autenticação → Cliente → Reserva → Funcionário.
+2. Decorar PRIORIDADE 1 (final deste arquivo).
+3. Simule oral: feche o arquivo e narre "POST /Reserva/Create passo a passo".
+4. Referências L### ainda aparecem para você achar no código DEPOIS da prova; o texto abaixo
+   já traz o significado completo de cada trecho.
+
+LEGENDA
+  L### = linha aproximada no arquivo .cs correspondente (só para conferência futura)
+  POO  = Programação Orientada a Objetos
+  DIP  = Dependency Inversion Principle (depender de interface, não de SQL)
+  CSRF = falsificação de POST cross-site (token antiforgery)
+
+
+================================================================================
+PARTE 0 — O QUE O SISTEMA FAZ (EM UMA PÁGINA)
+================================================================================
+
+Restaurante Santa Massa (São José do Rio Preto). Sistema web de RESERVAS DE MESAS.
+
+DOIS TIPOS DE USUÁRIO (papéis separados):
+  • CLIENTE — cadastra-se, entra com CPF+senha, cria/edita/cancela SUAS reservas.
+  • FUNCIONÁRIO — entra com e-mail institucional (@santamassa)+senha, gerencia mesas,
+    ambientes, funcionários, lista clientes, VÊ todas as reservas e altera STATUS.
+
+Regras de negócio memoráveis:
+  • Funcionamento: segunda a sábado; NÃO domingo.
+  • Horários: 18:30 até 23:30, de 30 em 30 minutos.
+  • Antecedência máxima: 90 dias.
+  • Não reserva em data passada; se for HOJE, horário já passado é rejeitado.
+  • Cliente: no máximo UMA reserva ATIVA (não cancelada) POR DIA.
+  • Mesas: relação N:N com reserva (várias mesas numa reserva).
+  • Disponibilidade de mesa é POR DATA (tabela Reservas_Mesas), não “mesa trancada para sempre”
+    — exceto mesa com status Ocupada no cadastro (bloqueio permanente).
+  • Junção automática: se faltam lugares, o sistema adiciona mesas livres DO MESMO AMBIENTE.
+  • Status da reserva: Pendente → Confirmada ou Cancelada (funcionário confirma; cliente cancela).
+
+Stack:
+  • MVC: Model (dados), View (Razor HTML), Controller (orquestra HTTP).
+  • Repositórios: I*Repository (interface) + *SqlRepository (SQL Server).
+  • Conexão: appsettings "DefaultConnection" → banco gestaoReserva.
+  • Autenticação: dois cookies independentes (FuncionarioScheme / ClienteScheme).
+
+
+================================================================================
+PARTE 1 — BANCO DE DADOS (CONCEITO PARA A PROVA)
+================================================================================
+
+Tabela PESSOAS (núcleo da herança OO)
+  • id, nome, cpf
+  • Senha NÃO fica mais em pessoas; fica em clientes/funcionarios (senha_hash).
+
+Tabela CLIENTES
+  • pessoa_id (FK), email_pessoal, telefone, senha_hash
+
+Tabela FUNCIONARIOS
+  • pessoa_id (FK), email_institucional, senha_hash
+
+Herança no C#: Cliente : Pessoa e Funcionario : Pessoa espelham “uma pessoa, dois papéis”.
+
+Tabela RESERVAS
+  • numero (PK identity), qtd_pessoas, data_hora (datetime com data+hora), status (int), cliente_id
+  • Status no SQL (int):
+      0 = Pendente
+      1 = Confirmada
+      2 = Cancelada
+  • Na aplicação (string): "Pendente", "Confirmada", "Cancelada" (mapeado no repositório/views).
+
+Tabela RESERVAS_MESAS (N:N)
+  • numero_reservas, nr_mesas
+  • Uma reserva pode ter várias mesas; uma mesa pode aparecer em reservas em DIAS diferentes.
+
+Tabelas MESAS, AMBIENTES — cadastro físico do restaurante.
+
+VIEWs (leitura simplificada): v_reservas, v_clientes, v_mesas, v_reservas_mesas
+  • ReservaSqlRepository monta objetos C# a partir dessas VIEWs + joins.
+
+Cancelar reserva (cliente):
+  • NÃO apaga linha: ReservaSqlRepository.Delete faz UPDATE status = 2.
+
+
+================================================================================
+PARTE 2 — POO NO PROJETO (RESPOSTA ESTRUTURADA PARA BANCA)
+================================================================================
+
+ENCAPSULAMENTO
+  • Campos private readonly nos controllers (repositórios injetados).
+  • SqlConnection protected em DataConnection; SQL só nos repositórios.
+  • Métodos private em ReservaController (ClienteLogadoId, PreencherClienteLogado,
+    GarantirReservaDoCliente, ValidarDiaReserva…) escondem detalhes da action pública.
+
+HERANÇA
+  • Pessoa ← Cliente, Funcionario (atributos comuns: Nome, Cpf).
+  • DataConnection ← ClienteSqlRepository, ReservaSqlRepository… (conexão compartilhada).
+
+POLIMORFISMO
+  • Controller declara IReservaRepository repository; em runtime é ReservaSqlRepository
+    (registrado no Program.cs). Pode trocar implementação sem mudar controller.
+
+ABSTRAÇÃO
+  • Interfaces IClienteRepository, IAuthRepository… definem CONTRATO (Create, Read, Update…).
+  • Classe abstrata DataConnection: “todo repositório SQL tem conexão”.
+
+COMPOSIÇÃO
+  • Reserva contém Cliente + List<int> MesaIds (objeto + IDs das mesas).
+  • ReservaController compõe 4 repositórios no construtor (não herda deles).
+
+INJEÇÃO DE DEPENDÊNCIA (DIP)
+  • Program.cs: builder.Services.AddScoped<IReservaRepository, ReservaSqlRepository>();
+  • Construtor do controller recebe interfaces; framework instancia implementação.
+
+CLASSES ESTÁTICAS (utilitários)
+  • HorarioFuncionamento, MesaJuncaoAutomatica, MesaReservaSync — sem estado de instância;
+    funções puras de regra de negócio reutilizáveis e testáveis.
+
+
+================================================================================
+PARTE 3 — Program.cs (CONFIGURAÇÃO GLOBAL) — TEXTO COMPLETO
+================================================================================
+
+Arquivo: Program.cs (ponto de entrada da aplicação)
+
+PASSO A PASSO DO QUE ACONTECE AO SUBIR O SITE:
+
+(A) CreateBuilder
+  • Lê appsettings.json (connection string localhost\gestaoReserva).
+  • Configura logging, ambiente Development/Production.
+
+(B) AddControllersWithViews
+  • Habilita MVC + Razor.
+  • FILTRO GLOBAL: AutoValidateAntiforgeryToken em TODO [HttpPost].
+    Significado: formulário POST precisa do token hidden gerado na GET (proteção CSRF).
+    Exceções no projeto: Logout/LogoutCliente com [IgnoreAntiforgeryToken].
+
+(C) Dois AddCookie (autenticação)
+
+  FuncionarioScheme:
+    LoginPath = /Auth/Login (se acessar rota protegida sem cookie → vai aqui)
+    AccessDeniedPath = /Auth/AccessDenied
+    Cookie Name = FuncionarioAuth
+    ExpireTimeSpan = 5 minutos, SlidingExpiration = true (renova a cada request)
+    HttpOnly = true (JavaScript não lê o cookie)
+    SecurePolicy = SameAsRequest em dev, Always em produção
+
+  ClienteScheme:
+    LoginPath = /Auth/LoginCliente
+    AccessDeniedPath = /Auth/AccessDeniedCliente
+    Cookie Name = ClienteAuth
+    (mesmas opções de expiração)
+
+  POR QUÊ DOIS SCHEMES: mesmo navegador pode ter conceitos de “dois logins”, mas o sistema
+  força um papel de cada vez (middleware + SignOut ao logar no outro).
+
+(D) AddAuthorization — permite [Authorize] e [AllowAnonymous] nos controllers.
+
+(E) AddScoped para cada par Interface → SqlRepository
+  SCOPED = uma instância por requisição HTTP (ideal para conexão SQL aberta/fechada na request).
+
+(F) Build + Pipeline middleware (ordem IMPORTA):
+  1. ExceptionHandler (produção) → /Home/Error
+  2. HSTS, HTTPS (produção)
+  3. StaticFiles (wwwroot)
+  4. Routing
+  5. Authentication (lê cookies)
+  6. Middleware custom: se Funcionario E Cliente autenticados → SignOut ClienteScheme
+  7. Authorization
+  8. MapControllerRoute default Home/Index
+
+PERGUNTA TÍPICA: “Ordem UseAuthentication e UseAuthorization?”
+  Autenticação PRIMEIRO (descobre QUEM é o usuário), autorização DEPOIS (se PODE acessar).
+
+
+================================================================================
+PARTE 4 — DataConnection.cs (BASE DOS REPOSITÓRIOS)
+================================================================================
+
+Classe abstract DataConnection : IDisposable
+
+  • Construtor protected recebe IConfiguration.
+  • Lê ConnectionStrings:DefaultConnection; se faltar → InvalidOperationException.
+  • Cria SqlConnection conn (protected — só subclasses usam).
+  • Dispose(): conn.Dispose() + GC.SuppressFinalize(this).
+
+Significado POO: repositórios concretos HERDAM a conexão; não repetem código de abrir string.
+IDisposable: ao fim do scope da requisição, DI descarta o repositório e fecha conexão.
+
+
+================================================================================
+PARTE 5 — MODELOS (CAMPOS E SIGNIFICADO) — DECORE SEM ABRIR ARQUIVO
+================================================================================
+
+----- LoginViewModel -----
+  • Cpf — usado no login CLIENTE
+  • Senha — ambos os logins
+  • Email — usado no login FUNCIONÁRIO
+  (Um único ViewModel para dois formulários; campos não usados ficam vazios.)
+
+----- Pessoa (classe base) -----
+  • Id, Nome, Cpf, Senha (senha na tela; no banco vira hash nas tabelas filhas)
+  • [Required], [StringLength] — validação automática MVC
+
+----- Cliente : Pessoa -----
+  • Telefone, EmailPessoal
+
+----- Funcionario : Pessoa -----
+  • EmailInstitucional (login staff)
+
+----- Reserva -----
+  • Id
+  • Cliente (objeto) + ClienteId (FK) — composição
+  • MesaIds (List<int>) — N:N persistido em Reservas_Mesas
+  • MesasDescricao (List<string>) — só exibição, montada no Read do repositório
+  • DataHora — datetime no banco (data + horário juntos após Combinar)
+  • Horario (string?) — SÓ formulário Create; NÃO é coluna extra
+  • QtdPessoas [Range 1-30]
+  • Status string: Pendente / Confirmada / Cancelada
+
+----- Mesa -----
+  • Numero, QtdLugares, Status (Livre / Reservada / Ocupada…), AmbienteId, AmbienteNome
+
+----- Ambiente -----
+  • Nome, Status, Capacidade
+
+----- SiteHeaderModel (View Component) -----
+  • FuncionarioLogado, ClienteLogado, Nome, Perfil
+
+
+================================================================================
+PARTE 6 — INTERFACES DE REPOSITÓRIO (CONTRATOS)
+================================================================================
+
+Padrão em todas I*Repository (exemplo IClienteRepository):
+  • List<T> Read()
+  • T? Read(int id)
+  • void Create(T)
+  • void Update(T)
+  • void Delete(int id)
+
+IReservaRepository EXTRA:
+  • void UpdateStatus(int id, string status) — só funcionário altera status no painel
+
+IAuthRepository:
+  • Funcionario? Login(LoginViewModel) — e-mail + senha
+  • Cliente? LoginCliente(LoginViewModel) — CPF + senha
+
+Controllers dependem APENAS dessas interfaces (DIP).
+
+
+================================================================================
+PARTE 7 — FLUXO HOME (GET /)
+================================================================================
+
+Controller: HomeController.Index — PÚBLICO (sem [Authorize])
+
+Sequência:
+  1. AuthenticateAsync("FuncionarioScheme")
+  2. AuthenticateAsync("ClienteScheme")
+  3. funcionarioLogado = funcionario.Succeeded
+  4. clienteLogado = cliente.Succeeded E NÃO funcionarioLogado
+     (se os dois cookies existissem, middleware já teria removido cliente — mas a Home
+      também não trata como “cliente logado” se funcionário está ativo)
+  5. ViewBag: FuncionarioLogado, ClienteLogado, NomeFuncionario, NomeCliente
+  6. View Home/Index: cards conforme estado
+     - Cliente → Minhas reservas
+     - Funcionário → Painel
+     - Ninguém → Entrar cliente / Entrar funcionário
+     - Logado → botão Sair (POST Auth/SairConta com antiforgery)
+
+HomeController.Error (produção): status 500, view de erro.
+
+Não precisa de repositório: só lê cookies.
+
+
+================================================================================
+PARTE 8 — FLUXO AUTENTICAÇÃO COMPLETO (AuthController + AuthSqlRepository)
+================================================================================
+
+----- 8.1 GET /Auth/LoginCliente -----
+  Retorna view com LoginViewModel vazio (CPF e senha na tela).
+
+----- 8.2 POST /Auth/LoginCliente -----
+  Entrada: LoginViewModel (Cpf, Senha)
+  1. auth.LoginCliente(model) → AuthSqlRepository.AutenticarCliente
+  2. SQL: SELECT de pessoas JOIN clientes WHERE p.cpf = @Cpf (parâmetro, anti injection)
+  3. Se não achou linha → retorna null
+  4. SenhaConfere(senha_hash, senha digitada):
+       - se hash começa com "AQAAAA" → PasswordHasherUtil.VerifyPassword (ASP.NET Identity)
+       - senão compara texto legado (migração antiga)
+  5. Monta objeto Cliente (Id, Nome, Cpf, EmailPessoal, Telefone)
+  6. Se null → ViewBag "CPF ou senha inválidos", mesma view
+  7. SignOutAsync(FuncionarioScheme) — login exclusivo
+  8. SignInAsync(ClienteScheme, ClaimsPrincipal com:
+       NameIdentifier = id,
+       Name = nome,
+       Role = "Cliente",
+       AuthenticationType = ClienteScheme)
+     Expiração cookie: 5 min UTC
+  9. Redirect /Reserva/Index
+
+----- 8.3 GET /Auth/Login -----
+  View "LoginFuncionario" + LoginViewModel (Email, Senha).
+
+----- 8.4 POST /Auth/Login (funcionário) -----
+  1. EmailInstitucionalSantamassa.EhValido(Email)
+     — deve conter substring "@santamassa" (case insensitive)
+     — se falhar → MensagemErro na ViewBag, view LoginFuncionario
+  2. auth.Login(model) → AutenticarFuncionario
+  3. SQL: pessoas JOIN funcionarios WHERE LOWER(TRIM(email_institucional)) = LOWER(TRIM(@Email))
+  4. SenhaConfere no hash do funcionário
+  5. SignOut ClienteScheme
+  6. SignIn FuncionarioScheme, claims Role "Funcionario"
+  7. Redirect /AreaRestaurante/Reservas (lista de reservas — não Index do painel)
+
+----- 8.5 POST /Auth/Logout (funcionário) -----
+  [AllowAnonymous] [IgnoreAntiforgeryToken]
+  SignOut Funcionario → Redirect Home
+  Motivo IgnoreAntiforgery: evitar erro 400 ao sair pelo header (bug de token com usuário anônimo na action).
+
+----- 8.6 POST /Auth/LogoutCliente -----
+  Idem para ClienteScheme.
+
+----- 8.7 POST /Auth/SairConta (Home) -----
+  [AllowAnonymous] mas COM antiforgery (form da Home tem token)
+  SignOut AMBOS schemes → Home
+
+----- 8.8 AccessDenied / AccessDeniedCliente -----
+  Redirecionamento quando [Authorize] bloqueia acesso.
+
+MEMORIZAR DIFERENÇA LOGIN:
+  Cliente = CPF + senha, cookie ClienteAuth, redireciona Reserva
+  Funcionário = e-mail @santamassa + senha, cookie FuncionarioAuth, redireciona Reservas staff
+
+
+================================================================================
+PARTE 9 — CADASTRO CLIENTE (ClienteController.Create)
+================================================================================
+
+GET /Cliente/Create — [AllowAnonymous] — form vazio.
+
+POST /Cliente/Create — [AllowAnonymous]
+
+Validações no controller (além de Data Annotations):
+  • EmailPessoal obrigatório
+  • Senha obrigatória
+  • CpfJaCadastrado(cpf, 0) → outro cliente já tem esse CPF
+
+ClienteSqlRepository.Create (transação SQL):
+  1. Busca pessoa_id por CPF
+  2. Se CPF não existe:
+       INSERT pessoas (nome, cpf) → pessoa_id novo
+  3. Se CPF existe:
+       se já é cliente → InvalidOperationException "já cadastrado como cliente"
+       senão UPDATE nome em pessoas (reuso de pessoa — ex. mesma pessoa no sistema)
+  4. INSERT clientes (pessoa_id, email, telefone, senha_hash)
+       senha_hash = PasswordHasherUtil.HashPassword(senha em texto)
+  5. Commit; Rollback se erro
+
+Após Create no controller:
+  • Se model.Id ainda 0 → Read().FirstOrDefault por CPF para obter Id
+  • SE User tem claim Role Funcionario:
+       Redirect /Cliente/Index (funcionário cadastrou pela área interna)
+  • SENÃO (cadastro público):
+       SignOut Funcionario (garantia)
+       SignIn ClienteScheme com claims do novo cliente
+       Redirect /Reserva/Create (fluxo contínuo: já logado para reservar)
+
+Erros: InvalidOperationException, SqlException → ModelState, volta view.
+
+
+================================================================================
+PARTE 10 — ReservaController (CLIENTE LOGADO) — VISÃO GERAL
+================================================================================
+
+[Authorize(AuthenticationSchemes = "ClienteScheme")] na CLASSE INTEIRA.
+Qualquer action sem cookie válido → redirect /Auth/LoginCliente.
+
+Quatro dependências injetadas:
+  IReservaRepository, IMesaRepository, IAmbienteRepository, IClienteRepository
+
+Métodos privados essenciais (encapsulamento):
+
+  ClienteLogadoId()
+    → int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
+    → Id vem do cookie, não do formulário (segurança).
+
+  PreencherClienteLogado(Reserva model)
+    → Read(ClienteLogadoId()), preenche Cliente e ClienteId no model
+    → Remove chaves ModelState que começam com "Cliente." (não validar campos que não vêm do form)
+
+  GarantirReservaDoCliente(Reserva? reserva)
+    → null → NotFound()
+    → reserva.ClienteId != ClienteLogadoId() → NotFound() (não Forbid — não revela que id existe)
+
+  MesasReservadasNoDia(dia, ignorarReservaId opcional)
+    → todas reservas Read(), filtra Status != "Cancelada", mesmo DateOnly da data
+    → SelectMany MesaIds → HashSet<int> (mesas ocupadas naquele dia)
+
+  ValidarDiaReserva(data)
+    → data vazia; passado; domingo; mais de 90 dias à frente
+
+  ClienteJaTemReservaAtivaNoDia(clienteId, dia, ignorarId)
+    → impede duas reservas ativas no mesmo dia
+
+
+================================================================================
+PARTE 11 — GET /Reserva/Index (minhas reservas)
+================================================================================
+
+Query: ?filtro=proximas | historico (padrão proximas)
+
+  1. clienteId = ClienteLogadoId()
+  2. lista = repository.Read() filtrado ClienteId == clienteId
+  3. proximas: data >= hoje, ordena DataHora crescente
+  4. historico: data < hoje, ordena DataHora decrescente
+  5. ViewBag.FiltroReservas, View com lista
+
+
+================================================================================
+PARTE 12 — GET /Reserva/MesasDisponiveis (JSON para mapa na tela Create)
+================================================================================
+
+Parâmetros query: dataHora (string), ambienteId (opcional)
+
+  1. ParseDiaConsulta → DateOnly?
+  2. Se dia < hoje → JSON [] (vazio)
+  3. ocupadas = MesasReservadasNoDia(dia)
+  4. mesaRepository.Read(), filtra ambiente se ambienteId > 0
+  5. Para cada mesa JSON: id, numero, lugares, ambienteId, ambiente, situacao, dataConsulta
+     situacao =
+       "Ocupada" se mesa.Status == Ocupada (permanente)
+       "Reservada" se mesa.Id está no HashSet do dia
+       "Livre" caso contrário
+  6. return Json(resultado) — usado por JavaScript na view Create
+
+
+================================================================================
+PARTE 13 — GET /Reserva/Create (formulário nova reserva)
+================================================================================
+
+  1. ViewBag.MapaAmbienteIds = dicionário { "Interno"→id, "Externo"→id, "Sacada"→id }
+     (busca ambientes no banco; Interno aceita nome "Salão Interno")
+  2. model = new Reserva { QtdPessoas = 2, Status = "Pendente" }
+  3. PreencherClienteLogado(model)
+  4. View Create — cliente NÃO redigita nome/CPF (já logado)
+
+
+================================================================================
+PARTE 14 — POST /Reserva/Create — FLUXO CENTRAL (DECORE ESTE BLOCO)
+================================================================================
+
+Entrada HTTP: formulário com DataHora (date), Horario (select "HH:mm"),
+QtdPessoas, MesaIds (checkboxes do mapa), antiforgery token.
+
+SEQUÊNCIA COMPLETA NO CONTROLLER:
+
+(1) model.Status = "Pendente"; ModelState.Remove(Status)
+    → cliente nunca cria reserva já Confirmada.
+
+(2) PreencherClienteLogado(model)
+    → ClienteId = quem está no cookie; impede reservar em nome de outro.
+
+(3) HORÁRIO
+    horaEscolhida = HorarioFuncionamento.Parse(model.Horario)
+    • Parse: null se vazio ou fora da grade 18:30–23:30
+    • Se null → erro "Escolha um horário entre 18:30 e 23:30..."
+    • Se DataHora != default:
+         model.DataHora = HorarioFuncionamento.Combinar(data do input, hora)
+         (input date vem meia-noite; Combinar coloca hora correta)
+    erroHorario = HorarioFuncionamento.Validar(DataHora, DateTime.Now)
+    • Fora da grade → mensagem
+    • Se reserva é HOJE e DataHora <= agora → "Esse horário já passou..."
+
+(4) DIA
+    erroDia = ValidarDiaReserva(model.DataHora)
+    • Domingo, passado, >90 dias
+    Senão se ClienteJaTemReservaAtivaNoDia(ClienteId, dia da reserva)
+    → "Você já possui uma reserva ativa neste dia..."
+
+(5) MESAS — normalização
+    model.MesaIds = ids distintos > 0
+    Se Count == 0 → "Escolha ao menos uma mesa no mapa"
+
+(6) Se ModelState.IsValid até aqui — validação de mesas no servidor:
+    reservadasNoDia = MesasReservadasNoDia(dia da reserva)
+    Para cada mesaId escolhida:
+      mesa = mesaRepository.Read(mesaId)
+      não existe → erro
+      não MesaLivreParaReservaNaData → erro (ocupada permanente ou reservada no dia)
+
+(7) Junção automática (ainda ModelState válido):
+    juncao = MesaJuncaoAutomatica.Completar(MesaIds, QtdPessoas, todasMesas, reservadasNoDia)
+    • Mesmas regras: um ambiente só; mesas devem existir; soma lugares < qtdPessoas → loop
+      adiciona mesas livres do mesmo AmbienteId (greedy)
+    • !juncao.Ok → AddModelError com juncao.Erro
+    • model.MesaIds = juncao.MesaIds (pode ter MAIS mesas que o usuário clicou)
+    • TemMesasDesnecessarias → usuário selecionou mesas a mais que o necessário → erro
+    • Se sistema adicionou mesas → TempData["AvisoJuncaoMesas"] mensagem amigável
+
+(8) Se ModelState inválido → View Create + MapaAmbienteIds de novo
+
+(9) try { repository.Create(model);
+         Redirect Details(model.Id) }
+    model.Id é preenchido DENTRO do repositório após INSERT.
+
+(10) catch SqlException — mensagens por número erro (FK, unique…)
+     catch InvalidOperationException — mesa perdida no lock concorrente no SQL
+
+----- Persistência ReservaSqlRepository.Create (em paralelo mental) -----
+
+  Abre conexão; BeginTransaction
+  Para cada mesaId:
+    SELECT COUNT(*) com UPDLOCK, HOLDLOCK
+    — trava linha para duas pessoas não reservarem mesma mesa mesmo dia ao mesmo tempo
+    Se count > 0 → InvalidOperationException
+  INSERT reservas (qtd_pessoas, data_hora, status=0 Pendente, cliente_id)
+  SCOPE_IDENTITY → atribui reserva.Id
+  Para cada mesaId: INSERT Reservas_Mesas (numero_reservas, nr_mesas)
+  Commit; Rollback em falha; Close conn
+
+FIM DO FLUXO CREATE: usuário vê Details com reserva Pendente.
+
+
+================================================================================
+PARTE 15 — EDIT / DETAILS / DELETE RESERVA (CLIENTE)
+================================================================================
+
+GET Edit(id):
+  Read(id); GarantirReservaDoCliente; se Cancelada → BadRequest; senão view Edit.
+
+POST Edit(id, model):
+  • Carrega original; GarantirReservaDoCliente; cancelada → BadRequest
+  • FORÇA: Id, Cliente, ClienteId, Status do original
+  • MesaIds = cópia das mesas ORIGINAIS (cliente não remove mesa na edição)
+  • Horário: preserva TimeOfDay do original; só pode mudar a DATA (parte date)
+  • Remove validação ModelState de Status, Horario, Cliente, MesaIds…
+  • Não pode DIMINUIR QtdPessoas vs original
+  • Se data mudou: ValidarDiaReserva + uma reserva ativa/dia (ignorando id atual)
+  • Valida mesas livres no novo dia; juncao se aumentou pessoas
+  • repository.Update(model) → Redirect Index
+  ReservaSqlRepository.Update: UPDATE qtd e data_hora; só INSERT mesas NOVAS na N:N
+  (não remove mesas que já estavam)
+
+GET Details(id): Read + GarantirReservaDoCliente + View
+
+GET Delete(id): confirmação
+POST Delete (DeleteConfirmed):
+  repository.Delete(id) → UPDATE status=2 Cancelada no SQL (não DELETE físico)
+  MesaReservaSync.AplicarStatusReserva(..., "Cancelada")
+  Redirect Index
+
+
+================================================================================
+PARTE 16 — HorarioFuncionamento (CLASSE ESTÁTICA — CONTEÚDO INTEGRAL)
+================================================================================
+
+Constantes: Abertura 18:30, Encerramento 23:30, Intervalo 30 min.
+
+Horarios: lista readonly 18:30, 19:00, …, 23:30 (MontarLista em loop until >= Encerramento)
+
+Parse(texto): TryParse HH:mm + EhHorarioDaGrade
+
+Combinar(data, horario): data.Date + horario → DateTime único para o banco
+
+Validar(dataHora, agora): horário na grade; se data é hoje, dataHora > agora
+
+Formatar: exibição "dd/MM/yyyy às HH:mm" nas views
+
+Testes unitários (HorarioFuncionamentoTests) cobrem grade, Parse, Validar, Combinar.
+
+
+================================================================================
+PARTE 17 — MesaJuncaoAutomatica (REGRAS COMPLETAS)
+================================================================================
+
+Classe estática. Resultado sealed: MesaIds, Adicionadas, Erro, Ok (= Erro vazio).
+
+Completar(escolhidas, qtdPessoas, todasMesas, reservadasNoDia):
+  • qtd < 1 → erro
+  • nenhuma mesa → erro
+  • toda escolhida deve existir no dicionário por Id
+  • todas devem ter MESMO AmbienteId (não mistura Interno com Externo)
+  • Se soma QtdLugares das escolhidas >= qtdPessoas → retorna sem adicionar
+  • Senão while soma < qtd:
+      pool = mesas do ambiente, não em finais, não Ocupada, não em reservadasNoDia
+      se pool vazio → erro "não há mesas livres suficientes..."
+      escolhe mesa (guloso: menor sobra de lugares, empate vizinho pelo número)
+      adiciona id em finais
+
+TemMesasDesnecessarias: com 2+ mesas, se remover uma e ainda cabe qtd → true (erro UX)
+
+MensagemJuncao: texto para TempData quando sistema juntou mesas
+
+
+================================================================================
+PARTE 18 — MesaReservaSync
+================================================================================
+
+Chamado após mudança de status (staff) ou cancelamento cliente.
+
+AplicarStatusReserva(reservas, mesas, reserva, statusReserva):
+  • Se statusReserva == "Confirmada" → RETURN (não marca mesa global Reservada)
+  • Se não Pendente nem Cancelada → return
+  • Para cada mesaId da reserva:
+      se mesa.Status cadastro == "Reservada" (legado):
+        se nenhuma OUTRA reserva Confirmada usa essa mesa
+        → mesa.Status = "Livre"; mesas.Update(mesa)
+
+Explica evolução do sistema: antes confirmar reservava mesa no cadastro; hoje é por data.
+
+
+================================================================================
+PARTE 19 — ÁREA RESTAURANTE (FUNCIONÁRIO)
+================================================================================
+
+[Authorize FuncionarioScheme] em AreaRestauranteController inteiro.
+
+GET Index: hub (links mesas, ambientes, reservas, clientes, funcionários)
+
+GET Reservas?nome=&status=:
+  • Read() todas reservas
+  • Completa Cliente.Nome se vazio (Read cliente por ClienteId)
+  • Filtra nome (contém, ignora acento/case) — método NomeContem
+  • Filtra status (Todos = sem filtro)
+  • Ordena: Pendente primeiro, ordem estável
+  • View REUTILIZADA: ~/Views/Reserva/Index.cshtml (mesma lista, contexto staff)
+
+GET Edit(id): Read; NotFound; cancelada BadRequest; view Reserva/Edit
+
+POST Edit(id, status):
+  • Valida status ∈ Pendente, Confirmada, Cancelada
+  • repository.UpdateStatus(id, status) — CASE no SQL 0/1/2
+  • MesaReservaSync.AplicarStatusReserva
+  • Redirect Reservas
+
+Create e Delete reserva no AreaRestaurante: retornam 403 (só cliente cria; staff só status).
+
+Atalhos: CadastrarFuncionario → Redirect Funcionario/Create; GerenciarMesas → Mesa/Index; etc.
+
+
+================================================================================
+PARTE 20 — CRUD STAFF (RESUMO PARA PROVA)
+================================================================================
+
+MesaController, AmbienteController, FuncionarioController:
+  [Authorize FuncionarioScheme] no controller
+  Padrão Index, Create GET/POST, Edit, Details, Delete
+  MesaController injeta também IReservaRepository para não deletar mesa com vínculo N:N
+  Funcionário Create valida EmailInstitucionalSantamassa
+
+ClienteController Index/Edit/Details/Delete: [Authorize FuncionarioScheme]
+  Delete bloqueado se ClienteTemReservas (qualquer reserva inclusive cancelada)
+
+FuncionarioController: CRUD equipe; login staff usa email do cadastro
+
+
+================================================================================
+PARTE 21 — View Component ReservaPageTop
+================================================================================
+
+ReservaPageTopViewComponent.InvokeAsync:
+  AuthenticateAsync ambos schemes
+  Se funcionário → SiteHeaderModel com FuncionarioLogado, Nome
+  Senão se cliente → ClienteLogado, Nome
+  Senão modelo vazio
+  View Default.cshtml: logo, Voltar ao início, badge usuário, forms Logout/LogoutCliente
+
+POO: componente reutilizável; várias páginas invocam sem duplicar header.
+
+
+================================================================================
+PARTE 22 — PASSWORD E SEGURANÇA
+================================================================================
+
+PasswordHasherUtil:
+  • HashPassword(plain) → string AQAAAA…
+  • VerifyPassword(hash, plain) → bool
+  • Usa PasswordHasher<Funcionario> do ASP.NET Identity (tipo genérico qualquer)
+
+AuthSqlRepository.SenhaConfere:
+  hash moderno → Verify; senão igualdade texto (legado)
+
+SQL: sempre parâmetros @Cpf @Email (não concatena string — injection)
+
+Antiforgery global POST; exceção Logout header.
+
+GarantirReservaDoCliente: NotFound em vez de Forbid (IDOR mitigation).
+
+Cookies HttpOnly, 5 min, sliding.
+
+
+================================================================================
+PARTE 23 — CRONOLOGIA HTTP COMPLETA (CLIENTE) — NARRAR EM VOZ ALTA
+================================================================================
+
+Cenário A — Login e reserva
+  1. GET /
+  2. GET /Auth/LoginCliente
+  3. POST /Auth/LoginCliente → cookie ClienteAuth → 302 /Reserva/Index
+  4. GET /Reserva/Create
+  5. (JS) GET /Reserva/MesasDisponiveis?dataHora=2027-05-10&ambienteId=1
+  6. POST /Reserva/Create (+ token) → validação → SQL transação → 302 /Reserva/Details/42
+  7. GET /Reserva/Details/42
+
+Cenário B — Cadastro e reserva direta
+  1. GET /Cliente/Create
+  2. POST /Cliente/Create → INSERT pessoas+clientes → SignIn cliente → 302 /Reserva/Create
+  3. (continua como passo 5–7 acima)
+
+Cenário C — Cancelar
+  1. GET /Reserva/Delete/42
+  2. POST /Reserva/Delete/42 → status 2 → MesaReservaSync → /Reserva/Index
+
+
+================================================================================
+PARTE 24 — CRONOLOGIA HTTP COMPLETA (FUNCIONÁRIO)
+================================================================================
+
+  1. GET /Auth/Login
+  2. POST /Auth/Login (email @santamassa) → cookie FuncionarioAuth → /AreaRestaurante/Reservas
+  3. GET /AreaRestaurante/Reservas?status=Pendente
+  4. GET /AreaRestaurante/Edit/42
+  5. POST /AreaRestaurante/Edit/42 status=Confirmada → UpdateStatus + MesaReservaSync → Reservas
+  6. POST /Auth/Logout → Home
+
+
+================================================================================
+PARTE 25 — 35 PERGUNTAS E RESPOSTAS (ESTUDO SEM CÓDIGO)
+================================================================================
+
+1. Qual padrão arquitetural?
+   MVC com camada Repository e injeção de dependência via interfaces.
+
+2. Onde está a herança?
+   Cliente e Funcionario herdam Pessoa; repositórios SQL herdam DataConnection.
+
+3. Onde está polimorfismo?
+   Controller usa IReservaRepository; runtime ReservaSqlRepository registrado no Program.cs.
+
+4. Por que dois cookies?
+   Papéis diferentes, políticas de login diferentes; middleware impede dois ativos (prioriza funcionário).
+
+5. Como o sistema sabe o id do cliente na reserva?
+   Claim NameIdentifier no cookie ClienteScheme, lido em ClienteLogadoId().
+
+6. O que é N:N aqui?
+   Reserva ↔ Mesas via tabela Reservas_Mesas e propriedade List<int> MesaIds.
+
+7. Diferença Delete reserva cliente vs excluir cliente?
+   Delete reserva = cancelamento lógico status 2; excluir cliente bloqueado se existe qualquer reserva vinculada.
+
+8. O que funcionário altera na reserva?
+   Apenas status (Pendente/Confirmada/Cancelada) via UpdateStatus.
+
+9. Regra domingo?
+   ValidarDiaReserva retorna erro se DayOfWeek == Sunday.
+
+10. Regra horário?
+    Grade HorarioFuncionamento; Parse + Combinar + Validar no Create.
+
+11. Concorrência duas reservas mesma mesa?
+    UPDLOCK/HOLDLOCK no COUNT antes do INSERT na transação Create.
+
+12. O que é AddScoped?
+    Uma instância do repositório por requisição HTTP.
+
+13. Antiforgery?
+    Token em POST contra CSRF; Logout ignora por correção de saída.
+
+14. Por que PreencherClienteLogado?
+    ClienteId não vem confiável do form; vem do cookie autenticado.
+
+15. O que faz MesaJuncaoAutomatica?
+    Adiciona mesas livres do mesmo ambiente até somar lugares >= qtd pessoas.
+
+16. Status Confirmada marca mesa no cadastro?
+    Não no modelo novo; MesaReservaSync não altera em Confirmada.
+
+17. Onde senha é guardada?
+    clientes.senha_hash / funcionarios; hash com PasswordHasherUtil; login compara SenhaConfere.
+
+18. Login funcionário usa CPF?
+    Não; usa Email institucional com @santamassa.
+
+19. ViewBag vs Model?
+    View fortemente tipado @model Reserva; ViewBag para dados extras (MapaAmbienteIds, filtros).
+
+20. TempData?
+    Sobrevive um redirect (ex. aviso de mesas juntadas após POST-Redirect).
+
+21. O que é IDisposable em DataConnection?
+    Fecha SqlConnection ao descartar repositório no fim da request.
+
+22. Herança pessoa no cadastro cliente?
+    INSERT pessoas depois clientes; pode reutilizar pessoa se CPF existe sem ser cliente ainda.
+
+23. Uma reserva por dia?
+    ClienteJaTemReservaAtivaNoDia no Create e Edit se mudar data.
+
+24. Cliente edita horário?
+    Não no POST Edit — preserva TimeOfDay do original.
+
+25. O que é Forbid vs NotFound em GarantirReservaDoCliente?
+    Usa NotFound para outro cliente não descobrir ids alheios.
+
+26. Interfaces começam com I?
+    Convenção C#: IClienteRepository define contrato.
+
+27. O que faz AuthenticateAsync na Home?
+    Lê cookie sem exigir [Authorize]; só para mostrar UI.
+
+28. Redirect após login staff?
+    AreaRestaurante/Reservas não Index.
+
+29. O que View REUTILIZADA em Reservas staff?
+    Mesma Reserva/Index.cshtml; links apontam AreaRestaurante nas rotas da view.
+
+30. O que é sealed Resultado em MesaJuncao?
+    Classe interna não herdável; encapsula resultado da junção.
+
+31. Qual fluxo tem mais validação?
+    POST Reserva/Create (data, hora, mesas, junção, concorrência SQL).
+
+32. appsettings conexão?
+    DefaultConnection SQL Server localhost gestaoReserva Integrated Security.
+
+33. O que é partial class Program?
+    Permite testes de integração referenciarem assembly.
+
+34. Editar reserva cancelada?
+    GET/POST Edit retorna BadRequest se Status Cancelada.
+
+35. Como cliente lista reservas passadas?
+    GET /Reserva/Index?filtro=historico
+
+
+================================================================================
+PARTE 26 — PRIORIDADE 1 PARA DECORAR (COLA MENTAL)
+================================================================================
+
+Program.cs: MVC + antiforgery; 2 cookies 5min; AddScoped repositórios; Auth antes Authorization;
+  middleware desloga cliente se funcionário também logado.
+
+Auth: Cliente CPF+senha → ClienteScheme → Reserva; Func @santamassa → FuncionarioScheme → Reservas.
+  SignOut outro scheme ao logar. Claims: Id, Nome, Role.
+
+Create Reserva POST: Pendente; Cliente do cookie; Parse/Combinar/Validar horário; dia sem domingo/90d/1 por dia;
+  mesas livres; JuncaoAutomatica; Create SQL transação UPDLOCK; Redirect Details.
+
+Staff Edit: só status → UpdateStatus 0/1/2 + MesaReservaSync.
+
+POO: Pessoa herdada; I*Repository DIP; DataConnection abstract; utils static.
+
+N:N Reservas_Mesas. Delete reserva = status 2.
+
+
+================================================================================
+PARTE 27 — ANEXO LINHA A LINHA (REFERÊNCIA RÁPIDA L###)
+================================================================================
+
+Mantido para quem quiser conferir no IDE depois — o conteúdo acima JÁ explica cada passo.
+
+ReservaController.Create POST L214-L307:
+  L216-218 Status Pendente + PreencherClienteLogado
+  L220-230 Horário Parse Combinar Validar
+  L232-237 Dia + uma reserva/dia
+  L240-242 MesaIds
+  L246-276 Mesas livres + JuncaoAutomatica + TemMesasDesnecessarias + TempData
+  L277-280 ou L283-286 View erro ou Create+Details
+  L289-305 catches SQL e InvalidOperation
+
+ReservaSqlRepository.Create L28-L85:
+  Transação; UPDLOCK COUNT; INSERT reservas; INSERT Reservas_Mesas; Commit/Rollback
+
+AuthController: ver PARTE 8 (equivale a L16-L120)
+Program.cs: ver PARTE 3 (equivale a L1-L94)
+
+
+================================================================================
+FIM DO MATERIAL AUTÔNOMO — GestaoReservas
+Arquivo: ESTUDO_FLUXOS_LINHA_A_LINHA.txt
+================================================================================

@@ -7,6 +7,14 @@
     ViewData["Title"] = "Excluir Ambiente";
     // Atribui Layout
     Layout = null;
+    // Valor gravado no banco e no formulário: "Indisponivel" (sem acento).
+    // Aceita também "Indisponível" só para não perder o destaque se vier com acento.
+    bool StatusAmbienteIndisponivel(string? status)
+    {
+        var texto = (status ?? "").Trim();
+        return texto.Equals("Indisponivel", StringComparison.OrdinalIgnoreCase)
+            || texto.Equals("Indisponível", StringComparison.OrdinalIgnoreCase);
+    }
 }
 
 @* Tipo do documento (HTML5) *@
@@ -242,7 +250,7 @@
                         @* Texto destacado *@
                         <span>Status</span>
                         @* Texto em negrito *@
-                        <strong>
+                        <strong class="@(StatusAmbienteIndisponivel(Model.Status) ? "detalhes-edicao-status ambiente-status-indisponivel" : null)">
                             @(string.IsNullOrWhiteSpace(Model.Status)
                                 ? "Não informado"
                                 : Model.Status)
@@ -260,7 +268,7 @@
                       style="margin-top: 26px;">
 
                     @* Resumo dos erros de validação *@
-                    @Html.ValidationSummary(false, "", new { @class = "exclusao-erros" })
+                    @Html.ValidationSummary(false, "", new { @class = "exclusao-erros alerta-erro-visivel" })
 
                     @* Campo de entrada (asp-for Id) *@
                     <input type="hidden" asp-for="Id" />

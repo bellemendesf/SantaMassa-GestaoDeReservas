@@ -33,6 +33,7 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/Cadastro.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
@@ -72,7 +73,7 @@
             <form asp-controller="Cliente"
                   asp-action="Create"
                   method="post"
-                  class="cadastro-form">
+                  class="cadastro-form" novalidate data-validacao-form>
 
                 @* Token antifalsificação do formulário *@
                 @Html.AntiForgeryToken()
@@ -88,7 +89,11 @@
                            value="@Model?.Nome"
                            placeholder="Digite seu nome completo"
                            autocomplete="name"
+                           maxlength="50"
+                           data-valida="nome"
+                           title="Informe o nome com pelo menos 3 letras, sem números ou símbolos."
                            required>
+                    <span id="Nome-erro" class="erro-campo" data-erro-para="Nome" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -100,9 +105,14 @@
                            name="Cpf"
                            type="text"
                            value="@Model?.Cpf"
-                           placeholder="Digite seu CPF"
+                           placeholder="000.000.000-00"
                            autocomplete="off"
+                           inputmode="numeric"
+                           maxlength="14"
+                           data-valida="cpf"
+                           title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)."
                            required>
+                    <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -128,9 +138,14 @@
                            name="Telefone"
                            type="tel"
                            value="@Model?.Telefone"
-                           placeholder="Digite seu telefone"
+                           placeholder="(00) 00000-0000"
                            autocomplete="tel"
+                           inputmode="numeric"
+                           maxlength="15"
+                           data-valida="telefone"
+                           title="Informe um telefone com 10 ou 11 dígitos (DDD). Pode usar parênteses, espaço e hífen."
                            required>
+                    <span id="Telefone-erro" class="erro-campo" data-erro-para="Telefone" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -170,5 +185,6 @@
         </footer>
 
     </main>
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -218,3 +218,22 @@
     display: none; /* tipo de exibição */
 }
 
+
+
+/* Grade fluida: cresce com as mesas do banco, dentro do desenho do salão. */
+.mapa-grade,
+.mapa-grade.quatro {
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+}
+
+/* Células geradas pelo JS precisam preencher o espaço da grade fluida. */
+.mapa-grade .mapa-mesa {
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+}
+
+.mapa-grade .mapa-mesa.redonda {
+    width: 48px;
+    height: 48px;
+}

@@ -133,7 +133,7 @@ body.tema-claro .detalhes-edicao-header h1,
 body.tema-claro .detalhes-edicao-descricao,
 body.tema-claro .area-header h1,
 body.tema-claro .area-header p {
-    color: var(--tc-escuro) !important;
+    color: var(--tc-texto) !important;
 }
 
 body.tema-claro .reservas-lista-kicker,
@@ -142,36 +142,36 @@ body.tema-claro .funcionarios-kicker,
 body.tema-claro .detalhes-edicao-kicker,
 body.tema-claro .area-kicker,
 body.tema-claro .page-kicker {
-    /* Não usar amarelo como texto sobre creme — usar escuro/terracota */
-    color: var(--tc-perigo) !important;
+    /* Rotulos no estilo da Home: dourado sobre fundo escuro */
+    color: var(--tc-dourado) !important;
 }
 
 body.tema-claro .reservas-contador,
 body.tema-claro .clientes-contador,
 body.tema-claro .mesas-contagem {
-    background: var(--tc-cartao)3B0 !important;
-    color: var(--tc-escuro) !important;
-    border: 1px solid #F0E080 !important;
+    background: rgba(198, 164, 92, 0.16) !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
 }
 
 body.tema-claro .reservas-tabela thead,
 body.tema-claro .mesas-table thead,
 body.tema-claro .clientes-tabela thead {
-    background: var(--tc-cartao)3B0 !important;
+    background: rgba(198, 164, 92, 0.16) !important;
 }
 
 body.tema-claro .reservas-tabela th,
 body.tema-claro .mesas-table th,
 body.tema-claro .clientes-tabela th {
-    color: var(--tc-escuro) !important;
+    color: var(--tc-texto) !important;
     border-color: var(--tc-borda) !important;
 }
 
 body.tema-claro .reservas-tabela td,
 body.tema-claro .mesas-table td,
 body.tema-claro .clientes-tabela td {
-    border-color: #F0E8C8 !important;
-    color: var(--tc-escuro) !important;
+    border-color: var(--tc-borda) !important;
+    color: var(--tc-texto) !important;
 }
 
 body.tema-claro .reservas-tabela tbody tr:nth-child(even),
@@ -189,11 +189,11 @@ body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
 body.tema-claro .reservas-tabela tbody tr:hover,
 body.tema-claro .mesas-table tbody tr:hover,
 body.tema-claro .clientes-tabela tbody tr:hover {
-    background: var(--tc-cartao)6C2 !important;
+    background: rgba(198, 164, 92, 0.22) !important;
 }
 
 body.tema-claro tr.reserva-linha-pendente {
-    background: var(--tc-cartao)6C2 !important;
+    background: rgba(198, 164, 92, 0.22) !important;
     outline: 1px solid var(--tc-dourado) !important;
 }
 
@@ -205,9 +205,9 @@ body.tema-claro .status-pendente {
 }
 
 body.tema-claro .status-confirmada {
-    background: #E8F5E9 !important;
-    border-color: #4CAF50 !important;
-    color: #1B5E20 !important;
+    background: #1A2E22 !important;
+    border-color: var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
 }
 
 body.tema-claro .status-cancelada {
@@ -217,8 +217,8 @@ body.tema-claro .status-cancelada {
 }
 
 body.tema-claro .status-outro {
-    background: #F5F5F5 !important;
-    border-color: #BDBDBD !important;
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-borda) !important;
     color: var(--tc-texto) !important;
 }
 
@@ -233,7 +233,7 @@ body.tema-claro .reservas-filtro-btn--primario,
 body.tema-claro .reservas-filtro-btn--ativo {
     background: var(--tc-dourado) !important;
     border-color: var(--tc-dourado) !important;
-    color: var(--tc-sobre-amarelo) !important;
+    color: var(--tc-sobre-dourado) !important;
 }
 
 body.tema-claro .reservas-botao-novo:hover,
@@ -246,7 +246,7 @@ body.tema-claro .reservas-filtro-btn--primario:hover,
 body.tema-claro .reservas-filtro-btn--ativo:hover {
     background: var(--tc-dourado-hover) !important;
     border-color: var(--tc-dourado-hover) !important;
-    color: var(--tc-sobre-amarelo) !important;
+    color: var(--tc-sobre-dourado) !important;
 }
 
 /* Secundário / perigo = terracota */
@@ -274,13 +274,13 @@ body.tema-claro .reserva-acao,
 body.tema-claro .acao-detalhes {
     background: var(--tc-cartao-hover) !important;
     border: 1px solid var(--tc-dourado) !important;
-    color: var(--tc-escuro) !important;
+    color: var(--tc-texto) !important;
 }
 
 body.tema-claro .reserva-acao:hover,
 body.tema-claro .acao-detalhes:hover {
     background: var(--tc-dourado) !important;
-    color: var(--tc-sobre-amarelo) !important;
+    color: var(--tc-sobre-dourado) !important;
 }
 
 body.tema-claro input,
@@ -289,8 +289,8 @@ body.tema-claro textarea,
 body.tema-claro .reservas-filtro-campo input,
 body.tema-claro .reservas-filtro-campo select {
     background: var(--tc-cartao) !important;
-    color: var(--tc-escuro) !important;
-    border: 1px solid #E0D6B0 !important;
+    color: var(--tc-texto) !important;
+    border: 1px solid var(--tc-borda) !important;
 }
 
 body.tema-claro input:focus,
@@ -314,7 +314,7 @@ body.tema-claro .cadastro-erros:not(.validation-summary-valid) {
 
 body.tema-claro .alerta-aviso,
 body.tema-claro .detalhes-edicao-alerta-aviso {
-    background: var(--tc-cartao)6C2 !important;
+    background: rgba(198, 164, 92, 0.22) !important;
     border: 1px solid var(--tc-dourado) !important;
     color: var(--tc-texto) !important;
 }
@@ -322,9 +322,9 @@ body.tema-claro .detalhes-edicao-alerta-aviso {
 body.tema-claro .alerta-sucesso,
 body.tema-claro .reservas-alerta-sucesso,
 body.tema-claro .detalhes-edicao-alerta-sucesso {
-    background: #E8F5E9 !important;
-    border: 1px solid #4CAF50 !important;
-    color: #1B5E20 !important;
+    background: #1A2E22 !important;
+    border: 1px solid var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
 }
 
 body.tema-claro .area-card:hover {
@@ -335,7 +335,7 @@ body.tema-claro .area-card:hover {
 body.tema-claro .area-card h2,
 body.tema-claro .area-card p,
 body.tema-claro .card-link {
-    color: var(--tc-escuro) !important;
+    color: var(--tc-texto) !important;
 }
 
 body.tema-claro .back-link,
@@ -358,15 +358,15 @@ body.tema-claro .mapa-cozinha {
 }
 
 body.tema-claro .mapa-mesa {
-    color: var(--tc-escuro) !important;
-    background: #F5F0E0 !important;
-    border-color: #E0D6B0 !important;
+    color: var(--tc-texto) !important;
+    background: var(--tc-cartao-hover) !important;
+    border-color: var(--tc-borda) !important;
 }
 
 body.tema-claro .mapa-mesa.livre {
-    border-color: #4CAF50 !important;
+    border-color: var(--tc-sucesso) !important;
     background: rgba(76, 175, 80, 0.18) !important;
-    color: #1B5E20 !important;
+    color: #A9D9B4 !important;
 }
 
 body.tema-claro .mapa-mesa.reservada {
@@ -406,7 +406,7 @@ body.tema-claro.cadastro-page h1,
 body.tema-claro.cadastro-page .cadastro-descricao,
 body.tema-claro.cadastro-page label,
 body.tema-claro .cadastro-aviso-campo {
-    color: var(--tc-escuro) !important;
+    color: var(--tc-texto) !important;
 }
 
 body.tema-claro .reservas-lista-rodape,
@@ -439,12 +439,12 @@ body.tema-claro .clientes-tabela tbody tr:nth-child(even) {
 body.tema-claro .reservas-tabela tbody tr:hover,
 body.tema-claro .mesas-table tbody tr:hover,
 body.tema-claro .clientes-tabela tbody tr:hover {
-    background: var(--tc-cartao)6C2 !important;
+    background: rgba(198, 164, 92, 0.22) !important;
 }
 
 body.tema-claro tr.reserva-linha-pendente,
 body.tema-claro .reservas-tabela tbody tr.reserva-linha-pendente {
-    background: var(--tc-cartao)6C2 !important;
+    background: rgba(198, 164, 92, 0.22) !important;
 }
 
 body.tema-claro .reservas-filtro-btn.reservas-filtro-btn--primario,
@@ -500,12 +500,12 @@ body.tema-claro .panel form select,
 body.tema-claro .panel form textarea {
     color: var(--tc-texto);
     background-color: var(--tc-cartao);
-    border: 1px solid #E0D6B0;
+    border: 1px solid var(--tc-borda);
 }
 
 body.tema-claro .page-content form input::placeholder,
 body.tema-claro .page-content form textarea::placeholder {
-    color: #6B6B6B;
+    color: var(--tc-texto-suave);
 }
 
 body.tema-claro .page-content form .form-control:focus,
@@ -557,11 +557,11 @@ body.tema-claro .detalhes-edicao-campo select,
 body.tema-claro .detalhes-edicao-campo textarea {
     background: var(--tc-cartao);
     color: var(--tc-texto);
-    border: 1px solid #E0D6B0;
+    border: 1px solid var(--tc-borda);
 }
 
 body.tema-claro .detalhes-edicao-campo input::placeholder {
-    color: #6B6B6B;
+    color: var(--tc-texto-suave);
 }
 
 body.tema-claro .detalhes-edicao-campo select option {
@@ -571,20 +571,20 @@ body.tema-claro .detalhes-edicao-campo select option {
 
 /* Cabeçalho de tabela Mesas ainda hardcoded #25221D */
 body.tema-claro .mesas-table thead th {
-    background: var(--tc-cartao)3B0;
+    background: rgba(198, 164, 92, 0.16);
     color: var(--tc-texto);
-    border-bottom-color: #E8DFC0;
+    border-bottom-color: var(--tc-borda);
 }
 
 body.tema-claro .mesas-table tbody td {
-    border-bottom-color: #F0E8C8;
+    border-bottom-color: var(--tc-borda);
 }
 
 /* Mapa: áreas, legenda, listagem e opções (MapaMesas.css) */
 body.tema-claro .mapa-area {
     color: var(--tc-texto-suave);
     background: var(--tc-fundo);
-    border-color: #E0D6B0;
+    border-color: var(--tc-borda);
 }
 
 body.tema-claro .mapa-area.janela {
@@ -593,8 +593,8 @@ body.tema-claro .mapa-area.janela {
 }
 
 body.tema-claro .mapa-area.saida {
-    color: #1B5E20;
-    border-color: #4CAF50;
+    color: #A9D9B4;
+    border-color: var(--tc-sucesso);
 }
 
 body.tema-claro .mapa-legenda {
@@ -604,7 +604,7 @@ body.tema-claro .mapa-legenda {
 body.tema-claro .mesa-opcao {
     color: var(--tc-texto);
     background: var(--tc-cartao);
-    border-color: #E0D6B0;
+    border-color: var(--tc-borda);
 }
 
 body.tema-claro .mesa-opcao small {
@@ -623,7 +623,7 @@ body.tema-claro .mesa-opcao.livre:hover {
 body.tema-claro #mapa-aviso:not(.alerta-erro):not(.alerta-sucesso),
 body.tema-claro .mapa-aviso:not(.alerta-erro):not(.alerta-sucesso) {
     color: var(--tc-texto);
-    background: var(--tc-cartao)6C2;
+    background: rgba(198, 164, 92, 0.22);
     border: 1px solid var(--tc-dourado);
 }
 
@@ -643,7 +643,7 @@ body.tema-claro.com-sidebar-restaurante:has(.menu-restaurante).has-fixed-page-to
 }
 
 body.tema-claro .page-kicker {
-    color: var(--tc-perigo);
+    color: var(--tc-dourado);
 }
 
 body.tema-claro .page-intro h1,
@@ -739,7 +739,7 @@ body.tema-claro .funcionarios-resumo-numero {
 }
 
 body.tema-claro .funcionario-avatar {
-    background: var(--tc-cartao)6C2;
+    background: rgba(198, 164, 92, 0.22);
     border-color: var(--tc-dourado);
     color: var(--tc-texto);
 }
@@ -758,7 +758,7 @@ body.tema-claro .mesas-form select,
 body.tema-claro .mesas-form textarea {
     background-color: var(--tc-cartao);
     color: var(--tc-texto);
-    border: 1px solid #E0D6B0;
+    border: 1px solid var(--tc-borda);
 }
 
 body.tema-claro .mesas-form .mesas-erro,
@@ -771,31 +771,31 @@ body.tema-claro .mesas-contagem strong,
 body.tema-claro .reservas-contador,
 body.tema-claro .ambientes-contador,
 body.tema-claro .clientes-contador {
-    background: var(--tc-cartao)3B0;
+    background: rgba(198, 164, 92, 0.16);
     color: var(--tc-texto);
-    border-color: #F0E080;
+    border-color: var(--tc-borda);
 }
 
 /* Status livre (verde claro no texto) */
 body.tema-claro .mesa-status.status-livre,
 body.tema-claro .status-livre {
-    color: #1B5E20;
-    background: #E8F5E9;
-    border-color: #4CAF50;
+    color: #A9D9B4;
+    background: #1A2E22;
+    border-color: var(--tc-sucesso);
 }
 
 body.tema-claro .mapa-mesa.livre {
-    background: #E8F5E9;
-    color: #1B5E20;
-    border-color: #4CAF50;
+    background: #1A2E22;
+    color: #A9D9B4;
+    border-color: var(--tc-sucesso);
 }
 
 /* Ambientes: estilos inline da view usam !important do tema escuro */
 body.tema-claro .ambientes-tabela thead,
 body.tema-claro .ambientes-tabela thead th {
-    background: var(--tc-cartao)3B0;
+    background: rgba(198, 164, 92, 0.16);
     color: var(--tc-texto);
-    border-color: #E8DFC0;
+    border-color: var(--tc-borda);
 }
 
 body.tema-claro .ambientes-tabela td,
@@ -808,7 +808,7 @@ body.tema-claro .ambiente-nome,
 body.tema-claro .ambiente-capacidade {
     color: var(--tc-texto) !important;
     background: transparent;
-    border-bottom-color: #F0E8C8;
+    border-bottom-color: var(--tc-borda);
 }
 
 body.tema-claro .ambientes-tabela tbody tr {
@@ -816,9 +816,9 @@ body.tema-claro .ambientes-tabela tbody tr {
 }
 
 body.tema-claro .ambiente-status {
-    background: #E8F5E9 !important;
-    border-color: #4CAF50 !important;
-    color: #1B5E20 !important;
+    background: #1A2E22 !important;
+    border-color: var(--tc-sucesso) !important;
+    color: #A9D9B4 !important;
 }
 
 body.tema-claro .ambiente-acoes a {
@@ -870,21 +870,21 @@ body.tema-claro .reservas-contador,
 body.tema-claro .ambientes-contador,
 body.tema-claro .clientes-contador,
 body.tema-claro span.ambientes-contador {
-    background: var(--tc-cartao)3B0 !important;
+    background: rgba(198, 164, 92, 0.16) !important;
     color: var(--tc-texto) !important;
-    border-color: #F0E080 !important;
+    border-color: var(--tc-borda) !important;
 }
 
 body.tema-claro .mapa-mesa.livre {
-    background: #E8F5E9 !important;
-    color: #1B5E20 !important;
-    border-color: #4CAF50 !important;
+    background: #1A2E22 !important;
+    color: #A9D9B4 !important;
+    border-color: var(--tc-sucesso) !important;
 }
 
 /* Mesa selecionada precisa vencer .livre quando as duas classes estão juntas */
 body.tema-claro .mapa-mesa.selecionada,
 body.tema-claro .mapa-mesa.livre.selecionada {
-    background: var(--tc-cartao)3B0 !important;
+    background: rgba(198, 164, 92, 0.16) !important;
     color: var(--tc-texto) !important;
     border-color: var(--tc-dourado) !important;
     box-shadow: 0 0 0 2px rgba(198, 164, 92, 0.55) !important;
@@ -1053,7 +1053,7 @@ body.tema-claro .reservas-filtro-resultado {
     white-space: nowrap;
 }
 
-/* Coluna Ações alinhada à direita, igual aos botões */
+/* Coluna Ações: título e botões centralizados e alinhados entre si */
 body.tema-claro .reservas-tabela th:last-child,
 body.tema-claro .reservas-tabela td:last-child,
 body.tema-claro .mesas-table th:last-child,
@@ -1062,7 +1062,7 @@ body.tema-claro .ambientes-tabela th:last-child,
 body.tema-claro .ambientes-tabela td:last-child,
 body.tema-claro .clientes-tabela th:last-child,
 body.tema-claro .clientes-tabela td:last-child {
-    text-align: right;
+    text-align: center;
 }
 
 /* Botões de linha: caixa alta menos chamativa, estilo consistente */
@@ -1143,4 +1143,36 @@ body.tema-claro.container > form .btn-secondary {
         margin-left: 0 !important;
         width: 100%;
     }
+}
+
+
+/* Alerta visível de erro (exclusões e cadastro não encontrado) no tema escuro/dourado */
+body.tema-claro .alerta-erro-visivel,
+body.tema-claro .exclusao-erros.validation-summary-errors,
+body.tema-claro .exclusao-erros:not(.validation-summary-valid):not(:empty) {
+    display: block;
+    padding: 14px 16px;
+    margin: 0 0 18px;
+    color: #F0B4AD;
+    background: rgba(180, 35, 24, 0.14);
+    border: 1px solid rgba(231, 160, 154, 0.4);
+    border-left: 3px solid var(--tc-perigo, #E07A5F);
+    border-radius: 9px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+body.tema-claro .alerta-erro-visivel ul,
+body.tema-claro .exclusao-erros.validation-summary-errors ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+body.tema-claro .exclusao-erros.validation-summary-valid,
+body.tema-claro .exclusao-erros:empty {
+    display: none !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }

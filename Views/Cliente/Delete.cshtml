@@ -50,7 +50,7 @@
     @* Formulário *@
     <form action="/Cliente/Delete/@Model.Id" method="POST">
         @* Resumo dos erros de validação *@
-        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        @Html.ValidationSummary(false, "", new { @class = "exclusao-erros alerta-erro-visivel" })
         @* Token antifalsificação do formulário *@
         @Html.AntiForgeryToken()
         @* Botão *@

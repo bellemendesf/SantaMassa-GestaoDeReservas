@@ -1,0 +1,22 @@
+/* Mensagens de validação dos formulários (sempre em português) */
+.erro-campo {
+    display: block;
+    margin-top: 6px;
+    color: #c96b62;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.erro-campo[hidden] {
+    display: none;
+}
+
+.tema-claro .erro-campo,
+.page-reserva .erro-campo,
+.detalhes-edicao-page .erro-campo {
+    color: #e7a09a;
+}
+
+.cadastro-page .erro-campo {
+    color: #a9322a;
+}

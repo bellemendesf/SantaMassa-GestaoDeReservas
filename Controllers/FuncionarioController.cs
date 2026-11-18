@@ -41,9 +41,9 @@ public class FuncionarioController : Controller
         if (string.IsNullOrWhiteSpace(model.EmailInstitucional))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailInstitucional), "Informe o e-mail institucional.");
-        // Exige domínio @santamassa no e-mail institucional
-        else if (!EmailInstitucionalSantamassa.EhValido(model.EmailInstitucional))
-            ModelState.AddModelError(nameof(model.EmailInstitucional), EmailInstitucionalSantamassa.MensagemErro);
+        // Cadastro: formato/pontos e e-mail terminando em @santamassa.com.br
+        else if (ValidacaoEntrada.ErroEmailInstitucionalCadastro(model.EmailInstitucional) is string erroEmail)
+            ModelState.AddModelError(nameof(model.EmailInstitucional), erroEmail);
         // Verifica se o campo foi preenchido
         if (string.IsNullOrWhiteSpace(model.Senha))
             // Registra a mensagem de erro para a tela
@@ -82,6 +82,8 @@ public class FuncionarioController : Controller
         var model = repository.Read(id);
         // Se não encontrou o registro...
         if (model == null) return NotFound();
+        // Guarda o e-mail atual para o front só exigir .com.br se ele for alterado
+        ViewBag.EmailInstitucionalOriginal = model.EmailInstitucional;
         // Mostra a view com o modelo
         return View(model);
     }
@@ -95,15 +97,19 @@ public class FuncionarioController : Controller
         model.Id = id;
         // Ignora a validação deste campo
         ModelState.Remove(nameof(model.Id));
-        // Condição
-        if (repository.Read(id) == null) return NotFound();
+        // Lê o cadastro atual (e-mail original) para decidir se a regra nova se aplica
+        var atual = repository.Read(id);
+        if (atual == null) return NotFound();
+        // Mantém o original no ViewBag se a tela for reexibida com erro
+        ViewBag.EmailInstitucionalOriginal = atual.EmailInstitucional;
         // Verifica se o campo foi preenchido
         if (string.IsNullOrWhiteSpace(model.EmailInstitucional))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailInstitucional), "Informe o e-mail institucional.");
-        // Exige domínio @santamassa no e-mail institucional
-        else if (!EmailInstitucionalSantamassa.EhValido(model.EmailInstitucional))
-            ModelState.AddModelError(nameof(model.EmailInstitucional), EmailInstitucionalSantamassa.MensagemErro);
+        // Só exige @santamassa.com.br quando o e-mail institucional foi de fato alterado
+        else if (ValidacaoEntrada.EmailInstitucionalFoiAlterado(model.EmailInstitucional, atual.EmailInstitucional)
+                 && ValidacaoEntrada.ErroEmailInstitucionalCadastro(model.EmailInstitucional) is string erroEmail)
+            ModelState.AddModelError(nameof(model.EmailInstitucional), erroEmail);
         // Se houver erro de validação, volta para o formulário
         if (!ModelState.IsValid) return View(model);
         // Tenta executar; erros são tratados abaixo
@@ -171,7 +177,8 @@ public class FuncionarioController : Controller
         catch (SqlException)
         {
             // Registra a mensagem de erro para a tela
-            ModelState.AddModelError("", "Não foi possível excluir. O cadastro pode estar vinculado a outros registros; verifique também a conexão.");
+            var nome = string.IsNullOrWhiteSpace(model.Nome) ? "selecionado" : model.Nome.Trim();
+            ModelState.AddModelError("", $"Não foi possível excluir o funcionário {nome}. O cadastro pode estar vinculado a outros registros. O funcionário não foi excluído. Verifique os vínculos e tente novamente.");
             // Mostra a view com o modelo
             return View("Delete", model);
         }

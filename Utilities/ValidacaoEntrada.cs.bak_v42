@@ -1,0 +1,60 @@
+﻿// Regras de validação de entrada compartilhadas (login e cadastro)
+using System.Text.RegularExpressions;
+
+namespace GestaoReservas.Utilities;
+
+// Centraliza a regra do e-mail institucional do funcionário
+public static class ValidacaoEntrada
+{
+    // Trecho obrigatório no e-mail (cobre @santamassa.com e @santamassa.com.br)
+    public const string TrechoDominio = "@santamassa";
+
+    // Mensagem quando falta o domínio institucional (mesma do login)
+    public const string MensagemDominio =
+        "O e-mail institucional deve conter @santamassa (ex.: nome@santamassa.com.br).";
+
+    // Mensagem quando o formato é inválido (pontos consecutivos no domínio, como no type=email do login)
+    public const string MensagemFormato =
+        "Email inválido: use apenas um ponto antes do .com, ex.: nome@santamassa.com";
+
+    // Mesmo formato do type=email do HTML5 (WHATWG), usado no login de funcionário
+    private static readonly Regex EmailNoFormatoHtml5 = new(
+        @"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+        RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+    // Devolve a mensagem de erro, ou null se o e-mail institucional for aceito
+    public static string? ErroEmailInstitucional(string? email)
+    {
+        // Sem e-mail → mesma mensagem de domínio já usada no login
+        if (string.IsNullOrWhiteSpace(email)) return MensagemDominio;
+
+        var valor = email.Trim();
+
+        // Domínio (depois do @): impede pontos consecutivos (..com, santamassa..com)
+        var arroba = valor.LastIndexOf('@');
+        var dominio = arroba >= 0 ? valor[(arroba + 1)..] : "";
+        var formatoInvalido = dominio.Contains("..", StringComparison.Ordinal)
+            || dominio.StartsWith('.')
+            || dominio.EndsWith('.')
+            || !EmailNoFormatoHtml5.IsMatch(valor);
+
+        if (formatoInvalido)
+        {
+            // Se parece um e-mail da casa com typo no domínio, mostra a mensagem de formato
+            if (valor.Contains("santamassa", StringComparison.OrdinalIgnoreCase))
+                return MensagemFormato;
+            // Caso contrário, mantém a mensagem de domínio já usada no login
+            return MensagemDominio;
+        }
+
+        // Exige o trecho @santamassa (sem distinguir maiúsculas)
+        if (!valor.Contains(TrechoDominio, StringComparison.OrdinalIgnoreCase))
+            return MensagemDominio;
+
+        return null;
+    }
+
+    // Retorna true se o e-mail institucional é aceito (login e cadastro)
+    public static bool EmailInstitucionalEhValido(string? email) =>
+        ErroEmailInstitucional(email) is null;
+}

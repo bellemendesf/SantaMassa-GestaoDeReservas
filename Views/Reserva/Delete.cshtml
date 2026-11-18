@@ -225,7 +225,7 @@
                       asp-action="Delete" asp-route-id="@Model.Id"
                       method="post">
         @* Resumo dos erros de validação *@
-        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        @Html.ValidationSummary(false, "", new { @class = "exclusao-erros alerta-erro-visivel" })
 
                     @* Token antifalsificação do formulário *@
                     @Html.AntiForgeryToken()

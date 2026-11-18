@@ -163,7 +163,7 @@
                 </div>
 
                 <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="detalhes-edicao-form" style="margin-top: 26px;">
-                    @Html.ValidationSummary(false, "", new { @class = "exclusao-erros" })
+                    @Html.ValidationSummary(false, "", new { @class = "exclusao-erros alerta-erro-visivel" })
                     @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
 

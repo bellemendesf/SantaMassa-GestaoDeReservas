@@ -1,22 +1,18 @@
-// Utilitário: valida e-mail institucional do funcionário (domínio Santa Massa)
+﻿// Utilitário: valida e-mail institucional do funcionário (domínio Santa Massa)
+// O login usa ValidacaoEntrada.ErroEmailInstitucional (aceita os e-mails atuais).
+// O cadastro/alteração de e-mail usa ErroEmailInstitucionalCadastro (exige @santamassa.com.br).
 namespace GestaoReservas.Utilities;
 
-// Classe estática com a regra única de domínio institucional
+// Classe estática mantida para compatibilidade; delega para ValidacaoEntrada
 public static class EmailInstitucionalSantamassa
 {
-    // Trecho obrigatório no e-mail (cobre @santamassa.com e @santamassa.com.br do script.sql)
-    public const string TrechoDominio = "@santamassa";
+    // Trecho obrigatório no e-mail do login (cobre @santamassa.com e @santamassa.com.br)
+    public const string TrechoDominio = ValidacaoEntrada.TrechoDominio;
 
-    // Mensagem de erro em português para login/cadastro/edição
-    public const string MensagemErro =
-        "O e-mail institucional deve conter @santamassa (ex.: nome@santamassa.com.br).";
+    // Mensagem de domínio (quando falta @santamassa no login)
+    public const string MensagemErro = ValidacaoEntrada.MensagemDominio;
 
-    // Retorna true se o e-mail contém @santamassa (sem distinguir maiúsculas)
-    public static bool EhValido(string? email)
-    {
-        // Sem e-mail → inválido
-        if (string.IsNullOrWhiteSpace(email)) return false;
-        // Aceita qualquer domínio que contenha o trecho @santamassa
-        return email.Contains(TrechoDominio, StringComparison.OrdinalIgnoreCase);
-    }
+    // Retorna true se o e-mail passa na regra do login (não exige .com.br)
+    public static bool EhValido(string? email) =>
+        ValidacaoEntrada.EmailInstitucionalEhValido(email);
 }

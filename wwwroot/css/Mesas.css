@@ -545,3 +545,244 @@ body.mesas-page {
     .mesas-table-wrap { overflow-x: auto; } /* rolagem lateral em telas estreitas */
     .mesas-table { min-width: 760px; } /* largura mínima da tabela */
 }
+
+/* ===== Painel de gerenciamento da aba Mesas (t51u) ===== */
+
+/* Faixa de resumo no topo do painel */
+.mesas-resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 0 0 22px;
+}
+
+/* Um indicador do resumo (total, livres, etc.) */
+.mesas-resumo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    background: var(--tc-cartao-hover, var(--sm-painel-claro));
+    border: 1px solid var(--tc-borda, var(--sm-borda));
+    border-radius: 10px;
+}
+
+/* Rótulo pequeno acima do número */
+.mesas-resumo-rotulo {
+    color: var(--tc-texto-suave, var(--sm-secundario));
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Número de destaque do resumo */
+.mesas-resumo-valor {
+    color: var(--tc-dourado-claro, var(--sm-dourado-claro));
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+/* Unidade ao lado da capacidade total */
+.mesas-resumo-ajuda {
+    color: var(--tc-texto-suave, var(--sm-secundario));
+    font-size: 0.8rem;
+}
+
+/* Detalhe colorido por tipo de status */
+.mesas-resumo-livre { border-top: 3px solid #58A36C; }
+.mesas-resumo-reservada { border-top: 3px solid var(--tc-dourado, var(--sm-dourado)); }
+.mesas-resumo-ocupada { border-top: 3px solid var(--tc-perigo, #E07A5F); }
+.mesas-resumo-outro { border-top: 3px solid var(--tc-texto-suave, var(--sm-secundario)); }
+.mesas-resumo-capacidade { border-top: 3px solid var(--tc-dourado-claro, var(--sm-dourado-claro)); }
+
+/* Barra de filtros (só front-end) */
+.mesas-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0 0 22px;
+    padding: 16px 18px;
+    background: var(--tc-fundo-suave, var(--sm-painel));
+    border: 1px solid var(--tc-borda, var(--sm-borda));
+    border-radius: 10px;
+}
+
+/* Um campo de filtro */
+.mesas-filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 200px;
+    flex: 1;
+}
+
+.mesas-filtro span {
+    color: var(--tc-texto-suave, var(--sm-secundario));
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.mesas-filtro select {
+    min-height: 42px;
+    padding: 8px 12px;
+    color: var(--tc-texto, var(--sm-texto));
+    background: var(--tc-escuro, var(--sm-fundo));
+    border: 1px solid var(--tc-borda, var(--sm-borda));
+    border-radius: 7px;
+    font-size: 0.9rem;
+}
+
+.mesas-filtro select:focus {
+    outline: 2px solid var(--tc-dourado, var(--sm-dourado));
+    outline-offset: 2px;
+}
+
+/* Grade de cartões de mesa */
+.mesas-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+/* Cartão de uma mesa, mais fácil de ler do que a linha da tabela */
+.mesa-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px 20px 16px;
+    background: var(--tc-cartao, var(--sm-painel));
+    border: 1px solid var(--tc-borda, var(--sm-borda));
+    border-left: 4px solid var(--tc-dourado, var(--sm-dourado));
+    border-radius: 12px;
+    box-shadow: var(--tc-sombra, 0 10px 28px rgba(0, 0, 0, 0.35));
+    min-height: 220px;
+}
+
+.mesa-card:hover {
+    background: var(--tc-cartao-hover, var(--sm-painel-claro));
+    border-color: var(--tc-dourado, var(--sm-dourado));
+}
+
+/* Número e badge de status no topo do cartão */
+.mesa-card-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mesa-card-numero {
+    margin: 0;
+    color: var(--tc-dourado-claro, var(--sm-dourado-claro));
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+/* Ambiente e capacidade dentro do cartão */
+.mesa-card-dados {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+
+.mesa-card-dados div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mesa-card-dados dt {
+    color: var(--tc-texto-suave, var(--sm-secundario));
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.mesa-card-dados dd {
+    margin: 0;
+    color: var(--tc-texto, var(--sm-texto));
+    font-size: 0.95rem;
+}
+
+/* Ações do cartão: botões visíveis, não só links de texto */
+.mesa-card .mesas-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 4px;
+}
+
+.mesa-card .mesas-acoes a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 6px 12px;
+    border: 1px solid var(--tc-borda, var(--sm-borda));
+    border-radius: 7px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mesa-card .mesas-acoes a:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.mesa-card .acao-detalhes,
+.mesa-card .acao-editar {
+    color: var(--tc-dourado-claro, var(--sm-dourado-claro));
+    background: rgba(198, 164, 92, 0.08);
+    border-color: rgba(198, 164, 92, 0.35);
+}
+
+.mesa-card .acao-detalhes:hover,
+.mesa-card .acao-editar:hover {
+    color: var(--tc-sobre-dourado, #090909);
+    background: var(--tc-dourado, var(--sm-dourado));
+    border-color: var(--tc-dourado, var(--sm-dourado));
+}
+
+.mesa-card .acao-excluir {
+    color: #F0A5A0;
+    background: rgba(224, 122, 95, 0.08);
+    border-color: rgba(224, 122, 95, 0.4);
+}
+
+.mesa-card .acao-excluir:hover {
+    color: #fff;
+    background: var(--tc-perigo, #E07A5F);
+    border-color: var(--tc-perigo, #E07A5F);
+}
+
+/* Aviso de filtro sem resultado */
+.mesas-filtro-vazio {
+    margin: 18px 0 0;
+    padding: 16px 18px;
+    color: var(--tc-texto-suave, var(--sm-secundario));
+    border: 1px dashed var(--tc-borda, var(--sm-borda));
+    border-radius: 9px;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .mesas-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mesas-grade {
+        grid-template-columns: 1fr;
+    }
+    .mesas-filtro {
+        min-width: 100%;
+    }
+}

@@ -48,6 +48,15 @@ public class ReservaController : Controller
         return null;
     }
 
+    // Preenche o mapa: ids dos desenhos conhecidos e a lista de ambientes cadastrados.
+    private void PrepararMapaMesas()
+    {
+        // Ids de Interno/Externo/Sacada, quando existirem no cadastro.
+        ViewBag.MapaAmbienteIds = IdsAmbientesMapa();
+        // Todos os ambientes do banco, para o select da tela de reserva.
+        ViewBag.AmbientesCadastro = ambienteRepository.Read();
+    }
+
     private Dictionary<string, int> IdsAmbientesMapa()
     {
         var cadastrados = ambienteRepository.Read();
@@ -202,7 +211,7 @@ public class ReservaController : Controller
     // Ação Create (GET): abre o formulário vazio
     public ActionResult Create()
     {
-        ViewBag.MapaAmbienteIds = IdsAmbientesMapa();
+        PrepararMapaMesas();
         var model = new Reserva { QtdPessoas = 2, Status = "Pendente" };
         PreencherClienteLogado(model);
         return View(model);
@@ -276,7 +285,7 @@ public class ReservaController : Controller
         }
         if (!ModelState.IsValid)
         {
-            ViewBag.MapaAmbienteIds = IdsAmbientesMapa();
+            PrepararMapaMesas();
             return View(model);
         }
         try
@@ -294,14 +303,14 @@ public class ReservaController : Controller
                 : "Verifique CPF, telefone, e mesa cadastrados e a conexão com o banco.";
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError("", "Não foi possível cadastrar. " + motivo);
-            ViewBag.MapaAmbienteIds = IdsAmbientesMapa();
+            PrepararMapaMesas();
             return View(model);
         }
         // Mesa reservada por outra pessoa no mesmo instante (conferido de novo na gravação)
         catch (InvalidOperationException ex)
         {
             ModelState.AddModelError(nameof(model.MesaIds), "Não foi possível cadastrar. " + ex.Message);
-            ViewBag.MapaAmbienteIds = IdsAmbientesMapa();
+            PrepararMapaMesas();
             return View(model);
         }
     }
@@ -459,7 +468,7 @@ public class ReservaController : Controller
         catch (SqlException)
         {
             // Registra a mensagem de erro para a tela
-            ModelState.AddModelError("", "Não foi possível cancelar. Verifique a conexão com o banco.");
+            ModelState.AddModelError("", $"Não foi possível cancelar a reserva {id}. A operação não foi concluída e a reserva permanece como estava. Verifique a conexão com o banco e tente novamente em instantes.");
             // Mostra a view com o modelo
             return View("Delete", model);
         }

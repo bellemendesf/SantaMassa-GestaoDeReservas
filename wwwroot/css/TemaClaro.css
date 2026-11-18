@@ -821,6 +821,15 @@ body.tema-claro .ambiente-status {
     color: #A9D9B4 !important;
 }
 
+/* Status Indisponível do ambiente (valor no banco: Indisponivel): vermelho de perigo */
+body.tema-claro .ambiente-status.ambiente-status-indisponivel,
+body.tema-claro .detalhes-edicao-status.ambiente-status-indisponivel,
+body.tema-claro .ambiente-status-indisponivel {
+    background: #2A1816 !important;
+    border-color: var(--tc-perigo, #E07A5F) !important;
+    color: var(--tc-perigo, #E07A5F) !important;
+}
+
 body.tema-claro .ambiente-acoes a {
     background: var(--tc-cartao-hover) !important;
     border-color: var(--tc-dourado) !important;
@@ -1053,7 +1062,7 @@ body.tema-claro .reservas-filtro-resultado {
     white-space: nowrap;
 }
 
-/* Coluna Ações alinhada à direita, igual aos botões */
+/* Coluna Ações: título e botões centralizados e alinhados entre si */
 body.tema-claro .reservas-tabela th:last-child,
 body.tema-claro .reservas-tabela td:last-child,
 body.tema-claro .mesas-table th:last-child,
@@ -1062,7 +1071,7 @@ body.tema-claro .ambientes-tabela th:last-child,
 body.tema-claro .ambientes-tabela td:last-child,
 body.tema-claro .clientes-tabela th:last-child,
 body.tema-claro .clientes-tabela td:last-child {
-    text-align: right;
+    text-align: center;
 }
 
 /* Botões de linha: caixa alta menos chamativa, estilo consistente */
@@ -1143,4 +1152,36 @@ body.tema-claro.container > form .btn-secondary {
         margin-left: 0 !important;
         width: 100%;
     }
+}
+
+
+/* Alerta visível de erro (exclusões e cadastro não encontrado) no tema escuro/dourado */
+body.tema-claro .alerta-erro-visivel,
+body.tema-claro .exclusao-erros.validation-summary-errors,
+body.tema-claro .exclusao-erros:not(.validation-summary-valid):not(:empty) {
+    display: block;
+    padding: 14px 16px;
+    margin: 0 0 18px;
+    color: #F0B4AD;
+    background: rgba(180, 35, 24, 0.14);
+    border: 1px solid rgba(231, 160, 154, 0.4);
+    border-left: 3px solid var(--tc-perigo, #E07A5F);
+    border-radius: 9px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+body.tema-claro .alerta-erro-visivel ul,
+body.tema-claro .exclusao-erros.validation-summary-errors ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+body.tema-claro .exclusao-erros.validation-summary-valid,
+body.tema-claro .exclusao-erros:empty {
+    display: none !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }

@@ -12,7 +12,8 @@
     --dourado-claro: #E8D5A3; /* variável de cor --dourado-claro */
     --texto: var(--texto); /* variável de cor --texto */
     --texto-secundario: #BDB7AA; /* variável de cor --texto-secundario */
-    --borda: var(--borda);
+    --borda: var(--borda);
+
     --sobre-dourado: #090909; /* variável de cor --borda */
     --verde: #7DB58A; /* variável de cor --verde */
     --vermelho: #E07A5F; /* variável de cor --vermelho */
@@ -180,6 +181,14 @@ body.detalhes-edicao-page {
     color: var(--dourado-claro) !important; /* cor do texto */
     font-size: 12px !important; /* tamanho da fonte */
     font-weight: 600 !important; /* peso da fonte */
+}
+
+/* Status Indisponível do ambiente: texto #E07A5F e fundo #2A1816 */
+.detalhes-edicao-status.ambiente-status-indisponivel,
+.ambiente-status-indisponivel {
+    background: #2A1816 !important; /* fundo */
+    border-color: #E07A5F !important; /* borda */
+    color: #E07A5F !important; /* cor do texto */
 }
 
 /* Formulário */

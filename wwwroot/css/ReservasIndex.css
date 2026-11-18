@@ -7,7 +7,8 @@
     --reserva-dourado-claro: #E8D5A3; /* variável de cor --reserva-dourado-claro */
     --reserva-texto: var(--reserva-texto); /* variável de cor --reserva-texto */
     --reserva-secundario: #BDB7AA; /* variável de cor --reserva-secundario */
-    --reserva-borda: var(--reserva-borda);
+    --reserva-borda: var(--reserva-borda);
+
     --reserva-sobre-dourado: #090909; /* variável de cor --reserva-borda */
     --reserva-verde: #7DB58A; /* variável de cor --reserva-verde */
     --reserva-vermelho: #F09B95; /* variável de cor --reserva-vermelho */
@@ -243,11 +244,18 @@ tr.reserva-linha-pendente td {
     color: var(--reserva-secundario); /* cor do texto */
 }
 
+/* Título e botões da coluna Ações ficam centralizados e alinhados entre si */
+.reservas-tabela th:last-child,
+.reservas-tabela td:last-child {
+    text-align: center; /* alinhamento do texto */
+}
+
 /* Estilo de: .reservas-acoes */
 .reservas-acoes {
     display: flex; /* tipo de exibição */
     flex-wrap: wrap; /* quebra de linha dos itens */
     align-items: center; /* alinhamento vertical */
+    justify-content: center; /* alinha os botões com o título Ações */
     gap: 6px; /* espaço entre itens */
 }
 

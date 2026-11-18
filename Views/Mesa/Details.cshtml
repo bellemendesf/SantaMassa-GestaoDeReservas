@@ -29,6 +29,7 @@
 
     @* Arquivo de estilo/fonte externo *@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/Mesas.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
 </head>
@@ -46,7 +47,7 @@
             @* Cabeçalho *@
             <header class="detalhes-edicao-header">
                 @* Parágrafo de texto *@
-                <p class="detalhes-edicao-kicker">Santa Massa - Rio Preto</p>
+                <p class="detalhes-edicao-kicker">Painel de mesas · Santa Massa</p>
                 @* Título principal *@
                 <h1>Detalhes da mesa</h1>
                 @* Parágrafo de texto *@
@@ -78,6 +79,13 @@
                     @* Bloco (classe detalhes-edicao-item) *@
                     <div class="detalhes-edicao-item">
                         @* Texto destacado *@
+                        <span>Ambiente</span>
+                        @* Texto em negrito *@
+                        <strong>@(string.IsNullOrWhiteSpace(Model.AmbienteNome) ? "Não informado" : Model.AmbienteNome)</strong>
+                    </div>
+
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
                         <span>Quantidade de lugares</span>
                         @* Texto em negrito *@
                         <strong>@Model.QtdLugares @(Model.QtdLugares == 1 ? "lugar" : "lugares")</strong>
@@ -88,7 +96,17 @@
                         @* Texto destacado *@
                         <span>Status</span>
                         @* Texto em negrito *@
-                        <strong class="detalhes-edicao-status">@Model.Status</strong>
+                        @{
+                            var statusDetalhe = (Model.Status ?? "").Trim();
+                            var classeStatusDetalhe = statusDetalhe.ToLowerInvariant() switch
+                            {
+                                "livre" => "status-livre",
+                                "reservada" => "status-reservada",
+                                "ocupada" => "status-ocupada",
+                                _ => "status-outro"
+                            };
+                        }
+                        <strong class="detalhes-edicao-status mesa-status @classeStatusDetalhe">@(string.IsNullOrWhiteSpace(statusDetalhe) ? "Não informado" : statusDetalhe)</strong>
                     </div>
                 </div>
 

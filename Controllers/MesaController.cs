@@ -92,15 +92,21 @@ public class MesaController : Controller
             // Redireciona para outra tela
             return RedirectToAction(nameof(Index));
         }
-        // Erro vindo do banco de dados
-        catch (SqlException)
+        // Número repetido no mesmo ambiente (mensagem visível no resumo do formulário)
+        catch (InvalidOperationException ex)
         {
             // Registra a mensagem de erro para a tela
-            ModelState.AddModelError(
-                "",
-                "Não foi possível cadastrar a mesa. Verifique os dados e o ambiente selecionado."
-            );
-
+            ModelState.AddModelError("", ex.Message);
+            // Carrega a lista de ambientes para o select
+            CarregarAmbientes(model.AmbienteId);
+            // Mostra a view com o modelo
+            return View(model);
+        }
+        // Erro vindo do banco de dados
+        catch (SqlException ex)
+        {
+            // Registra a mensagem de erro para a tela
+            ModelState.AddModelError("", MensagemErroSqlCadastro(ex));
             // Carrega a lista de ambientes para o select
             CarregarAmbientes(model.AmbienteId);
             // Mostra a view com o modelo
@@ -143,9 +149,9 @@ public ActionResult Edit(int id, Mesa model)
         // Registro não existe: responde 404
         return NotFound();
 
-    // Ajusta Id do modelo
+    // Ajusta Id do modelo (id da rota é o nr, não o número de exibição)
     model.Id = id;
-    // CORREÇÃO: mantém o número original (ele é igual à chave nr da mesa).
+    // Mantém o número de exibição original (o campo é somente leitura na edição).
     model.Numero = mesaExistente.Numero;
     ModelState.Remove(nameof(model.Numero));
     // Ignora a validação deste campo
@@ -173,15 +179,21 @@ public ActionResult Edit(int id, Mesa model)
         // Redireciona para outra tela
         return RedirectToAction(nameof(Index));
     }
-    // Erro vindo do banco de dados
-    catch (SqlException)
+    // Número repetido no mesmo ambiente ao trocar o ambiente (ou o número)
+    catch (InvalidOperationException ex)
     {
         // Registra a mensagem de erro para a tela
-        ModelState.AddModelError(
-            "",
-            "Não foi possível salvar. Verifique os dados, o ambiente e os vínculos com reservas."
-        );
-
+        ModelState.AddModelError("", ex.Message);
+        // Carrega a lista de ambientes para o select
+        CarregarAmbientes(model.AmbienteId);
+        // Mostra a view com o modelo
+        return View(model);
+    }
+    // Erro vindo do banco de dados
+    catch (SqlException ex)
+    {
+        // Registra a mensagem de erro para a tela
+        ModelState.AddModelError("", MensagemErroSqlEdicao(ex));
         // Carrega a lista de ambientes para o select
         CarregarAmbientes(model.AmbienteId);
         // Mostra a view com o modelo
@@ -218,6 +230,10 @@ public ActionResult Edit(int id, Mesa model)
             // Registro não existe: responde 404
             return NotFound();
 
+        // Já explica o bloqueio na tela de confirmação, quando houver vínculo.
+        if (MesaTemReservasVisiveis(id))
+            ModelState.AddModelError("", MensagemMesaComReservas(model));
+
         // Mostra a view com o modelo
         return View(model);
     }
@@ -243,8 +259,7 @@ public ActionResult Edit(int id, Mesa model)
         // Também confere no app (memória/SQL): qualquer reserva vinculada bloqueia a exclusão.
         if (reservaRepository.Read().Any(r => r.MesaIds.Contains(id)))
         {
-            ModelState.AddModelError("",
-                "Não é possível excluir esta mesa porque existem reservas vinculadas (mesmo canceladas). Se quiser indisponibilizá-la, altere o status para Ocupada.");
+            ModelState.AddModelError("", MensagemMesaComReservas(model));
             CarregarAmbientes(model.AmbienteId);
             return View("Delete", model);
         }
@@ -257,26 +272,70 @@ public ActionResult Edit(int id, Mesa model)
             return RedirectToAction(nameof(Index));
         }
         // Erro de regra (ex.: mesa com reservas)
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
 {
-    // Registra a mensagem de erro para a tela
-    ModelState.AddModelError("", ex.Message);
+    // Usa o texto claro do painel (a regra no repositório permanece a mesma).
+    ModelState.AddModelError("", MensagemMesaComReservas(model));
     // Mostra a view com o modelo
     return View("Delete", model);
 }
-// Erro vindo do banco de dados
+// Erro vindo do banco (ex.: restrição de chave estrangeira), sem estourar 500.
 catch (SqlException)
 {
-    // Registra a mensagem de erro para a tela
-    ModelState.AddModelError(
-        "",
-        "Não foi possível excluir a mesa. Verifique os vínculos existentes."
-    );
-
+    // Mesma regra: a mesa não é excluída; só explica o motivo.
+    ModelState.AddModelError("", MensagemMesaComReservas(model));
     // Mostra a view com o modelo
     return View("Delete", model);
 }
     }
+
+
+    // Monta a mensagem clara quando a mesa tem reservas vinculadas (incluindo canceladas).
+    private string MensagemMesaComReservas(Mesa model)
+    {
+        // Conta no app as reservas visíveis ligadas a esta mesa.
+        var qtd = reservaRepository.Read().Count(r => r.MesaIds != null && r.MesaIds.Contains(model.Id));
+        // Número da mesa para o funcionário reconhecer o cadastro.
+        var numero = model.Numero;
+        // Se a consulta não trouxer canceladas, ainda assim explica o motivo real.
+        if (qtd <= 0)
+        {
+            return $"Não é possível excluir a mesa {numero} porque ela possui reservas vinculadas (incluindo canceladas, que ficam no histórico). A mesa não foi excluída. Se quiser indisponibilizá-la, edite a mesa e altere o status para Ocupada.";
+        }
+        // Mensagem no singular ou no plural, com a quantidade encontrada.
+        var trecho = qtd == 1 ? "1 reserva vinculada" : $"{qtd} reservas vinculadas";
+        return $"Não é possível excluir a mesa {numero} porque existem {trecho} (incluindo canceladas, que ficam no histórico). A mesa não foi excluída. Se quiser indisponibilizá-la, edite a mesa e altere o status para Ocupada.";
+    }
+
+    // Indica se alguma reserva (da listagem do repositório) aponta para a mesa.
+    private bool MesaTemReservasVisiveis(int id) =>
+        reservaRepository.Read().Any(r => r.MesaIds != null && r.MesaIds.Contains(id));
+
+    // Traduz erros comuns do SQL no cadastro para mensagens claras na tela.
+    private static string MensagemErroSqlCadastro(SqlException ex) =>
+        ex.Number switch
+        {
+            // 2627/2601: chave ou índice único (pk_mesas)
+            2627 or 2601 =>
+                "Já existe uma mesa com esse código. Atualize a página e tente cadastrar novamente.",
+            // 547: CHECK de status ou FK do ambiente
+            547 =>
+                "Não foi possível cadastrar a mesa. O status ou o ambiente selecionado não é válido.",
+            _ =>
+                "Não foi possível cadastrar a mesa. Verifique os dados e o ambiente selecionado."
+        };
+
+    // Traduz erros comuns do SQL na edição para mensagens claras na tela.
+    private static string MensagemErroSqlEdicao(SqlException ex) =>
+        ex.Number switch
+        {
+            2627 or 2601 =>
+                "Já existe uma mesa com esse código. Verifique o número e o ambiente e tente novamente.",
+            547 =>
+                "Não foi possível salvar. O status ou o ambiente selecionado não é válido.",
+            _ =>
+                "Não foi possível salvar. Verifique os dados, o ambiente e os vínculos com reservas."
+        };
 
     private static bool StatusManualPermitido(string? status) =>
         status == "Livre" || status == "Ocupada";

@@ -177,11 +177,18 @@
             overflow-wrap: anywhere; /* quebra de palavras longas */
         }
 
+        /* Título e botões da coluna Ações ficam centralizados e alinhados entre si */
+        .clientes-tabela th:last-child,
+        .clientes-tabela td:last-child {
+            text-align: center; /* alinhamento do texto */
+        }
+
         /* Estilo de: .cliente-acoes */
         .cliente-acoes {
             display: flex; /* tipo de exibição */
             flex-wrap: wrap; /* quebra de linha dos itens */
             align-items: center; /* alinhamento vertical */
+            justify-content: center; /* alinha os botões com o título Ações */
             gap: 7px; /* espaço entre itens */
         }
 

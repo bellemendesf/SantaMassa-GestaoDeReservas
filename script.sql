@@ -188,9 +188,9 @@ go
 INSERT INTO reservas
 (qtd_pessoas, data_hora, status, cliente_id)
 VALUES
-(6, '20261105', 1, 1),
-(4, '20261106', 0, 2),
-(8, '20261107', 1, 3)
+(6, '20261105 18:30:00', 1, 1),
+(4, '20261106 20:00:00', 0, 2),
+(8, '20261107 22:30:00', 1, 3)
 GO
 
 -- Reservas_Mesas --
@@ -374,10 +374,10 @@ GO
 -- Teste de execução --
 EXEC buscCli
     @nome = 'Maria Oliveira',
-    @cpf = '12345678900',
-    @email_pessoal = 'maria@email.com',
+    @cpf = '123.456.789-00',
+    @email_pessoal = 'maria.oli@email.com',
     @telefone = '17999999999',
-    @senha_hash = 'hash_teste'
+    @senha_hash = 'AQAAAAIAAYljAAAAECf76C1r+LS[EbL+WXeKHtgUFbI+YvnflCDZIrpTMbLcbJ+sLayVYbDxuohaGQRpXYfQ=='
 GO
 
 --2. Procedure para atualizar os dados de um cliente na tabela Clientes.--
@@ -405,8 +405,8 @@ GO
 
 -- Teste de execução--
 EXEC AtualizaCli
-    1, 'Maria Oliveira', '12345678900',
-    'maria@email.com', '17999999999', 'hash_teste'
+    1, 'João Mendes', '999.888.777-66',
+    'joao@email.com', '(17) 99999-0001', 'AQAAAAIAAYagAAAAECf73N1r+ESbL+NXeQHbgUFbI+YvnflCDZIwbTNbLcbJ+sLanVYbCxuohaGLRpXYfQ=='
 GO
 
 --3. Procedure para inserir um funcionário na tabela Funcionarios.
@@ -431,8 +431,8 @@ GO
 
 -- Teste de execução --
 EXEC InsereFunc
-    'João Santos', '98765432100',
-    'joao@santamassa.com', 'hash_teste'
+    'João Santos', '987-654-321-00',
+    'joao@santamassa.com.br', 'AQAAAAIAAYlgAAAAECf73C1r+LS[EbL+NXeGHbgUFbI+YvnflCDZIrpTNbLcbJ+sLayVYbCxuohaGLRpXYfQ=='
 GO
 --4. Procedure para atualizar os dados de um funcionário na tabela Funcionarios.
 CREATE OR ALTER PROCEDURE AtualizaFunc
@@ -457,8 +457,8 @@ GO
 
 -- Teste de execução --
 EXEC AtualizaFunc
-    4, 'João Santos', '98765432100',
-    'joao@santamassa.com', 'hash_teste'
+    4, 'Ana Cristina', '111.222.333-44',
+    'ana@santamassa.com.br', 'AQAAAAIAAYagAAAAELKwxpYhaL2sy/t/PgA4Rv5RtsiHIeFN3qrZiyvjW9JLcCMpCbK4ZUd2IAG7DoKdbw=='
 GO
 --5. Procedure para inserir um ambiente na tabela Ambientes.--
 CREATE OR ALTER PROCEDURE InsereAmb
@@ -550,7 +550,7 @@ END
 GO
 
 -- Teste de execução --
-EXEC InsereReserva 4, '2026-11-10', 1
+EXEC InsereReserva 4, '20261110 20:00:00', 1
 GO
 --10. Procedure para atualizar os dados de uma reserva na tabela Reservas.
 CREATE OR ALTER PROCEDURE AtualizaReserva
@@ -571,7 +571,7 @@ END
 GO
 
 -- Teste de execução --
-EXEC AtualizaReserva 1, 5, '2026-11-10', 1, 1
+EXEC AtualizaReserva 1, 5, '20261110 18:30:00', 1, 1
 GO
 --11. Procedure para inserir uma associação entre reserva e mesa na tabela Reservas_Mesas.
 CREATE OR ALTER PROCEDURE InsereReservaMesa
@@ -587,7 +587,7 @@ END
 GO
  
 -- Teste de execução --
-EXEC InsereReservaMesa 1, 2
+EXEC InsereReservaMesa 4, 5
 GO
 --12. Procedure para atualizar uma associação entre reserva e mesa na tabela Reservas_Mesas.
 CREATE OR ALTER PROCEDURE AtualizaReservaMesa
@@ -644,3 +644,7 @@ GO
 -- Teste de execução --
 EXEC AtualizaStatus 1, 'Ocupada', 1
 GO
+
+select * from funcionarios
+select * from pessoas
+select * from clientes

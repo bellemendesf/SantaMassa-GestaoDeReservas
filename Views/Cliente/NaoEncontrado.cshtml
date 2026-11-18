@@ -1,0 +1,41 @@
+﻿@* Página 404 clara quando o cadastro de cliente não existe. *@
+@{
+    Layout = null;
+    ViewData["Title"] = ViewBag.Titulo ?? "Cadastro não encontrado";
+    var mensagem = ViewBag.Mensagem as string ?? "O cadastro solicitado não foi encontrado.";
+    var voltarUrl = ViewBag.VoltarUrl as string ?? Url.Action("Index", "Cliente");
+    var voltarTexto = ViewBag.VoltarTexto as string ?? "Voltar";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true" />
+</head>
+<body class="detalhes-edicao-page tema-claro com-sidebar-restaurante">
+@await Html.PartialAsync("_MenuRestaurante")
+    <main class="detalhes-edicao-container">
+        <section class="detalhes-edicao-card">
+            <header class="detalhes-edicao-header">
+                <p class="detalhes-edicao-kicker">Santa Massa · Rio Preto</p>
+                <h1>@ViewData["Title"]</h1>
+            </header>
+            <div class="detalhes-edicao-conteudo">
+                <div class="alerta-erro-visivel" role="alert">
+                    @mensagem
+                </div>
+                <div class="detalhes-edicao-acoes">
+                    <a href="@voltarUrl" class="detalhes-edicao-botao detalhes-edicao-botao-principal">@voltarTexto</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

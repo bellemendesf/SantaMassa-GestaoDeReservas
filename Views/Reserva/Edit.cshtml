@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="~/css/DetalhesEdicao.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
 </head>
 @* Corpo da página *@
 <body class="detalhes-edicao-page tema-claro com-sidebar-restaurante">
@@ -71,13 +72,35 @@
             @* Bloco (classe detalhes-edicao-conteudo) *@
             <div class="detalhes-edicao-conteudo">
                 @* Formulário (asp-action Edit, id @Model.Id) *@
-                <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="detalhes-edicao-form">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="detalhes-edicao-form" novalidate data-validacao-form>
                     @* Campo de entrada (asp-for Id) *@
                     <input type="hidden" asp-for="Id" />
                     @* N:N: as mesas não são enviadas; o servidor mantém as mesas originais da reserva. *@
 
                     @* Resumo dos erros de validação *@
-                    <div asp-validation-summary="All" class="detalhes-edicao-erros detalhes-edicao-alerta-erro"></div>
+                    @* Resumo só com erros da reserva (esconde Informe telefone/nome/CPF do modelo Cliente). *@
+                    @{
+                        var errosDaReserva = ViewData.ModelState
+                            .Where(par =>
+                                !string.Equals(par.Key, "Cliente", StringComparison.OrdinalIgnoreCase)
+                                && !par.Key.StartsWith("Cliente.", StringComparison.OrdinalIgnoreCase))
+                            .SelectMany(par => par.Value?.Errors ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>())
+                            .Select(erro => erro.ErrorMessage)
+                            .Where(msg => !string.IsNullOrWhiteSpace(msg)
+                                && !string.Equals(msg, "Informe o telefone.", StringComparison.OrdinalIgnoreCase)
+                                && !string.Equals(msg, "Informe o nome.", StringComparison.OrdinalIgnoreCase)
+                                && !string.Equals(msg, "Informe o CPF.", StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+                    }
+                    @if (errosDaReserva.Count > 0)
+                    {
+                        <div class="detalhes-edicao-erros detalhes-edicao-alerta-erro" id="erros-reserva" role="alert">
+                            @foreach (var msg in errosDaReserva)
+                            {
+                                <div>@msg</div>
+                            }
+                        </div>
+                    }
 
                     @* Bloco (classe detalhes-edicao-campo) *@
                     <div class="detalhes-edicao-campo">
@@ -115,7 +138,11 @@
                         <input asp-for="QtdPessoas" type="number"
                                min="@(restaurante ? 1 : Model.QtdPessoas)"
                                max="30"
+                               inputmode="numeric"
+                               data-valida="qtd-pessoas"
+                               title="Informe uma quantidade válida de pessoas."
                                readonly="@restaurante" />
+                        <span id="QtdPessoas-erro" class="erro-campo" data-erro-para="QtdPessoas" hidden></span>
                         @if (!restaurante)
                         {
                             <small class="detalhes-edicao-ajuda">
@@ -213,5 +240,6 @@
     })();
 </script>
 }
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
 </body>
 </html>

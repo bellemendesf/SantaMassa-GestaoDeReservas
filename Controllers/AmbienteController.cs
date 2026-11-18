@@ -14,12 +14,32 @@ public class AmbienteController : Controller
 {
     // Dependência IAmbienteRepository recebida pelo construtor
     private readonly IAmbienteRepository repository;
+    // Usado só para explicar por que a exclusão é bloqueada quando há mesas.
+    private readonly IMesaRepository mesaRepository;
 
     // Construtor: recebe as dependências por injeção
-    public AmbienteController(IAmbienteRepository repository)
+    public AmbienteController(IAmbienteRepository repository, IMesaRepository mesaRepository)
     {
         // Guarda a dependência repository recebida
         this.repository = repository;
+        // Guarda o repositório de mesas para contar vínculos.
+        this.mesaRepository = mesaRepository;
+    }
+
+    // Quantas mesas estão cadastradas neste ambiente.
+    private int ContarMesasDoAmbiente(int ambienteId) =>
+        mesaRepository.Read().Count(m => m.AmbienteId == ambienteId);
+
+    // Texto claro: por que não dá para excluir e o que fazer.
+    private string MensagemExclusaoAmbiente(Ambiente model)
+    {
+        var qtd = ContarMesasDoAmbiente(model.Id);
+        var nome = string.IsNullOrWhiteSpace(model.Nome) ? "selecionado" : model.Nome.Trim();
+        if (qtd == 1)
+            return $"Não é possível excluir o ambiente {nome} porque ele tem 1 mesa cadastrada. Exclua ou mova a mesa para outro ambiente antes de tentar novamente.";
+        if (qtd > 1)
+            return $"Não é possível excluir o ambiente {nome} porque ele tem {qtd} mesas cadastradas. Exclua ou mova as mesas para outro ambiente antes de tentar novamente.";
+        return $"Não foi possível excluir o ambiente {nome}. Ele pode estar vinculado a outros registros. O ambiente não foi excluído. Verifique os cadastros relacionados e tente novamente.";
     }
 
     // Ação Index: mostra a listagem
@@ -121,6 +141,9 @@ public class AmbienteController : Controller
         var model = repository.Read(id);
         // Se não encontrou o registro...
         if (model == null) return NotFound();
+        // Já avisa na confirmação quando o ambiente tem mesas.
+        if (ContarMesasDoAmbiente(id) > 0)
+            ModelState.AddModelError("", MensagemExclusaoAmbiente(model));
         // Mostra a view com o modelo
         return View(model);
     }
@@ -134,6 +157,12 @@ public class AmbienteController : Controller
         var model = repository.Read(id);
         // Se não encontrou o registro...
         if (model == null) return NotFound();
+        // Mesma regra de sempre: ambiente com mesa não é excluído (evita erro 500 de FK).
+        if (ContarMesasDoAmbiente(id) > 0)
+        {
+            ModelState.AddModelError("", MensagemExclusaoAmbiente(model));
+            return View("Delete", model);
+        }
         // Tenta executar; erros são tratados abaixo
         try
         {
@@ -142,11 +171,11 @@ public class AmbienteController : Controller
             // Redireciona para outra tela
             return RedirectToAction(nameof(Index));
         }
-        // Erro vindo do banco de dados
+        // Erro vindo do banco de dados (ex.: vínculo que a contagem não viu)
         catch (SqlException)
         {
             // Registra a mensagem de erro para a tela
-            ModelState.AddModelError("", "Não foi possível excluir. O cadastro pode estar vinculado a outros registros; verifique também a conexão.");
+            ModelState.AddModelError("", MensagemExclusaoAmbiente(model));
             // Mostra a view com o modelo
             return View("Delete", model);
         }

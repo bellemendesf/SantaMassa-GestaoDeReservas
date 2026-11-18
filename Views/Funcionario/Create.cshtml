@@ -7,6 +7,13 @@
     // Atribui Layout
     Layout = null;
     ViewData["Title"] = "Cadastrar funcionário";
+    // Esta tela hoje exige login de funcionário (FuncionarioScheme no controller).
+    // Se no futuro o cadastro for aberto sem login, Cancelar/Voltar vão para o login — não para a listagem.
+    var funcionarioLogado = User?.Identities?.Any(i =>
+        i.IsAuthenticated && i.AuthenticationType == "FuncionarioScheme") == true;
+    var destinoController = funcionarioLogado ? "Funcionario" : "Auth";
+    var destinoAction = funcionarioLogado ? "Index" : "Login";
+    var textoVoltar = funcionarioLogado ? "← Voltar aos funcionários" : "← Voltar ao login";
 }
 
 @* Tipo do documento (HTML5) *@
@@ -35,6 +42,7 @@
     <link rel="stylesheet" href="~/css/Cadastro.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
 </head>
 
 @* Corpo da página *@
@@ -46,9 +54,9 @@
 
         @* Link *@
         <a class="cadastro-voltar-topo"
-           asp-controller="AreaRestaurante"
-           asp-action="Index">
-            ← Voltar ao painel
+           asp-controller="@destinoController"
+           asp-action="@destinoAction">
+            @textoVoltar
         </a>
 
         @* Seção da página *@
@@ -80,7 +88,7 @@
             <form asp-controller="Funcionario"
                   asp-action="Create"
                   method="post"
-                  class="cadastro-form">
+                  class="cadastro-form" novalidate data-validacao-form>
 
                 @* Token antifalsificação do formulário *@
                 @Html.AntiForgeryToken()
@@ -96,7 +104,11 @@
                            value="@Model?.Nome"
                            placeholder="Nome completo"
                            autocomplete="name"
+                           maxlength="50"
+                           data-valida="nome"
+                           title="Informe o nome com pelo menos 3 letras, sem números ou símbolos."
                            required>
+                    <span id="Nome-erro" class="erro-campo" data-erro-para="Nome" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -108,9 +120,14 @@
                            name="Cpf"
                            type="text"
                            value="@Model?.Cpf"
-                           placeholder="Digite o CPF"
+                           placeholder="000.000.000-00"
                            autocomplete="off"
+                           inputmode="numeric"
+                           maxlength="14"
+                           data-valida="cpf"
+                           title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)."
                            required>
+                    <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -125,10 +142,12 @@
                            placeholder="nome@@santamassa.com.br"
                            autocomplete="email"
                            maxlength="50"
-                           pattern=".*@@santamassa.*"
-                           title="Use um e-mail com @@santamassa (ex.: nome@@santamassa.com.br)"
+                           data-valida="email-institucional"
+                           pattern="(?!.*@@.*\.\.)[^\s]+@@santamassa\.com\.br"
+                           title="O email do funcionário deve terminar em @@santamassa.com.br (ex.: nome@@santamassa.com.br)."
                            required>
-                    <small class="cadastro-aviso-campo">Somente e-mails com @@santamassa</small>
+                    <small class="cadastro-aviso-campo">O e-mail deve terminar em @@santamassa.com.br (um ponto antes do .com)</small>
+                    <span id="EmailInstitucional-erro" class="erro-campo" data-erro-para="EmailInstitucional" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
@@ -152,8 +171,8 @@
                     </button>
 
                     @* Link *@
-                    <a asp-controller="AreaRestaurante"
-                       asp-action="Index"
+                    <a asp-controller="@destinoController"
+                       asp-action="@destinoAction"
                        class="btn-cadastro-voltar">
                         Cancelar
                     </a>
@@ -168,5 +187,6 @@
         </footer>
 
     </main>
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
 </body>
 </html>

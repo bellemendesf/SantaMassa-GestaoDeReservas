@@ -8,6 +8,20 @@
     ViewData["Lead"] = "Escolha o dia, o horário, o ambiente e as mesas para a sua reserva.";
     var mapaIds = ViewBag.MapaAmbienteIds as Dictionary<string, int> ?? new Dictionary<string, int>();
     int IdAmbienteMapa(string nome) => mapaIds.TryGetValue(nome, out var id) ? id : 0;
+    // Lista de ambientes cadastrados no banco, para o select do mapa.
+    var ambientesCadastro = ViewBag.AmbientesCadastro as IEnumerable<GestaoReservas.Models.Ambiente>
+        ?? Enumerable.Empty<GestaoReservas.Models.Ambiente>();
+    // Escolhe o desenho do salão: Interno / Externo / Sacada, ou o salão genérico.
+    string ChaveDesenho(string? nome)
+    {
+        var n = (nome ?? "").Trim();
+        if (n.Equals("Externo", StringComparison.OrdinalIgnoreCase)) return "Externo";
+        if (n.Equals("Sacada", StringComparison.OrdinalIgnoreCase)) return "Sacada";
+        if (n.Equals("Interno", StringComparison.OrdinalIgnoreCase)
+            || n.Contains("Interno", StringComparison.OrdinalIgnoreCase))
+            return "Interno";
+        return "Generico";
+    }
     var dataMinimaReserva = DateTime.Today.ToString("yyyy-MM-dd");
     var dataMaximaReserva = DateTime.Today.AddDays(90).ToString("yyyy-MM-dd");
 }
@@ -15,9 +29,31 @@
 @* Seção da página *@
 <section class="panel">
     @* Formulário (asp-action Create) *@
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" novalidate data-validacao-form>
         @* Resumo dos erros de validação *@
-        @Html.ValidationSummary(false, "", new { @class = "alerta-erro" })
+        @* Resumo só com erros da reserva (esconde Informe telefone/nome/CPF do modelo Cliente). *@
+        @{
+            var errosDaReserva = ViewData.ModelState
+                .Where(par =>
+                    !string.Equals(par.Key, "Cliente", StringComparison.OrdinalIgnoreCase)
+                    && !par.Key.StartsWith("Cliente.", StringComparison.OrdinalIgnoreCase))
+                .SelectMany(par => par.Value?.Errors ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>())
+                .Select(erro => erro.ErrorMessage)
+                .Where(msg => !string.IsNullOrWhiteSpace(msg)
+                    && !string.Equals(msg, "Informe o telefone.", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(msg, "Informe o nome.", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(msg, "Informe o CPF.", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        @if (errosDaReserva.Count > 0)
+        {
+            <div class="alerta-erro" id="erros-reserva" role="alert">
+                @foreach (var msg in errosDaReserva)
+                {
+                    <div>@msg</div>
+                }
+            </div>
+        }
         @if (Model.Cliente != null && Model.ClienteId > 0)
         {
             <div class="form-section">
@@ -62,7 +98,11 @@
                     @* Rótulo do campo (asp-for QtdPessoas) *@
                     <label asp-for="QtdPessoas">Quantidade de pessoas</label>
                     @* Campo de entrada (asp-for QtdPessoas) *@
-                    <input asp-for="QtdPessoas" type="number" min="1" max="30" />
+                    <input asp-for="QtdPessoas" type="number" min="1" max="30"
+                           inputmode="numeric" data-valida="qtd-pessoas"
+                           title="Informe entre 1 e 30 pessoas." />
+                    <span asp-validation-for="QtdPessoas" class="alerta-campo text-danger"></span>
+                    <span id="QtdPessoas-erro" class="erro-campo" data-erro-para="QtdPessoas" hidden></span>
                 </div>
                 @* ALTERAÇÃO: o status não aparece mais durante o cadastro; a nova reserva fica Pendente
                    e o status é exibido na tela de detalhes logo após salvar. *@
@@ -93,16 +133,23 @@
                 <label for="area-mapa">Ambiente</label>
                 <select id="area-mapa">
                     <option value="">Selecione o ambiente</option>
-                    @foreach (var nome in new[] { "Interno", "Externo", "Sacada" })
+                    @if (ambientesCadastro.Any())
                     {
-                        var codigo = IdAmbienteMapa(nome);
-                        if (codigo > 0)
+                        @foreach (var amb in ambientesCadastro.OrderBy(a => a.Nome))
                         {
-                            <option value="@codigo" data-chave="@nome">@nome</option>
+                            <option value="@amb.Id" data-chave="@ChaveDesenho(amb.Nome)">@amb.Nome</option>
                         }
-                        else
+                    }
+                    else
+                    {
+                        @* Fallback se a lista não vier no ViewBag: os três desenhos conhecidos. *@
+                        @foreach (var nome in new[] { "Interno", "Externo", "Sacada" })
                         {
-                            <option value="" disabled>@nome (cadastre em Ambientes)</option>
+                            var codigo = IdAmbienteMapa(nome);
+                            if (codigo > 0)
+                            {
+                                <option value="@codigo" data-chave="@nome">@nome</option>
+                            }
                         }
                     }
                 </select>
@@ -114,7 +161,7 @@
             <div id="mapa-mesas-root"
                  data-url="@Url.Action("MesasDisponiveis", "Reserva")">
 
-            @* Interno: 20 mesas (números 1–20 neste ambiente). *@
+            @* Interno: desenho do salão (rótulos fixos); as mesas vêm do banco via JS. *@
             <div class="mapa-salao" data-chave="Interno" data-ambiente-id="@IdAmbienteMapa("Interno")" hidden aria-hidden="true">
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
@@ -123,14 +170,8 @@
                     @* Bloco (classe mapa-area janela) *@
                     <div class="mapa-area janela">Janela</div>
                 </div>
-                @* Bloco (classe mapa-grade) *@
-                <div class="mapa-grade">
-                    @* Repete o bloco o número de vezes indicado *@
-                    @for (int n = 1; n <= 20; n++)
-                    {
-                        <div class="mapa-mesa @(n % 2 == 0 ? "redonda" : "")" data-numero="@n">@n</div>
-                    }
-                </div>
+                @* Grade vazia: o JS preenche com as mesas deste ambiente, em ordem de número. *@
+                <div class="mapa-grade" aria-label="Mesas do salão interno"></div>
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
                     @* Bloco (classe mapa-area) *@
@@ -143,21 +184,15 @@
                 <div class="mapa-listagem selecao-mesas" aria-label="Mesas cadastradas no Interno"></div>
             </div>
 
-            @* Externo: 12 mesas (números 1–12 neste ambiente). *@
+            @* Externo: desenho do salão (rótulos fixos); as mesas vêm do banco via JS. *@
             <div class="mapa-salao" data-chave="Externo" data-ambiente-id="@IdAmbienteMapa("Externo")" hidden aria-hidden="true">
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
                     @* Bloco (classe mapa-area) *@
                     <div class="mapa-area">Calçada</div>
                 </div>
-                @* Bloco (classe mapa-grade quatro) *@
-                <div class="mapa-grade quatro">
-                    @* Repete o bloco o número de vezes indicado *@
-                    @for (int n = 1; n <= 12; n++)
-                    {
-                        <div class="mapa-mesa redonda" data-numero="@n">@n</div>
-                    }
-                </div>
+                @* Grade vazia: o JS preenche com as mesas deste ambiente, em ordem de número. *@
+                <div class="mapa-grade quatro" aria-label="Mesas do salão externo"></div>
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
                     @* Bloco (classe mapa-area janela) *@
@@ -168,21 +203,15 @@
                 <div class="mapa-listagem selecao-mesas" aria-label="Mesas cadastradas no Externo"></div>
             </div>
 
-            @* Sacada: 8 mesas (números 1–8 neste ambiente). *@
+            @* Sacada: desenho do salão (rótulos fixos); as mesas vêm do banco via JS. *@
             <div class="mapa-salao" data-chave="Sacada" data-ambiente-id="@IdAmbienteMapa("Sacada")" hidden aria-hidden="true">
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
                     @* Bloco (classe mapa-area janela) *@
                     <div class="mapa-area janela">Vista / Parapeito</div>
                 </div>
-                @* Bloco (classe mapa-grade quatro) *@
-                <div class="mapa-grade quatro">
-                    @* Repete o bloco o número de vezes indicado *@
-                    @for (int n = 1; n <= 8; n++)
-                    {
-                        <div class="mapa-mesa" data-numero="@n">@n</div>
-                    }
-                </div>
+                @* Grade vazia: o JS preenche com as mesas deste ambiente, em ordem de número. *@
+                <div class="mapa-grade quatro" aria-label="Mesas da sacada"></div>
                 @* Bloco (classe mapa-areas) *@
                 <div class="mapa-areas">
                     @* Bloco (classe mapa-area) *@
@@ -191,6 +220,18 @@
                     <div class="mapa-area saida">Saída</div>
                 </div>
                 <div class="mapa-listagem selecao-mesas" aria-label="Mesas cadastradas na Sacada"></div>
+            </div>
+
+            @* Salão genérico: usado por ambientes cadastrados que não têm desenho próprio. *@
+            <div class="mapa-salao" data-chave="Generico" hidden aria-hidden="true">
+                <div class="mapa-areas">
+                    <div class="mapa-area">Ambiente</div>
+                </div>
+                <div class="mapa-grade" aria-label="Mesas deste ambiente"></div>
+                <div class="mapa-areas">
+                    <div class="mapa-area saida">Saída</div>
+                </div>
+                <div class="mapa-listagem selecao-mesas" aria-label="Mesas cadastradas neste ambiente"></div>
             </div>
 
             @* Passo 3: legenda das cores usadas na seleção. *@
@@ -284,10 +325,61 @@
             });
         }
 
+        // Limpa a grade de um salão (as células passam a ser recriadas a cada pintura).
         function limparCelulas(salao) {
-            salao.querySelectorAll(".mapa-mesa").forEach(c => {
-                c.classList.remove("livre", "reservada", "selecionada", "sem-cadastro");
-                delete c.dataset.mesaId;
+            // Área onde as mesas são desenhadas.
+            const grade = salao.querySelector(".mapa-grade");
+            // Sem grade não há células para remover.
+            if (!grade) return;
+            // Esvazia o desenho para receber as mesas atuais do banco.
+            grade.innerHTML = "";
+        }
+
+        // Monta uma célula do mapa para uma mesa devolvida pela API.
+        function montarCelula(m, chaveSalao) {
+            // Cria o bloco visual da mesa.
+            const cel = document.createElement("div");
+            // Classe base de todas as mesas do desenho.
+            cel.className = "mapa-mesa";
+            // Número cadastrado da mesa (só para exibir e ordenar).
+            const numero = numMesa(m);
+            // No Externo as mesas são redondas; no Interno, as pares seguem o desenho antigo.
+            if (chaveSalao === "Externo" || (chaveSalao === "Interno" && numero % 2 === 0)) {
+                cel.classList.add("redonda");
+            }
+            // Guarda o número para leitura no mapa.
+            cel.dataset.numero = String(numero);
+            // Guarda o id real da mesa — é o que vai em MesaIds.
+            cel.dataset.mesaId = String(idMesa(m));
+            // Mostra o número no centro da célula.
+            cel.textContent = String(numero);
+            // Ajuda leitores de tela a identificar a mesa e o status.
+            cel.setAttribute("role", "button");
+            cel.setAttribute("aria-label", "Mesa " + numero + ", " + lugaresMesa(m) + " lugares, " + sitMesa(m));
+            // Pinta livre ou reservada/ocupada conforme a situação do dia.
+            if (sitMesa(m).toLowerCase() === "livre") cel.classList.add("livre");
+            else cel.classList.add("reservada");
+            // Destaca se esta mesa já está na seleção atual.
+            if (selecionadas.has(String(idMesa(m)))) cel.classList.add("selecionada");
+            // Devolve a célula pronta para entrar na grade.
+            return cel;
+        }
+
+        // Recria a grade com as mesas do ambiente, ordenadas por número (sem posição escolhida).
+        function preencherGrade(salao, mesas) {
+            // Área do desenho, entre os rótulos do salão.
+            const grade = salao.querySelector(".mapa-grade");
+            // Se o salão não tiver grade, não há o que montar.
+            if (!grade) return;
+            // Remove células da pintura anterior.
+            grade.innerHTML = "";
+            // Ordena pelo número cadastrado, do menor para o maior.
+            const ordenadas = mesas.slice().sort(function (a, b) { return numMesa(a) - numMesa(b); });
+            // Qual desenho está visível (Interno, Externo, Sacada ou Generico).
+            const chave = salao.dataset.chave || "";
+            // Uma célula para cada mesa devolvida pela API neste ambiente.
+            ordenadas.forEach(function (m) {
+                grade.appendChild(montarCelula(m, chave));
             });
         }
 
@@ -299,7 +391,7 @@
                 return;
             }
             if (!ambienteId()) {
-                aviso.textContent = "Selecione o ambiente (Interno, Externo ou Sacada).";
+                aviso.textContent = "Selecione o ambiente para ver as mesas no mapa.";
                 return;
             }
 
@@ -309,27 +401,13 @@
                 return;
             }
             mostrarSalao();
-            limparCelulas(salao);
-
             const mesas = mesasDoAmbienteAtual();
-            salao.querySelectorAll(".mapa-mesa").forEach(cel => {
-                const num = parseInt(cel.dataset.numero, 10);
-                const m = mesas.find(x => numMesa(x) === num);
-                if (!m) {
-                    cel.classList.add("sem-cadastro");
-                    return;
-                }
-                cel.dataset.mesaId = idMesa(m);
-                if (sitMesa(m).toLowerCase() === "livre") cel.classList.add("livre");
-                else cel.classList.add("reservada");
-                if (selecionadas.has(String(idMesa(m)))) cel.classList.add("selecionada");
-            });
-
+            // Desenha só as mesas cadastradas (a grade cresce se houver mesa 21, 22, etc.).
+            preencherGrade(salao, mesas);
             pintarListagem(salao, mesas);
 
-
             aviso.textContent = mesas.length === 0
-                ? "Nenhuma mesa cadastrada neste ambiente. Cadastre em Mesas e vincule ao ambiente " + chaveAmbiente() + "."
+                ? "Nenhuma mesa cadastrada neste ambiente. Cadastre em Mesas e vincule ao ambiente " + (document.querySelector("#area-mapa option:checked")?.textContent || "selecionado") + "."
                 : "Disponibilidade para " + campoData.value + ". Clique nas mesas verdes (livres) para marcar ou desmarcar.";
         }
 

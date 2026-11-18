@@ -18,6 +18,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/TemaClaro.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/MenuRestaurante.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
 </head>
 @* Corpo da página *@
 <body class="container py-4 tema-claro com-sidebar-restaurante">
@@ -35,7 +36,7 @@
     @* Resumo dos erros de validação *@
     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
     @* Formulário *@
-    <form action="/Cliente/Edit/@Model.Id" method="POST">
+    <form action="/Cliente/Edit/@Model.Id" method="POST" novalidate data-validacao-form>
         @* Token antifalsificação do formulário *@
         @Html.AntiForgeryToken()
         @* Bloco (classe mb-3) *@
@@ -43,14 +44,16 @@
             @* Rótulo do campo *@
             <label for="Nome" class="form-label">Nome</label>
             @* Campo de entrada (id Nome) *@
-            <input id="Nome" name="Nome" type="text" value="@Model.Nome" class="form-control" required>
+            <input id="Nome" name="Nome" type="text" value="@Model.Nome" class="form-control" maxlength="50" data-valida="nome" title="Informe o nome com pelo menos 3 letras, sem números ou símbolos." required>
+            <span id="Nome-erro" class="erro-campo" data-erro-para="Nome" hidden></span>
         </div>
         @* Bloco (classe mb-3) *@
         <div class="mb-3">
             @* Rótulo do campo *@
             <label for="Cpf" class="form-label">CPF</label>
             @* Campo de entrada (id Cpf) *@
-            <input id="Cpf" name="Cpf" type="text" value="@Model.Cpf" class="form-control" required>
+            <input id="Cpf" name="Cpf" type="text" value="@Model.Cpf" class="form-control" inputmode="numeric" maxlength="14" data-valida="cpf" title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)." required>
+            <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
         </div>
         @* Bloco (classe mb-3) *@
         <div class="mb-3">
@@ -64,7 +67,8 @@
             @* Rótulo do campo *@
             <label for="Telefone" class="form-label">Telefone</label>
             @* Campo de entrada (id Telefone) *@
-            <input id="Telefone" name="Telefone" type="tel" value="@Model.Telefone" class="form-control" required>
+            <input id="Telefone" name="Telefone" type="tel" value="@Model.Telefone" class="form-control" inputmode="numeric" maxlength="15" data-valida="telefone" title="Informe um telefone com 10 ou 11 dígitos (DDD)." required>
+            <span id="Telefone-erro" class="erro-campo" data-erro-para="Telefone" hidden></span>
         </div>
         @* Nunca preenchemos a senha com o valor armazenado pelo controller. *@
         <div class="mb-3">
@@ -78,5 +82,6 @@
         @* Link *@
         <a href="/Cliente/Index" class="btn btn-secondary">Voltar</a>
     </form>
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -214,9 +214,19 @@ body.area-page.has-fixed-page-top {
 }
 
 /* —— Grupo de ações na linha —— */
+/* Nas tabelas (Reservas, Ambientes, Clientes), alinha os botões com o título "Ações" centralizado. */
 .reservas-acoes,
-.mesas-acoes,
 .ambiente-acoes,
+.cliente-acoes {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+/* Listagens em cartão (mesas e funcionários) mantêm as ações no fim da linha. */
+.mesas-acoes,
 .funcionario-acoes {
     display: flex !important;
     flex-wrap: wrap !important;

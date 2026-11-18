@@ -228,6 +228,13 @@
                     @* Bloco (classe detalhes-edicao-item) *@
                     <div class="detalhes-edicao-item">
                         @* Texto destacado *@
+                        <span>Ambiente</span>
+                        @* Texto em negrito *@
+                        <strong>@(string.IsNullOrWhiteSpace(Model.AmbienteNome) ? "Não informado" : Model.AmbienteNome)</strong>
+                    </div>
+
+                    <div class="detalhes-edicao-item">
+                        @* Texto destacado *@
                         <span>Quantidade de lugares</span>
                         @* Texto em negrito *@
                         <strong>@Model.QtdLugares @(Model.QtdLugares == 1 ? "lugar" : "lugares")</strong>
@@ -245,7 +252,8 @@
                 @* Formulário (asp-action Delete, id @Model.Id) *@
                 <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="detalhes-edicao-form" style="margin-top: 26px;">
 @* Resumo dos erros de validação *@
-@Html.ValidationSummary(false, "", new { @class = "exclusao-erros" })                    <input type="hidden" asp-for="Id" />
+@Html.ValidationSummary(false, "", new { @class = "exclusao-erros alerta-erro-visivel" })
+                    <input type="hidden" asp-for="Id" />
 
                     @* Bloco (classe detalhes-edicao-acoes) *@
                     <div class="detalhes-edicao-acoes">

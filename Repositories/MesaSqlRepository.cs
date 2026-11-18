@@ -12,37 +12,50 @@ public class MesaSqlRepository : DataConnection, IMesaRepository
    // Insere um novo registro no banco
    public void Create(Mesa mesa)
 {
-    // Cria o comando SQL (descartado ao final)
-    using var cmd = new SqlCommand();
-    // Associa o comando à conexão
-    cmd.Connection = conn;
-
-    // Texto SQL que será executado
-    cmd.CommandText = @"
-        INSERT INTO mesas
-            (nr, numero, qtd_lugares, status, codigo_ambientes)
-        VALUES
-            (@Id, @Numero, @QtdLugares, @Status, @AmbienteId);";
-
-    // Preenche o parâmetro @Id (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Id", mesa.Numero);
-    // Preenche o parâmetro @Numero (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Numero", mesa.Numero);
-    // Preenche o parâmetro @QtdLugares (evita SQL injection)
-    cmd.Parameters.AddWithValue("@QtdLugares", mesa.QtdLugares);
-    // Preenche o parâmetro @Status (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Status",
-        mesa.Status == "Livre" ? "Disponivel" : mesa.Status);
-    // Preenche o parâmetro @AmbienteId (evita SQL injection)
-    cmd.Parameters.AddWithValue("@AmbienteId", mesa.AmbienteId);
-
     // Abre a conexão com o banco
     conn.Open();
+    // Transação: gera o nr e impede número repetido no mesmo ambiente
+    using var transacao = conn.BeginTransaction();
     // Tenta executar; erros são tratados abaixo
     try
     {
-        // Executa o comando (INSERT/UPDATE/DELETE)
-        cmd.ExecuteNonQuery();
+        // Recusa número de exibição já usado neste ambiente
+        if (NumeroExisteNoAmbiente(mesa.Numero, mesa.AmbienteId, null, transacao))
+        {
+            throw new InvalidOperationException(
+                $"Já existe a mesa {mesa.Numero} neste ambiente.");
+        }
+
+        // nr é a chave interna (não o número exibido). Gera o próximo valor livre, como em Ambiente.
+        using var cmd = new SqlCommand(@"
+            DECLARE @NovoNr int = (SELECT ISNULL(MAX(nr), 0) + 1 FROM mesas WITH (UPDLOCK, HOLDLOCK));
+            INSERT INTO mesas
+                (nr, numero, qtd_lugares, status, codigo_ambientes)
+            VALUES
+                (@NovoNr, @Numero, @QtdLugares, @Status, @AmbienteId);
+            SELECT @NovoNr;", conn, transacao);
+
+        // Preenche o parâmetro @Numero (número digitado pelo usuário)
+        cmd.Parameters.AddWithValue("@Numero", mesa.Numero);
+        // Preenche o parâmetro @QtdLugares (evita SQL injection)
+        cmd.Parameters.AddWithValue("@QtdLugares", mesa.QtdLugares);
+        // Preenche o parâmetro @Status (evita SQL injection)
+        cmd.Parameters.AddWithValue("@Status",
+            mesa.Status == "Livre" ? "Disponivel" : mesa.Status);
+        // Preenche o parâmetro @AmbienteId (evita SQL injection)
+        cmd.Parameters.AddWithValue("@AmbienteId", mesa.AmbienteId);
+
+        // Guarda o nr gerado no modelo (é o id das rotas e do mapa)
+        mesa.Id = Convert.ToInt32(cmd.ExecuteScalar());
+
+        // Confirma a transação
+        transacao.Commit();
+    }
+    catch
+    {
+        // Desfaz a transação em caso de erro
+        transacao.Rollback();
+        throw;
     }
     // Sempre executa, com ou sem erro
     finally
@@ -50,6 +63,22 @@ public class MesaSqlRepository : DataConnection, IMesaRepository
         // Fecha a conexão com o banco
         conn.Close();
     }
+}
+
+// Confere se o número de exibição já pertence a outra mesa do mesmo ambiente.
+// ignorarNr: na edição, a própria mesa (chave nr) é ignorada.
+private bool NumeroExisteNoAmbiente(int numero, int ambienteId, int? ignorarNr, SqlTransaction transacao)
+{
+    using var verificar = new SqlCommand(@"
+        SELECT COUNT(*)
+        FROM mesas WITH (UPDLOCK, HOLDLOCK)
+        WHERE numero = @Numero
+          AND codigo_ambientes = @AmbienteId
+          AND (@IgnorarNr IS NULL OR nr <> @IgnorarNr);", conn, transacao);
+    verificar.Parameters.AddWithValue("@Numero", numero);
+    verificar.Parameters.AddWithValue("@AmbienteId", ambienteId);
+    verificar.Parameters.AddWithValue("@IgnorarNr", (object?)ignorarNr ?? DBNull.Value);
+    return (int)verificar.ExecuteScalar()! > 0;
 }
 
 // Lê todos os registros do banco
@@ -191,40 +220,52 @@ public List<Mesa> Read()
   // Atualiza um registro existente no banco
   public void Update(Mesa mesa)
 {
-    // Cria o comando SQL (descartado ao final)
-    using var cmd = new SqlCommand();
-    // Associa o comando à conexão
-    cmd.Connection = conn;
-
-    // Texto SQL que será executado
-    cmd.CommandText = @"
-        UPDATE mesas
-        SET numero = @Numero,
-            qtd_lugares = @QtdLugares,
-            status = @Status,
-            codigo_ambientes = @AmbienteId
-        WHERE nr = @Id;";
-
-    // Preenche o parâmetro @Numero (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Numero", mesa.Numero);
-    // Preenche o parâmetro @QtdLugares (evita SQL injection)
-    cmd.Parameters.AddWithValue("@QtdLugares", mesa.QtdLugares);
-    // Preenche o parâmetro @Status (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Status",
-        mesa.Status == "Livre" ? "Disponivel" : mesa.Status);
-    // Preenche o parâmetro @AmbienteId (evita SQL injection)
-    cmd.Parameters.AddWithValue("@AmbienteId", mesa.AmbienteId);
-    // Preenche o parâmetro @Id (evita SQL injection)
-    cmd.Parameters.AddWithValue("@Id", mesa.Id);
-
     // Abre a conexão com o banco
     conn.Open();
-
+    // Transação: a checagem de número repetido ignora a própria mesa (nr)
+    using var transacao = conn.BeginTransaction();
     // Tenta executar; erros são tratados abaixo
     try
     {
+        // Recusa número de exibição já usado por outra mesa neste ambiente
+        if (NumeroExisteNoAmbiente(mesa.Numero, mesa.AmbienteId, mesa.Id, transacao))
+        {
+            throw new InvalidOperationException(
+                $"Já existe a mesa {mesa.Numero} neste ambiente.");
+        }
+
+        // Atualiza pelo nr (id da rota), preservando o número de exibição em numero
+        using var cmd = new SqlCommand(@"
+            UPDATE mesas
+            SET numero = @Numero,
+                qtd_lugares = @QtdLugares,
+                status = @Status,
+                codigo_ambientes = @AmbienteId
+            WHERE nr = @Id;", conn, transacao);
+
+        // Preenche o parâmetro @Numero (evita SQL injection)
+        cmd.Parameters.AddWithValue("@Numero", mesa.Numero);
+        // Preenche o parâmetro @QtdLugares (evita SQL injection)
+        cmd.Parameters.AddWithValue("@QtdLugares", mesa.QtdLugares);
+        // Preenche o parâmetro @Status (evita SQL injection)
+        cmd.Parameters.AddWithValue("@Status",
+            mesa.Status == "Livre" ? "Disponivel" : mesa.Status);
+        // Preenche o parâmetro @AmbienteId (evita SQL injection)
+        cmd.Parameters.AddWithValue("@AmbienteId", mesa.AmbienteId);
+        // Preenche o parâmetro @Id (chave nr da mesa)
+        cmd.Parameters.AddWithValue("@Id", mesa.Id);
+
         // Executa o comando (INSERT/UPDATE/DELETE)
         cmd.ExecuteNonQuery();
+
+        // Confirma a transação
+        transacao.Commit();
+    }
+    catch
+    {
+        // Desfaz a transação em caso de erro
+        transacao.Rollback();
+        throw;
     }
     // Sempre executa, com ou sem erro
     finally

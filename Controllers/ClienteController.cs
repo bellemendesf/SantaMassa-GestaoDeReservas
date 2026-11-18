@@ -104,7 +104,7 @@ public class ClienteController : Controller
         // Busca o registro no banco
         var model = repository.Read(id);
         // Se não encontrou o registro...
-        if (model == null) return NotFound();
+        if (model == null) return ClienteNaoEncontrado();
         // Mostra a view com o modelo
         return View(model);
     }
@@ -118,7 +118,7 @@ public class ClienteController : Controller
         // Ignora a validação deste campo
         ModelState.Remove(nameof(model.Id));
         // Condição
-        if (repository.Read(id) == null) return NotFound();
+        if (repository.Read(id) == null) return ClienteNaoEncontrado();
         // Verifica se o campo foi preenchido
         if (string.IsNullOrWhiteSpace(model.EmailPessoal))
             // Registra a mensagem de erro para a tela
@@ -154,7 +154,7 @@ public class ClienteController : Controller
         // Busca o registro no banco
         var model = repository.Read(id);
         // Se não encontrou o registro...
-        if (model == null) return NotFound();
+        if (model == null) return ClienteNaoEncontrado();
         // Mostra a view com o modelo
         return View(model);
     }
@@ -166,11 +166,11 @@ public class ClienteController : Controller
         // Busca o registro no banco
         var model = repository.Read(id);
         // Se não encontrou o registro...
-        if (model == null) return NotFound();
+        if (model == null) return ClienteNaoEncontrado();
         // Avisa na tela de confirmação quando já existem reservas
         if (ClienteTemReservas(id))
             // Mensagem clara para o formulário
-            ModelState.AddModelError("", "Não é possível excluir este cliente porque existem reservas vinculadas (mesmo canceladas).");
+            ModelState.AddModelError("", MensagemClienteComReservas(model));
         // Mostra a view com o modelo
         return View(model);
     }
@@ -182,12 +182,12 @@ public class ClienteController : Controller
         // Busca o registro no banco
         var model = repository.Read(id);
         // Se não encontrou o registro...
-        if (model == null) return NotFound();
+        if (model == null) return ClienteNaoEncontrado();
         // Bloqueia a exclusão no app quando o cliente tem qualquer reserva (incluindo canceladas)
         if (ClienteTemReservas(id))
         {
             // Mensagem clara para o formulário
-            ModelState.AddModelError("", "Não é possível excluir este cliente porque existem reservas vinculadas (mesmo canceladas).");
+            ModelState.AddModelError("", MensagemClienteComReservas(model));
             // Mantém o cadastro e volta à tela de exclusão
             return View("Delete", model);
         }
@@ -203,10 +203,34 @@ public class ClienteController : Controller
         catch (SqlException)
         {
             // Registra a mensagem de erro para a tela
-            ModelState.AddModelError("", "Não foi possível excluir. O cadastro pode estar vinculado a outros registros; verifique também a conexão.");
+            var nome = string.IsNullOrWhiteSpace(model.Nome) ? "selecionado" : model.Nome.Trim();
+            ModelState.AddModelError("", $"Não foi possível excluir o cliente {nome}. O cadastro pode estar vinculado a outros registros. O cliente não foi excluído. Verifique os vínculos e tente novamente.");
             // Mostra a view com o modelo
             return View("Delete", model);
         }
+    }
+
+
+    // Devolve uma página 404 clara (tema do restaurante) quando o cliente não existe.
+    private ActionResult ClienteNaoEncontrado()
+    {
+        // Mantém o código HTTP 404.
+        Response.StatusCode = 404;
+        // Texto objetivo: o que aconteceu e o que fazer.
+        ViewBag.Mensagem = "Não foi possível abrir este cliente porque o cadastro não foi encontrado. Volte à lista de clientes e escolha um cadastro existente.";
+        ViewBag.VoltarUrl = Url.Action("Index", "Cliente");
+        ViewBag.VoltarTexto = "Voltar à lista de clientes";
+        ViewBag.Titulo = "Cliente não encontrado";
+        return View("NaoEncontrado");
+    }
+
+    // Mensagem clara quando o cliente tem reservas no histórico.
+    private string MensagemClienteComReservas(Cliente model)
+    {
+        var qtd = reservaRepository.Read().Count(r => r.ClienteId == model.Id);
+        var nome = string.IsNullOrWhiteSpace(model.Nome) ? "selecionado" : model.Nome.Trim();
+        var trecho = qtd == 1 ? "1 reserva vinculada" : (qtd > 1 ? $"{qtd} reservas vinculadas" : "reservas vinculadas");
+        return $"Não é possível excluir o cliente {nome} porque existem {trecho} (incluindo canceladas, que ficam no histórico). O cadastro não foi excluído. A exclusão só é permitida quando o cliente não tiver reservas no histórico.";
     }
 
     // Indica se o CPF já pertence a outro cliente (idAtual = 0 no cadastro)

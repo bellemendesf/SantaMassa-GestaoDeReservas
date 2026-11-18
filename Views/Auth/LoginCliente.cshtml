@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="~/css/Cadastro.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
 </head>
 <body class="cadastro-page">
     <main class="cadastro-container">
@@ -37,12 +38,15 @@
                 <div class="cadastro-erros">@ViewBag.Error</div>
             }
 
-            <form asp-controller="Auth" asp-action="LoginCliente" method="post" class="cadastro-form">
+            <form asp-controller="Auth" asp-action="LoginCliente" method="post" class="cadastro-form" novalidate data-validacao-form>
                 @Html.AntiForgeryToken()
 
                 <div class="campo-cadastro">
                     <label for="Cpf">CPF</label>
-                    <input id="Cpf" name="Cpf" class="form-control" value="@Model.Cpf" autocomplete="username" required>
+                    <input id="Cpf" name="Cpf" class="form-control" value="@Model.Cpf" autocomplete="username"
+                           inputmode="numeric" maxlength="14" data-valida="cpf"
+                           title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)." required>
+                    <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
                 </div>
 
                 <div class="campo-cadastro">
@@ -59,5 +63,6 @@
 
         <footer class="cadastro-rodape">Santa Massa - Rio Preto</footer>
     </main>
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
 </body>
 </html>

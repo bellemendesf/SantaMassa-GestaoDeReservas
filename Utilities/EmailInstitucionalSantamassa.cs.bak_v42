@@ -1,0 +1,17 @@
+﻿// Utilitário: valida e-mail institucional do funcionário (domínio Santa Massa)
+// A regra completa vive em ValidacaoEntrada (login e cadastro usam a mesma).
+namespace GestaoReservas.Utilities;
+
+// Classe estática mantida para compatibilidade; delega para ValidacaoEntrada
+public static class EmailInstitucionalSantamassa
+{
+    // Trecho obrigatório no e-mail (cobre @santamassa.com e @santamassa.com.br do script.sql)
+    public const string TrechoDominio = ValidacaoEntrada.TrechoDominio;
+
+    // Mensagem de domínio (quando falta @santamassa)
+    public const string MensagemErro = ValidacaoEntrada.MensagemDominio;
+
+    // Retorna true se o e-mail passa na mesma regra do login e do cadastro
+    public static bool EhValido(string? email) =>
+        ValidacaoEntrada.EmailInstitucionalEhValido(email);
+}
