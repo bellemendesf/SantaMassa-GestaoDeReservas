@@ -49,10 +49,7 @@
                         <strong>@(string.IsNullOrWhiteSpace(Model.Nome) ? "Não informado" : Model.Nome)</strong>
                     </div>
 
-                    <div class="detalhes-edicao-item">
-                        <span>CPF</span>
-                        <strong>@(string.IsNullOrWhiteSpace(Model.Cpf) ? "Não informado" : Model.Cpf)</strong>
-                    </div>
+                    @* CPF removido só da parte visual, para o funcionário não ver o dado. *@
 
                     <div class="detalhes-edicao-item">
                         <span>E-mail pessoal</span>

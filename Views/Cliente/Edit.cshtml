@@ -47,14 +47,9 @@
             <input id="Nome" name="Nome" type="text" value="@Model.Nome" class="form-control" maxlength="50" data-valida="nome" title="Informe o nome com pelo menos 3 letras, sem números ou símbolos." required>
             <span id="Nome-erro" class="erro-campo" data-erro-para="Nome" hidden></span>
         </div>
-        @* Bloco (classe mb-3) *@
-        <div class="mb-3">
-            @* Rótulo do campo *@
-            <label for="Cpf" class="form-label">CPF</label>
-            @* Campo de entrada (id Cpf) *@
-            <input id="Cpf" name="Cpf" type="text" value="@Model.Cpf" class="form-control" inputmode="numeric" maxlength="14" data-valida="cpf" title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)." required>
-            <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
-        </div>
+        @* CPF fica oculto para o funcionário não ver. *@
+        @* O valor segue no POST, porque o campo é obrigatório no salvamento. *@
+        <input type="hidden" id="Cpf" name="Cpf" value="@Model.Cpf" />
         @* Bloco (classe mb-3) *@
         <div class="mb-3">
             @* Rótulo do campo *@

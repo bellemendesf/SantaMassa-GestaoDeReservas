@@ -329,13 +329,12 @@
             line-height: 1.5; /* altura da linha */
         }
 
-        /* Larguras das colunas: ID, Nome, CPF, E-mail, Telefone, Ações */
-        /* AJUSTE: larguras sem a coluna ID (Nome, CPF, E-mail, Telefone, Ações) */
-        .clientes-tabela th:nth-child(1) { width: 22%; } /* nome */
-        .clientes-tabela th:nth-child(2) { width: 15%; } /* CPF */
-        .clientes-tabela th:nth-child(3) { width: 26%; } /* e-mail */
-        .clientes-tabela th:nth-child(4) { width: 15%; } /* telefone */
-        .clientes-tabela th:nth-child(5) { width: 22%; } /* ações */
+        /* Larguras das colunas: Nome, E-mail, Telefone, Ações */
+        /* AJUSTE: larguras sem as colunas ID e CPF (o CPF saiu só da parte visual) */
+        .clientes-tabela th:nth-child(1) { width: 28%; } /* nome */
+        .clientes-tabela th:nth-child(2) { width: 32%; } /* e-mail */
+        .clientes-tabela th:nth-child(3) { width: 18%; } /* telefone */
+        .clientes-tabela th:nth-child(4) { width: 22%; } /* ações */
 
         /* Estilo de: .cliente-nome */
         .cliente-nome {
