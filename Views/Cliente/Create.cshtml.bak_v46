@@ -1,0 +1,190 @@
+﻿
+@* Tipo de dado (modelo) que esta view recebe do controller *@
+@model Cliente
+
+@* Bloco C#: configurações da view (título, layout e variáveis) *@
+@{
+    // Atribui Layout
+    Layout = null;
+    ViewData["Title"] = "Cadastrar-se";
+}
+
+@* Tipo do documento (HTML5) *@
+<!DOCTYPE html>
+@* Início do documento HTML *@
+<html lang="pt-BR">
+@* Cabeçalho do documento (título, fontes e estilos) *@
+<head>
+    @* Configuração da página *@
+    <meta charset="UTF-8">
+    @* Configuração da página *@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    @* Título da aba *@
+    <title>@ViewData["Title"]</title>
+
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @* Arquivo de estilo/fonte externo *@
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap"
+          rel="stylesheet">
+
+    @* Arquivo de estilo/fonte externo *@
+    <link rel="stylesheet" href="~/css/Cadastro.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/ValidacaoFormularios.css" asp-append-version="true" />
+</head>
+
+@* Corpo da página *@
+<body class="cadastro-page">
+    @* Conteúdo principal *@
+    <main class="cadastro-container">
+
+        <a class="cadastro-voltar-topo" asp-controller="Home" asp-action="Index">← Página inicial</a>
+
+        @* Seção da página *@
+        <section class="cadastro-card">
+
+            @* Cabeçalho *@
+            <header class="cadastro-header">
+                @* Imagem *@
+                <img src="~/images/logosantamassa.jpg"
+                     alt="Santa Massa"
+                     class="cadastro-logo">
+
+                @* Parágrafo de texto *@
+                <p class="cadastro-subtitulo">Santa Massa · Área do cliente</p>
+
+                @* Título principal *@
+                <h1>Criar cadastro</h1>
+
+                @* Parágrafo de texto *@
+                <p class="cadastro-descricao">
+                    Preencha seus dados para cadastrar-se no nosso sistema
+                    de reservas.
+                </p>
+            </header>
+
+            @* Resumo dos erros de validação *@
+            @Html.ValidationSummary(false, "", new { @class = "cadastro-erros" })
+
+            @* Formulário *@
+            <form asp-controller="Cliente"
+                  asp-action="Create"
+                  method="post"
+                  class="cadastro-form" novalidate data-validacao-form>
+
+                @* Token antifalsificação do formulário *@
+                @Html.AntiForgeryToken()
+
+                @* Bloco (classe campo-cadastro) *@
+                <div class="campo-cadastro">
+                    @* Rótulo do campo *@
+                    <label for="Nome">Nome completo</label>
+                    @* Campo de entrada (id Nome) *@
+                    <input id="Nome"
+                           name="Nome"
+                           type="text"
+                           value="@Model?.Nome"
+                           placeholder="Digite seu nome completo"
+                           autocomplete="name"
+                           maxlength="50"
+                           data-valida="nome"
+                           title="Informe o nome com pelo menos 3 letras, sem números ou símbolos."
+                           required>
+                    <span id="Nome-erro" class="erro-campo" data-erro-para="Nome" hidden></span>
+                </div>
+
+                @* Bloco (classe campo-cadastro) *@
+                <div class="campo-cadastro">
+                    @* Rótulo do campo *@
+                    <label for="Cpf">CPF</label>
+                    @* Campo de entrada (id Cpf) *@
+                    <input id="Cpf"
+                           name="Cpf"
+                           type="text"
+                           value="@Model?.Cpf"
+                           placeholder="000.000.000-00"
+                           autocomplete="off"
+                           inputmode="numeric"
+                           maxlength="14"
+                           data-valida="cpf"
+                           title="Informe um CPF com 11 dígitos, com ou sem pontuação (000.000.000-00)."
+                           required>
+                    <span id="Cpf-erro" class="erro-campo" data-erro-para="Cpf" hidden></span>
+                </div>
+
+                @* Bloco (classe campo-cadastro) *@
+                <div class="campo-cadastro">
+                    @* Rótulo do campo *@
+                    <label for="EmailPessoal">E-mail pessoal</label>
+                    @* Campo de entrada (id EmailPessoal) *@
+                    <input id="EmailPessoal"
+                           name="EmailPessoal"
+                           type="email"
+                           value="@Model?.EmailPessoal"
+                           placeholder="voce@exemplo.com"
+                           autocomplete="email"
+                           required>
+                </div>
+
+                @* Bloco (classe campo-cadastro) *@
+                <div class="campo-cadastro">
+                    @* Rótulo do campo *@
+                    <label for="Telefone">Telefone</label>
+                    @* Campo de entrada (id Telefone) *@
+                    <input id="Telefone"
+                           name="Telefone"
+                           type="tel"
+                           value="@Model?.Telefone"
+                           placeholder="(00) 00000-0000"
+                           autocomplete="tel"
+                           inputmode="numeric"
+                           maxlength="15"
+                           data-valida="telefone"
+                           title="Informe um telefone com 10 ou 11 dígitos (DDD). Pode usar parênteses, espaço e hífen."
+                           required>
+                    <span id="Telefone-erro" class="erro-campo" data-erro-para="Telefone" hidden></span>
+                </div>
+
+                @* Bloco (classe campo-cadastro) *@
+                <div class="campo-cadastro">
+                    @* Rótulo do campo *@
+                    <label for="Senha">Senha</label>
+                    @* Campo de entrada (id Senha) *@
+                    <input id="Senha"
+                           name="Senha"
+                           type="password"
+                           placeholder="Crie uma senha"
+                           autocomplete="new-password"
+                           required>
+                </div>
+
+                @* Bloco (classe cadastro-botoes) *@
+                <div class="cadastro-botoes">
+                    @* Botão *@
+                    <button type="submit" class="btn-cadastro-salvar">
+                        Criar cadastro
+                    </button>
+
+                    @* Link *@
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn-cadastro-voltar">
+                        Voltar
+                    </a>
+                </div>
+
+            </form>
+        </section>
+
+        @* Rodapé *@
+        <footer class="cadastro-rodape">
+            Santa Massa - Rio Preto
+        </footer>
+
+    </main>
+    <script src="~/js/validacaoFormularios.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 using GestaoReservas.Models;
+// Valida o formato do e-mail pessoal do cliente (qualquer domínio)
+using GestaoReservas.Utilities;
 
 public class ClienteController : Controller
 {
@@ -40,6 +42,10 @@ public class ClienteController : Controller
         if (string.IsNullOrWhiteSpace(model.EmailPessoal))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailPessoal), "Informe o e-mail pessoal.");
+        // Confere o formato do e-mail pessoal (algo@dominio.ext, qualquer domínio)
+        else if (ValidacaoEntrada.ErroEmailGenerico(model.EmailPessoal) is string erroEmailCadastro)
+            // Registra a mensagem de formato inválido para a tela
+            ModelState.AddModelError(nameof(model.EmailPessoal), erroEmailCadastro);
         // Verifica se o campo foi preenchido
         if (string.IsNullOrWhiteSpace(model.Senha))
             // Registra a mensagem de erro para a tela
@@ -123,6 +129,10 @@ public class ClienteController : Controller
         if (string.IsNullOrWhiteSpace(model.EmailPessoal))
             // Registra a mensagem de erro para a tela
             ModelState.AddModelError(nameof(model.EmailPessoal), "Informe o e-mail pessoal.");
+        // Confere o formato do e-mail pessoal (algo@dominio.ext, qualquer domínio)
+        else if (ValidacaoEntrada.ErroEmailGenerico(model.EmailPessoal) is string erroEmailEdicao)
+            // Registra a mensagem de formato inválido para a tela
+            ModelState.AddModelError(nameof(model.EmailPessoal), erroEmailEdicao);
         // Impede trocar o CPF para um que já pertence a outro cliente
         if (CpfJaCadastrado(model.Cpf, id))
             // Mensagem clara para o formulário

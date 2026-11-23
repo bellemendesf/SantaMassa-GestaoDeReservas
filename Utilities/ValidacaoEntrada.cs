@@ -96,4 +96,35 @@ public static class ValidacaoEntrada
     // Retorna true se o e-mail institucional é aceito no login
     public static bool EmailInstitucionalEhValido(string? email) =>
         ErroEmailInstitucional(email) is null;
+
+    // Mensagem quando o e-mail genérico (cliente, qualquer domínio) está em formato inválido
+    public const string MensagemEmailGenerico =
+        "Informe um e-mail válido (ex.: nome@email.com).";
+
+    // Devolve a mensagem de erro, ou null se o e-mail genérico for válido
+    // Exige algo@dominio.ext, recusa ".." no domínio e não exige @santamassa
+    public static string? ErroEmailGenerico(string? email, string? mensagemVazio = null)
+    {
+        // Sem e-mail → mensagem de campo vazio (o cadastro do cliente usa "Informe o e-mail pessoal.")
+        if (string.IsNullOrWhiteSpace(email))
+            return string.IsNullOrWhiteSpace(mensagemVazio) ? "Informe o e-mail." : mensagemVazio;
+
+        var valor = email.Trim();
+        // Localiza o @ para separar o domínio
+        var arroba = valor.LastIndexOf('@');
+        // Parte depois do @ (vazia se não houver @)
+        var dominio = arroba >= 0 ? valor[(arroba + 1)..] : "";
+
+        // Recusa sem @, domínio sem ponto (ex.: a@b), ".." e o restante do formato HTML5
+        if (arroba <= 0
+            || DominioEmFormatoInvalido(valor)
+            || !dominio.Contains('.'))
+            return MensagemEmailGenerico;
+
+        return null;
+    }
+
+    // Retorna true se o e-mail genérico está em formato válido
+    public static bool EmailGenericoEhValido(string? email) =>
+        ErroEmailGenerico(email) is null;
 }

@@ -1,4 +1,4 @@
-﻿// Validação de formulários no navegador (CPF, telefone, nome, quantidade de pessoas e e-mail institucional).
+﻿// Validação de formulários no navegador (CPF, telefone, nome, quantidade de pessoas, e-mail institucional e e-mail pessoal).
 // As mensagens são sempre em português e aparecem antes do envio.
 (function (global) {
     "use strict";
@@ -131,6 +131,28 @@
         return "";
     }
 
+    // Mensagem quando o e-mail pessoal (qualquer domínio) está em formato inválido
+    var mensagemEmailGenerico = "Informe um e-mail válido (ex.: nome@email.com).";
+
+    // Confere um e-mail genérico: algo@dominio.ext, sem ".." no domínio (não exige @santamassa)
+    function erroEmail(valor) {
+        var email = String(valor || "").trim();
+        // Campo vazio: mesma mensagem já usada no cadastro do cliente
+        if (!email) return "Informe o e-mail pessoal.";
+        // Separa o domínio (depois do último @)
+        var posArroba = email.lastIndexOf("@");
+        var dominio = posArroba >= 0 ? email.slice(posArroba + 1) : "";
+        // Recusa sem @, domínio sem ponto (ex.: a@b), ".." e formato HTML5 inválido
+        var formatoInvalido = posArroba <= 0
+            || dominio.indexOf("..") >= 0
+            || dominio.charAt(0) === "."
+            || dominio.charAt(dominio.length - 1) === "."
+            || dominio.indexOf(".") < 0
+            || !emailNoFormatoHtml5.test(email);
+        if (formatoInvalido) return mensagemEmailGenerico;
+        return "";
+    }
+
     // Localiza (ou cria) o span de erro do campo
     function obterSpan(campo) {
         var id = campo.id || campo.getAttribute("name") || "";
@@ -167,6 +189,7 @@
         else if (tipo === "nome") erro = erroNome(campo.value);
         else if (tipo === "qtd-pessoas") erro = erroQtd(campo);
         else if (tipo === "email-institucional") erro = erroEmailInstitucional(campo.value, campo);
+        else if (tipo === "email") erro = erroEmail(campo.value);
         mostrarErro(campo, erro);
         return !erro;
     }
@@ -302,6 +325,7 @@
         erroNome: erroNome,
         erroQtd: erroQtd,
         erroEmailInstitucional: erroEmailInstitucional,
+        erroEmail: erroEmail,
         validarFormulario: validarFormulario,
         iniciarFormulario: iniciarFormulario,
         iniciar: iniciar,

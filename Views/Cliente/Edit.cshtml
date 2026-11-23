@@ -55,7 +55,8 @@
             @* Rótulo do campo *@
             <label for="EmailPessoal" class="form-label">E-mail pessoal</label>
             @* Campo de entrada (id EmailPessoal) *@
-            <input id="EmailPessoal" name="EmailPessoal" type="email" value="@Model.EmailPessoal" class="form-control" required>
+            <input id="EmailPessoal" name="EmailPessoal" type="email" value="@Model.EmailPessoal" class="form-control" data-valida="email" title="Informe um e-mail válido (ex.: nome@email.com)." required>
+            <span id="EmailPessoal-erro" class="erro-campo" data-erro-para="EmailPessoal" hidden></span>
         </div>
         @* Bloco (classe mb-3) *@
         <div class="mb-3">

@@ -126,7 +126,10 @@
                            value="@Model?.EmailPessoal"
                            placeholder="voce@exemplo.com"
                            autocomplete="email"
+                           data-valida="email"
+                           title="Informe um e-mail válido (ex.: nome@email.com)."
                            required>
+                    <span id="EmailPessoal-erro" class="erro-campo" data-erro-para="EmailPessoal" hidden></span>
                 </div>
 
                 @* Bloco (classe campo-cadastro) *@
